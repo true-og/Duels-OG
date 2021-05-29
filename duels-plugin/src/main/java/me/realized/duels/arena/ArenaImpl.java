@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,9 +18,14 @@ import me.realized.duels.api.event.arena.ArenaSetPositionEvent;
 import me.realized.duels.api.event.arena.ArenaStateChangeEvent;
 import me.realized.duels.api.event.match.MatchEndEvent;
 import me.realized.duels.api.event.match.MatchEndEvent.Reason;
+import me.realized.duels.api.match.Match;
 import me.realized.duels.duel.DuelManager.OpponentInfo;
 import me.realized.duels.gui.BaseButton;
 import me.realized.duels.kit.KitImpl;
+import me.realized.duels.match.AbstractMatch;
+import me.realized.duels.match.MatchState;
+import me.realized.duels.match.matches.DuelMatch;
+import me.realized.duels.match.matches.PartyDuelMatch;
 import me.realized.duels.queue.Queue;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.compat.Items;
@@ -32,6 +35,8 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ArenaImpl extends BaseButton implements Arena {
 
@@ -43,8 +48,9 @@ public class ArenaImpl extends BaseButton implements Arena {
     private final Set<KitImpl> kits = new HashSet<>();
     @Getter
     private final Map<Integer, Location> positions = new HashMap<>();
-    @Getter
-    private MatchImpl match;
+
+    private AbstractMatch match;
+
     @Getter(value = AccessLevel.PACKAGE)
     @Setter(value = AccessLevel.PACKAGE)
     private Countdown countdown;
@@ -62,88 +68,25 @@ public class ArenaImpl extends BaseButton implements Arena {
         this.name = name;
     }
 
-    @Nullable
-    @Override
-    public Location getPosition(final int pos) {
-        return positions.get(pos);
-    }
-
-    @Override
-    public boolean setPosition(@Nullable final Player source, final int pos, @Nonnull final Location location) {
-        Objects.requireNonNull(location, "location");
-
-        if (pos <= 0 || pos > 2) {
-            return false;
-        }
-
-        final ArenaSetPositionEvent event = new ArenaSetPositionEvent(source, this, pos, location);
-        Bukkit.getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
-            return false;
-        }
-
-        positions.put(pos, location);
-        setLore(lang.getMessage("GUI.arena-selector.buttons.arena.lore-" + (isAvailable() ? "available" : "unavailable")).split("\n"));
-        arenaManager.getGui().calculatePages();
-        return true;
-    }
-
-    @Override
-    public boolean setPosition(final int pos, @Nonnull final Location location) {
-        return setPosition(null, pos, location);
-    }
-
-    @Override
-    public boolean setDisabled(@Nullable final CommandSender source, final boolean disabled) {
-        final ArenaStateChangeEvent event = new ArenaStateChangeEvent(source, this, disabled);
-        Bukkit.getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
-            return false;
-        }
-
-        this.disabled = event.isDisabled();
-        setLore(lang.getMessage("GUI.arena-selector.buttons.arena.lore-" + (isAvailable() ? "available" : "unavailable")).split("\n"));
-        arenaManager.getGui().calculatePages();
-        return true;
-    }
-
-    @Override
-    public boolean setDisabled(final boolean disabled) {
-        return setDisabled(null, disabled);
-    }
-
-    public boolean isBoundless() {
-        return kits.isEmpty();
-    }
-
-    public boolean isBound(final KitImpl kit) {
-        return kits.contains(kit);
-    }
-
-    public void bind(final KitImpl kit) {
-        if (isBound(kit)) {
-            kits.remove(kit);
-        } else {
-            kits.add(kit);
-        }
-    }
-
-    @Override
-    public boolean isUsed() {
-        return match != null;
-    }
-
     public boolean isAvailable() {
         return !isDisabled() && !isUsed() && getPosition(1) != null && getPosition(2) != null;
     }
 
-    public MatchImpl startMatch(final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
-        this.match = new MatchImpl(this, kit, items, bet, source);
+    private void updateGui() {
         setLore(lang.getMessage("GUI.arena-selector.buttons.arena.lore-unavailable").split("\n"));
         arenaManager.getGui().calculatePages();
-        return match;
+    }
+
+    public DuelMatch startDuelMatch(final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
+        this.match = new DuelMatch(plugin, this, kit, items, bet, source);
+        updateGui();
+        return (DuelMatch) match;
+    }
+
+    public PartyDuelMatch startPartyDuelMatch(final KitImpl kit) {
+        this.match = new PartyDuelMatch(plugin, this, kit);
+        updateGui();
+        return (PartyDuelMatch) match;
     }
 
     public void endMatch(final UUID winner, final UUID loser, final Reason reason) {
@@ -153,7 +96,7 @@ public class ArenaImpl extends BaseButton implements Arena {
         Bukkit.getPluginManager().callEvent(event);
 
         final Queue source = match.getSource();
-        match.setFinished();
+        match.setState(MatchState.FINISHED);
         match = null;
 
         if (source != null) {
@@ -180,30 +123,24 @@ public class ArenaImpl extends BaseButton implements Arena {
         return countdown != null;
     }
 
-    @Override
-    public boolean has(@Nonnull final Player player) {
-        Objects.requireNonNull(player, "player");
-        return isUsed() && !match.getPlayerMap().getOrDefault(player, true);
-    }
-
     public void add(final Player player) {
-        if (isUsed()) {
-            match.getPlayerMap().put(player, false);
+        if (!isUsed()) {
+            return;
         }
+
+        match.addPlayer(player);
     }
 
     public void remove(final Player player) {
-        if (isUsed() && match.getPlayerMap().containsKey(player)) {
-            match.getPlayerMap().put(player, true);
+        if (!isUsed()) {
+            return;
         }
+
+        match.removePlayer(player);
     }
 
     public boolean isEndGame() {
-        return size() <= 1;
-    }
-
-    public int size() {
-        return isUsed() ? match.getAlivePlayers().size() : 0;
+        return isUsed() && match.getState() == MatchState.END_GAME;
     }
 
     public Player first() {
@@ -214,6 +151,23 @@ public class ArenaImpl extends BaseButton implements Arena {
         return isUsed() ? match.getAllPlayers() : Collections.emptySet();
     }
 
+    public boolean isBoundless() {
+        return kits.isEmpty();
+    }
+
+    public boolean isBound(final KitImpl kit) {
+        return kit != null && kits.contains(kit);
+    }
+
+    public void bind(final KitImpl kit) {
+        if (isBound(kit)) {
+            kits.remove(kit);
+        } else {
+            kits.add(kit);
+        }
+        arenaManager.saveArenas();
+    }
+
     public void broadcast(final String message) {
         final List<Player> receivers = Lists.newArrayList(getPlayers());
         spectateManager.getSpectatorsImpl(this)
@@ -221,6 +175,81 @@ public class ArenaImpl extends BaseButton implements Arena {
             .map(spectator -> Bukkit.getPlayer(spectator.getUuid()))
             .forEach(receivers::add);
         receivers.forEach(player -> player.sendMessage(message));
+    }
+
+    @Nullable
+    @Override
+    public Location getPosition(final int pos) {
+        return positions.get(pos);
+    }
+
+    @Override
+    public boolean setPosition(@Nullable final Player source, final int pos, @NotNull final Location location) {
+        Objects.requireNonNull(location, "location");
+
+        if (pos <= 0 || pos > 2) {
+            return false;
+        }
+
+        final ArenaSetPositionEvent event = new ArenaSetPositionEvent(source, this, pos, location);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        positions.put(pos, location);
+        arenaManager.saveArenas();
+        setLore(lang.getMessage("GUI.arena-selector.buttons.arena.lore-" + (isAvailable() ? "available" : "unavailable")).split("\n"));
+        arenaManager.getGui().calculatePages();
+        return true;
+    }
+
+    @Override
+    public boolean setPosition(final int pos, @NotNull final Location location) {
+        return setPosition(null, pos, location);
+    }
+
+    @Override
+    public boolean setDisabled(@Nullable final CommandSender source, final boolean disabled) {
+        final ArenaStateChangeEvent event = new ArenaStateChangeEvent(source, this, disabled);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        this.disabled = event.isDisabled();
+        arenaManager.saveArenas();
+        setLore(lang.getMessage("GUI.arena-selector.buttons.arena.lore-" + (isAvailable() ? "available" : "unavailable")).split("\n"));
+        arenaManager.getGui().calculatePages();
+        return true;
+    }
+
+    @Override
+    public boolean setDisabled(final boolean disabled) {
+        return setDisabled(null, disabled);
+    }
+
+    @Override
+    public boolean isUsed() {
+        return this.match != null;
+    }
+
+    public AbstractMatch getMatchImpl() {
+        return this.match;
+    }
+
+    @Nullable
+    @Override
+    public Match getMatch() {
+        return getMatchImpl();
+    }
+
+    @Override
+    public boolean has(@NotNull final Player player) {
+        Objects.requireNonNull(player, "player");
+        return isUsed() && match.hasAlivePlayer(player);
     }
 
     @Override

@@ -21,12 +21,6 @@ public class QueueCommand extends BaseCommand {
     @Override
     protected void execute(final CommandSender sender, final String label, final String[] args) {
         final Player player = (Player) sender;
-
-        if (userManager.get(player) == null) {
-            lang.sendMessage(sender, "ERROR.data.load-failure");
-            return;
-        }
-
         queueManager.getGui().open(player);
     }
 }

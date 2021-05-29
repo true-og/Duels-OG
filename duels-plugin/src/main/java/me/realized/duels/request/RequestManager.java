@@ -1,15 +1,35 @@
 package me.realized.duels.request;
 
+import com.google.common.collect.ImmutableList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
-import me.realized.duels.api.event.request.RequestSendEvent;
 import me.realized.duels.config.Config;
 import me.realized.duels.config.Lang;
+import me.realized.duels.event.Events;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.Loadable;
 import me.realized.duels.util.TextBuilder;
+import me.realized.duels.util.validate.BiValidator;
+import me.realized.duels.util.validate.Validator;
+import me.realized.duels.util.validate.Validators;
+import me.realized.duels.validator.validators.request.self.SelfCheckCreativeValidator;
+import me.realized.duels.validator.validators.request.self.SelfCheckInventoryValidator;
+import me.realized.duels.validator.validators.request.self.SelfCheckMatchValidator;
+import me.realized.duels.validator.validators.request.self.SelfCheckPartyValidator;
+import me.realized.duels.validator.validators.request.self.SelfCheckSpectateValidator;
+import me.realized.duels.validator.validators.request.self.SelfCheckWorldValidator;
+import me.realized.duels.validator.validators.request.self.SelfCombatTagValidator;
+import me.realized.duels.validator.validators.request.self.SelfDuelZoneValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckMatchValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckPartyValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckRequestValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckSelfValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckSpectateValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckToggleValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckValidator;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import org.bukkit.Bukkit;
@@ -25,6 +45,11 @@ public class RequestManager implements Loadable, Listener {
     private final Lang lang;
     private final Map<UUID, Map<UUID, RequestImpl>> requests = new HashMap<>();
 
+    @Getter
+    private ImmutableList<Validator<Player>> selfValidators;
+    @Getter
+    private ImmutableList<BiValidator<Player, Player>> targetValidators;
+
     public RequestManager(final DuelsPlugin plugin) {
         this.plugin = plugin;
         this.config = plugin.getConfiguration();
@@ -33,7 +58,27 @@ public class RequestManager implements Loadable, Listener {
     }
 
     @Override
-    public void handleLoad() {}
+    public void handleLoad() {
+        this.selfValidators = Validators.constructValidators(
+            new SelfCheckInventoryValidator(plugin),
+            new SelfCheckCreativeValidator(plugin),
+            new SelfCheckWorldValidator(plugin),
+            new SelfCombatTagValidator(plugin),
+            new SelfDuelZoneValidator(plugin),
+            new SelfCheckMatchValidator(plugin),
+            new SelfCheckSpectateValidator(plugin),
+            new SelfCheckPartyValidator(plugin)
+        );
+        this.targetValidators = Validators.constructBiValidators(
+            new TargetCheckValidator(plugin),
+            new TargetCheckSelfValidator(plugin),
+            new TargetCheckToggleValidator(plugin),
+            new TargetCheckMatchValidator(plugin),
+            new TargetCheckSpectateValidator(plugin),
+            new TargetCheckPartyValidator(plugin),
+            new TargetCheckRequestValidator(plugin)
+        );
+    }
 
     @Override
     public void handleUnload() {
@@ -53,10 +98,8 @@ public class RequestManager implements Loadable, Listener {
 
     public void send(final Player sender, final Player target, final Settings settings) {
         final RequestImpl request = new RequestImpl(sender, target, settings);
-        final RequestSendEvent event = new RequestSendEvent(sender, target, request);
-        Bukkit.getPluginManager().callEvent(event);
 
-        if (event.isCancelled()) {
+        if (Events.callRequestSendEvent(sender, target, request)) {
             return;
         }
 

@@ -16,8 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.queue.QueueCreateEvent;
@@ -56,6 +54,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class QueueManager implements Loadable, DQueueManager, Listener {
 
@@ -173,7 +173,13 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
                         remove.add(opponent);
 
                         final Settings setting = new Settings(plugin);
-                        setting.setKit(queue.getKit() != null ? kitManager.get(queue.getKit().getName()) : null);
+
+                        if (queue.getKit() != null) {
+                            setting.setKit(kitManager.get(queue.getKit().getName()));
+                        } else {
+                            setting.setOwnInventory(true);
+                        }
+
                         setting.setBet(queue.getBet());
                         setting.getCache().put(player.getUniqueId(), current.getInfo());
                         setting.getCache().put(other.getUniqueId(), opponent.getInfo());
@@ -181,7 +187,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
                         final String kit = queue.getKit() != null ? queue.getKit().getName() : lang.getMessage("GENERAL.none");
                         lang.sendMessage(player, "QUEUE.found-opponent", "name", other.getName(), "kit", kit, "bet_amount", queue.getBet());
                         lang.sendMessage(other, "QUEUE.found-opponent", "name", player.getName(), "kit", kit, "bet_amount", queue.getBet());
-                        duelManager.startMatch(player, other, setting, null, queue);
+                        duelManager.startDuelMatch(player, other, setting, null, queue);
                         break;
                     }
                 }
@@ -231,7 +237,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
 
     @Nullable
     @Override
-    public Queue get(@Nonnull final Player player) {
+    public Queue get(@NotNull final Player player) {
         Objects.requireNonNull(player, "player");
         return queues.stream().filter(queue -> queue.isInQueue(player)).findFirst().orElse(null);
     }
@@ -272,20 +278,20 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
         return remove(null, kit, bet);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<DQueue> getQueues() {
         return Collections.unmodifiableList(queues);
     }
 
     @Override
-    public boolean isInQueue(@Nonnull final Player player) {
+    public boolean isInQueue(@NotNull final Player player) {
         Objects.requireNonNull(player, "player");
         return queues.stream().anyMatch(queue -> queue.isInQueue(player));
     }
 
     @Override
-    public boolean addToQueue(@Nonnull final Player player, @Nonnull final DQueue queue) {
+    public boolean addToQueue(@NotNull final Player player, @NotNull final DQueue queue) {
         Objects.requireNonNull(player, "player");
         Objects.requireNonNull(queue, "queue");
         return queue(player, (Queue) queue);
@@ -293,7 +299,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
 
     @Nullable
     @Override
-    public DQueue removeFromQueue(@Nonnull final Player player) {
+    public DQueue removeFromQueue(@NotNull final Player player) {
         Objects.requireNonNull(player, "player");
         return remove(player);
     }
@@ -374,7 +380,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
             return false;
         }
 
-        queue.addPlayer(new QueueEntry(player, player.getLocation().clone(), duelzone, gameMode));
+        queue.addPlayer(new QueueEntry(player, player.getLocation().clone(), duelzone));
 
         final String kit = queue.getKit() != null ? queue.getKit().getName() : lang.getMessage("GENERAL.none");
         lang.sendMessage(player, "QUEUE.add", "kit", kit, "bet_amount", queue.getBet());

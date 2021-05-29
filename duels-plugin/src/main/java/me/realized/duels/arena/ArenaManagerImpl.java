@@ -17,8 +17,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.arena.Arena;
@@ -48,6 +46,8 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.projectiles.ProjectileSource;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ArenaManagerImpl implements Loadable, ArenaManager {
 
@@ -116,7 +116,7 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
         arenas.clear();
     }
 
-    private void saveArenas() {
+    void saveArenas() {
         final List<ArenaData> data = new ArrayList<>();
 
         for (final ArenaImpl arena : arenas) {
@@ -133,25 +133,25 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
 
     @Nullable
     @Override
-    public ArenaImpl get(@Nonnull final String name) {
+    public ArenaImpl get(@NotNull final String name) {
         Objects.requireNonNull(name, "name");
         return arenas.stream().filter(arena -> arena.getName().equals(name)).findFirst().orElse(null);
     }
 
     @Nullable
     @Override
-    public ArenaImpl get(@Nonnull final Player player) {
+    public ArenaImpl get(@NotNull final Player player) {
         Objects.requireNonNull(player, "player");
         return arenas.stream().filter(arena -> arena.has(player)).findFirst().orElse(null);
     }
 
     @Override
-    public boolean isInMatch(@Nonnull final Player player) {
+    public boolean isInMatch(@NotNull final Player player) {
         Objects.requireNonNull(player, "player");
         return get(player) != null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Arena> getArenas() {
         return Collections.unmodifiableList(arenas);
@@ -195,7 +195,7 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
     }
 
     public long getPlayersInMatch(final Queue queue) {
-        return arenas.stream().filter(arena -> arena.isUsed() && arena.getMatch().isFromQueue() && arena.getMatch().getSource().equals(queue)).count() * 2;
+        return arenas.stream().filter(arena -> arena.isUsed() && arena.getMatchImpl().isFromQueue() && arena.getMatchImpl().getSource().equals(queue)).count() * 2;
     }
 
     public boolean isSelectable(final KitImpl kit, final ArenaImpl arena) {
@@ -203,12 +203,8 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
             return false;
         }
 
-        if (kit == null) {
-            return true;
-        }
-
         if (arena.isBoundless()) {
-            return !kit.isArenaSpecific();
+            return kit == null || !kit.isArenaSpecific();
         }
 
         return arena.isBound(kit);

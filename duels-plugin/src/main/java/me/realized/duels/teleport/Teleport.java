@@ -1,6 +1,5 @@
 package me.realized.duels.teleport;
 
-import java.util.function.Consumer;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.hook.hooks.EssentialsHook;
 import me.realized.duels.util.Loadable;
@@ -45,16 +44,12 @@ public final class Teleport implements Loadable, Listener {
      *
      * @param player Player to force-teleport to a location
      * @param location Location to force-teleport the player
-     * @param failHandler Called when teleportation has failed -- being when Player#teleport returns false.
+     * @return true if teleport was successful
      */
-    public void tryTeleport(final Player player, final Location location, final Consumer<Player> failHandler) {
+    public boolean tryTeleport(final Player player, final Location location) {
         if (location == null || location.getWorld() == null) {
             Log.warn(this, "Could not teleport " + player.getName() + "! Location is null");
-
-            if (failHandler != null) {
-                failHandler.accept(player);
-            }
-            return;
+            return false;
         }
 
         if (essentials != null) {
@@ -65,20 +60,10 @@ public final class Teleport implements Loadable, Listener {
 
         if (!player.teleport(location)) {
             Log.warn(this, "Could not teleport " + player.getName() + "! Player is dead or is vehicle");
-
-            if (failHandler != null) {
-                failHandler.accept(player);
-            }
+            return false;
         }
-    }
 
-    /**
-     * Calls {@link #tryTeleport(Player, Location, Consumer)} with a null FailHandler.
-     *
-     * @see #tryTeleport(Player, Location, Consumer)
-     */
-    public void tryTeleport(final Player player, final Location location) {
-        tryTeleport(player, location, null);
+        return true;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -86,7 +71,6 @@ public final class Teleport implements Loadable, Listener {
         final Player player = event.getPlayer();
         final Object value = MetadataUtil.removeAndGet(plugin, player, METADATA_KEY);
 
-        // Only handle the case where teleport is cancelled and player has force teleport metadata value
         if (!event.isCancelled() || value == null) {
             return;
         }

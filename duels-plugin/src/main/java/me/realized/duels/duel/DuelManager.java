@@ -1,43 +1,47 @@
 package me.realized.duels.duel;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.match.MatchEndEvent.Reason;
 import me.realized.duels.api.event.match.MatchStartEvent;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.arena.ArenaManagerImpl;
-import me.realized.duels.arena.MatchImpl;
 import me.realized.duels.config.Config;
 import me.realized.duels.config.Lang;
 import me.realized.duels.data.MatchData;
 import me.realized.duels.data.UserData;
 import me.realized.duels.data.UserManagerImpl;
-import me.realized.duels.hook.hooks.CombatLogXHook;
-import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.EssentialsHook;
 import me.realized.duels.hook.hooks.McMMOHook;
 import me.realized.duels.hook.hooks.MyPetHook;
-import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.VaultHook;
-import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
 import me.realized.duels.inventories.InventoryManager;
 import me.realized.duels.kit.KitImpl;
+import me.realized.duels.match.AbstractMatch;
+import me.realized.duels.match.MatchState;
+import me.realized.duels.match.matches.DuelMatch;
+import me.realized.duels.match.matches.PartyDuelMatch;
+import me.realized.duels.party.Party;
 import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.queue.Queue;
 import me.realized.duels.queue.QueueManager;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.teleport.Teleport;
+import me.realized.duels.util.EventUtil;
 import me.realized.duels.util.Loadable;
 import me.realized.duels.util.Log;
 import me.realized.duels.util.NumberUtil;
@@ -46,11 +50,21 @@ import me.realized.duels.util.StringUtil;
 import me.realized.duels.util.TextBuilder;
 import me.realized.duels.util.compat.CompatUtil;
 import me.realized.duels.util.compat.Titles;
+import me.realized.duels.util.inventory.InventoryUtil;
+import me.realized.duels.util.validate.BiValidator;
+import me.realized.duels.util.validate.Validators;
+import me.realized.duels.validator.validators.match.CheckAliveValidator;
+import me.realized.duels.validator.validators.match.CheckCreativeValidator;
+import me.realized.duels.validator.validators.match.CheckInventoryValidator;
+import me.realized.duels.validator.validators.match.CheckMoveValidator;
+import me.realized.duels.validator.validators.match.CheckWorldValidator;
+import me.realized.duels.validator.validators.match.CombatTagValidator;
+import me.realized.duels.validator.validators.match.DuelZoneValidator;
+import me.realized.duels.validator.validators.match.ModeValidator;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -59,12 +73,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -86,15 +100,14 @@ public class DuelManager implements Loadable {
 
     private QueueManager queueManager;
     private Teleport teleport;
-    private CombatTagPlusHook combatTagPlus;
-    private PvPManagerHook pvpManager;
-    private CombatLogXHook combatLogX;
     private VaultHook vault;
     private EssentialsHook essentials;
     private McMMOHook mcMMO;
-    private WorldGuardHook worldGuard;
     private MyPetHook myPet;
     private int durationCheckTask;
+
+    private ImmutableList<BiValidator<Collection<Player>, Settings>> matchValidators;
+    private ImmutableList<BiValidator<Party, Party>> partyValidators;
 
     public DuelManager(final DuelsPlugin plugin) {
         this.plugin = plugin;
@@ -112,248 +125,77 @@ public class DuelManager implements Loadable {
     public void handleLoad() {
         this.queueManager = plugin.getQueueManager();
         this.teleport = plugin.getTeleport();
-        this.combatTagPlus = plugin.getHookManager().getHook(CombatTagPlusHook.class);
-        this.pvpManager = plugin.getHookManager().getHook(PvPManagerHook.class);
-        this.combatLogX = plugin.getHookManager().getHook(CombatLogXHook.class);
         this.vault = plugin.getHookManager().getHook(VaultHook.class);
         this.essentials = plugin.getHookManager().getHook(EssentialsHook.class);
         this.mcMMO = plugin.getHookManager().getHook(McMMOHook.class);
-        this.worldGuard = plugin.getHookManager().getHook(WorldGuardHook.class);
         this.myPet = plugin.getHookManager().getHook(MyPetHook.class);
 
+        this.matchValidators = Validators.constructBiValidators(
+            new ModeValidator(plugin),
+            new CheckAliveValidator(plugin),
+            new CheckInventoryValidator(plugin),
+            new CheckWorldValidator(plugin),
+            new CombatTagValidator(plugin),
+            new CheckMoveValidator(plugin),
+            new DuelZoneValidator(plugin),
+            new CheckCreativeValidator(plugin)
+        );
+        this.partyValidators = Validators.constructBiValidators();
+
         if (config.getMaxDuration() > 0) {
-            this.durationCheckTask = plugin.doSyncRepeat(() -> {
-                final long now = System.currentTimeMillis();
-
-                for (final ArenaImpl arena : arenaManager.getArenasImpl()) {
-                    final MatchImpl match = arena.getMatch();
-
-                    if (match == null || now - match.getStart() < (config.getMaxDuration() * 60 * 1000) || arena.size() <= 1) {
-                        continue;
-                    }
-
-                    for (final Player player : match.getAllPlayers()) {
-                        handleTiePlayer(player, arena, match, true);
-                        lang.sendMessage(player, "DUEL.on-end.tie");
-                    }
-
+            this.durationCheckTask = plugin.doSyncRepeat(() -> arenaManager.getArenasImpl()
+                .stream()
+                .filter(arena -> arena.isUsed() && arena.getMatchImpl().getDuration() >= config.getMaxDuration() * 60L * 1000L && !arena.isEndGame())
+                .forEach(arena -> {
+                    final AbstractMatch match = arena.getMatchImpl();
+                    match.getAlivePlayers().forEach(player -> handleTie(player, arena, match));
                     arena.endMatch(null, null, Reason.MAX_TIME_REACHED);
-                }
-            }, 0L, 20L).getTaskId();
+                }), 0L, 20L).getTaskId();
         }
     }
 
     @Override
     public void handleUnload() {
         plugin.cancelTask(durationCheckTask);
-
-        for (final ArenaImpl arena : arenaManager.getArenasImpl()) {
-            final MatchImpl match = arena.getMatch();
-
-            if (match == null) {
-                continue;
-            }
-
-            final int size = arena.size();
-            final boolean ongoing = size > 1;
-            final boolean tie = size == 0;
-
-            for (final Player player : match.getAllPlayers()) {
-                // This case wouldn't be called if ongoing = true
-                if (match.isDead(player)) {
-                    continue;
+        arenaManager.getArenasImpl().stream().filter(ArenaImpl::isUsed).forEach(arena -> {
+            final AbstractMatch match = arena.getMatchImpl();
+            match.getAlivePlayers().forEach(player -> {
+                switch (match.getState()) {
+                    case PRE_GAME:
+                        // TODO: 4/2/21 Handle teleport queue
+                    case END_GAME:
+                        handleWin(player, null, arena, match);
+                        break;
+                    case IN_GAME:
+                        handleTie(player, arena, match);
+                        break;
                 }
-
-                // Now checks for non-dead players. ongoing = false is the case after winner is decided
-                if (ongoing) {
-                    handleTiePlayer(player, arena, match, true);
-                } else if (!tie) {
-                    handleWinner(player, getOther(player, match.getAllPlayers()), arena, match);
-                }
-            }
-
+            });
             arena.getPlayers().forEach(player -> lang.sendMessage(player, "DUEL.on-end.plugin-disable"));
             arena.endMatch(null, null, Reason.PLUGIN_DISABLE);
-        }
+        });
     }
 
-    private Player getOther(final Player player, final Set<Player> players) {
-        final Set<Player> copy = new HashSet<>(players);
-        copy.remove(player);
+    public void startDuelMatch(final Player first, final Player second, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
+        final List<Player> players = Arrays.asList(first, second);
 
-        if (copy.isEmpty()) {
-            return null;
+        if (!Validators.validate(matchValidators, players, settings)) {
+            refundItems(items, players);
+            return;
         }
 
-        return copy.iterator().next();
-    }
-
-    private void handleTiePlayer(final Player player, final ArenaImpl arena, final MatchImpl match, boolean alive) {
-        arena.remove(player);
-
-        if (vault != null && match.getBet() > 0) {
-            vault.add(match.getBet(), player);
-        }
-
-        if (mcMMO != null) {
-            mcMMO.enableSkills(player);
-        }
-
-        if (alive && !config.isUseOwnInventoryEnabled()) {
-            PlayerUtil.reset(player);
-        }
-
-        final PlayerInfo info = playerManager.get(player);
-
-        if (alive) {
-            playerManager.remove(player);
-
-            if (info != null) {
-                teleport.tryTeleport(player, info.getLocation(), failed -> {
-                    failed.setHealth(0);
-                    failed.sendMessage(StringUtil.color("&cTeleportation failed! You were killed to prevent staying in the arena."));
-                });
-                info.restore(player);
-            } else {
-                // If somehow PlayerInfo is not found...
-                teleport.tryTeleport(player, playerManager.getLobby());
-            }
-
-            match.getItems(player).stream().filter(Objects::nonNull).forEach(item -> player.getInventory().addItem(item));
-        } else {
-            final List<ItemStack> items = match.getItems(player);
-
-            if (player.isDead()) {
-                addItems(info, items);
-            } else {
-                // Note to self: Unsure if this case will ever be called, since player has to respawn instantly after a tick.
-                items.stream().filter(Objects::nonNull).forEach(item -> player.getInventory().addItem(item));
-            }
-        }
-    }
-
-    private void handleWinner(final Player player, final Player opponent, final ArenaImpl arena, final MatchImpl match) {
-        arena.remove(player);
-
-        if (vault != null && match.getBet() > 0) {
-            final int amount = match.getBet() * 2;
-            vault.add(amount, player);
-            lang.sendMessage(player, "DUEL.reward.money.message", "name", opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none"), "money", amount);
-
-            final String title = lang
-                .getMessage("DUEL.reward.money.title", "name", opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none"), "money", amount);
-
-            if (title != null) {
-                Titles.send(player, title, null, 0, 20, 50);
-            }
-        }
-
-        if (mcMMO != null) {
-            mcMMO.enableSkills(player);
-        }
-
-        final List<ItemStack> items = match.getItems();
-        final PlayerInfo info = playerManager.get(player);
-
-        if (player.isDead()) {
-            addItems(info, items);
-        } else if (player.isOnline()) {
-            playerManager.remove(player);
-
-            if (info != null) {
-                if (!config.isUseOwnInventoryEnabled()) {
-                    PlayerUtil.reset(player);
-                }
-
-                teleport.tryTeleport(player, info.getLocation(), failed -> {
-                    failed.setHealth(0);
-                    failed.sendMessage(StringUtil.color("&cTeleportation failed! You were killed to prevent staying in the arena."));
-                });
-                info.restore(player);
-            }
-
-            boolean added = false;
-
-            for (final ItemStack item : items) {
-                if (item == null) {
-                    continue;
-                }
-
-                if (!added) {
-                    added = true;
-                }
-
-                player.getInventory().addItem(item);
-            }
-
-            if (added) {
-                lang.sendMessage(player, "DUEL.reward.items.message", "name", opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none"));
-            }
-        }
-    }
-
-    private void addItems(final PlayerInfo info, final List<ItemStack> items) {
-        if (info != null) {
-            info.getExtra().addAll(items);
-        }
-    }
-
-    public void startMatch(final Player first, final Player second, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
         final KitImpl kit = settings.getKit();
-
-        if (!config.isUseOwnInventoryEnabled() && kit == null) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.no-kit-selected");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (first.isDead() || second.isDead()) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.player-is-dead");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (isBlacklistedWorld(first) || isBlacklistedWorld(second)) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.in-blacklisted-world");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (isTagged(first) || isTagged(second)) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.is-tagged");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (config.isCancelIfMoved() && (notInLoc(first, settings.getBaseLoc(first)) || notInLoc(second, settings.getBaseLoc(second)))) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.player-moved");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (config.isDuelzoneEnabled() && worldGuard != null && (notInDz(first, settings.getDuelzone(first)) || notInDz(second, settings.getDuelzone(second)))) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-in-duelzone");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (config.isPreventCreativeMode() && (notNoCreative(first, settings.getGameMode(first)) || notNoCreative(second, settings.getGameMode(second)))) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.in-creative-mode");
-            refundItems(items, first, second);
-            return;
-        }
-
         final ArenaImpl arena = settings.getArena() != null ? settings.getArena() : arenaManager.randomArena(kit);
 
         if (arena == null || !arena.isAvailable()) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure." + (settings.getArena() != null ? "arena-in-use" : "no-arena-available"));
-            refundItems(items, first, second);
+            lang.sendMessage(players, "DUEL.start-failure." + (settings.getArena() != null ? "arena-in-use" : "no-arena-available"));
+            refundItems(items, players);
             return;
         }
 
         if (kit != null && !arenaManager.isSelectable(kit, arena)) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.arena-not-applicable");
-            refundItems(items, first, second);
+            lang.sendMessage(players, "DUEL.start-failure.arena-not-applicable");
+            refundItems(items, players);
             return;
         }
 
@@ -361,81 +203,78 @@ public class DuelManager implements Loadable {
 
         if (bet > 0 && vault != null && vault.getEconomy() != null) {
             if (!vault.has(bet, first, second)) {
-                lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-enough-money", "bet_amount", bet);
-                refundItems(items, first, second);
+                lang.sendMessage(players, "DUEL.start-failure.not-enough-money", "bet_amount", bet);
+                refundItems(items, players);
                 return;
             }
 
             vault.remove(bet, first, second);
         }
 
-        final MatchImpl match = arena.startMatch(kit, items, settings.getBet(), source);
-        addPlayers(source, arena, kit, arena.getPositions(), first, second);
+        final DuelMatch match = arena.startDuelMatch(kit, items, settings.getBet(), source);
+        addPlayers(source, arena, kit, arena.getPosition(1), Collections.singleton(first));
+        addPlayers(source, arena, kit, arena.getPosition(2), Collections.singleton(second));
 
-        if (config.isCdEnabled()) {
-            final Map<UUID, OpponentInfo> info = new HashMap<>();
-            info.put(first.getUniqueId(), new OpponentInfo(second.getName(), getRating(kit, userDataManager.get(second))));
-            info.put(second.getUniqueId(), new OpponentInfo(first.getName(), getRating(kit, userDataManager.get(first))));
-            arena.startCountdown(kit != null ? kit.getName() : lang.getMessage("GENERAL.none"), info);
-        }
+//        if (config.isCdEnabled()) {
+//            final Map<UUID, OpponentInfo> info = new HashMap<>();
+//            info.put(first.getUniqueId(), new OpponentInfo(second.getName(), getRating(kit, userDataManager.get(second))));
+//            info.put(second.getUniqueId(), new OpponentInfo(first.getName(), getRating(kit, userDataManager.get(first))));
+//            arena.startCountdown(kit != null ? kit.getName() : lang.getMessage("GENERAL.none"), info);
+//        }
 
         final MatchStartEvent event = new MatchStartEvent(match, first, second);
         Bukkit.getPluginManager().callEvent(event);
     }
 
-    private void refundItems(final Map<UUID, List<ItemStack>> items, final Player... players) {
+    public void startPartyMatch(final Party first, final Party second, final Settings settings) {
+        final List<Player> firstPlayers = first.getOnlineMembers();
+        final List<Player> secondPlayers = second.getOnlineMembers();
+        final List<Player> players = Stream.concat(firstPlayers.stream(), secondPlayers.stream()).collect(Collectors.toList());
+
+        if (!Validators.validate(matchValidators, players, settings)) {
+            return;
+        }
+
+        final KitImpl kit = settings.getKit();
+        final ArenaImpl arena = settings.getArena() != null ? settings.getArena() : arenaManager.randomArena(kit);
+
+        if (arena == null || !arena.isAvailable()) {
+            lang.sendMessage(players, "DUEL.start-failure." + (settings.getArena() != null ? "arena-in-use" : "no-arena-available"));
+            return;
+        }
+
+        if (kit != null && !arenaManager.isSelectable(kit, arena)) {
+            lang.sendMessage(players, "DUEL.start-failure.arena-not-applicable");
+            return;
+        }
+
+        final PartyDuelMatch match = arena.startPartyDuelMatch(kit);
+        addPlayers(null, arena, kit, arena.getPosition(1), firstPlayers);
+        addPlayers(null, arena, kit, arena.getPosition(2), secondPlayers);
+        match.setState(MatchState.IN_GAME);
+
+//        if (config.isCdEnabled()) {
+//            final Map<UUID, OpponentInfo> info = new HashMap<>();
+//            info.put(first.getUniqueId(), new OpponentInfo(second.getName(), getRating(kit, userDataManager.get(second))));
+//            info.put(second.getUniqueId(), new OpponentInfo(first.getName(), getRating(kit, userDataManager.get(first))));
+//            arena.startCountdown(kit != null ? kit.getName() : lang.getMessage("GENERAL.none"), info);
+//        }
+
+        final MatchStartEvent event = new MatchStartEvent(match);
+        Bukkit.getPluginManager().callEvent(event);
+    }
+
+    private void refundItems(final Map<UUID, List<ItemStack>> items, final List<Player> players) {
         if (items != null) {
-            Arrays.stream(players).forEach(player -> {
-                final List<ItemStack> list = items.get(player.getUniqueId());
-
-                if (list != null) {
-                    list.stream().filter(Objects::nonNull).forEach(item -> player.getInventory().addItem(item));
-                }
-            });
+            players.forEach(player -> InventoryUtil.addOrDrop(player, items.getOrDefault(player.getUniqueId(), Collections.emptyList())));
         }
     }
 
-    private boolean isBlacklistedWorld(final Player player) {
-        return config.getBlacklistedWorlds().contains(player.getWorld().getName());
-    }
-
-    private boolean isTagged(final Player player) {
-        return (combatTagPlus != null && combatTagPlus.isTagged(player))
-            || (pvpManager != null && pvpManager.isTagged(player))
-            || (combatLogX != null && combatLogX.isTagged(player));
-    }
-
-    private boolean notInLoc(final Player player, final Location location) {
-        if (location == null) {
-            return false;
-        }
-
-        final Location source = player.getLocation();
-        return !source.getWorld().equals(location.getWorld()) || source.getBlockX() != location.getBlockX() || source.getBlockY() != location.getBlockY()
-            || source.getBlockZ() != location.getBlockZ();
-    }
-
-    private boolean notInDz(final Player player, final String duelzone) {
-        return duelzone != null && !duelzone.equals(worldGuard.findDuelZone(player));
-    }
-
-    private boolean notNoCreative(final Player player, final GameMode gameMode) {
-        return gameMode != null && player.getGameMode() != gameMode;
-    }
-
-    private int getRating(final KitImpl kit, final UserData user) {
-        return user != null ? user.getRating(kit) : config.getDefaultRating();
-    }
-
-    private void addPlayers(final Queue source, final ArenaImpl arena, final KitImpl kit, final Map<Integer, Location> locations, final Player... players) {
-        int position = 0;
-
+    private void addPlayers(final Queue source, final ArenaImpl arena, final KitImpl kit, final Location position, final Collection<Player> players) {
         for (final Player player : players) {
             if (source == null) {
                 queueManager.remove(player);
             }
-
-            inventoryManager.remove(player);
 
             if (player.getAllowFlight()) {
                 player.setFlying(false);
@@ -444,14 +283,11 @@ public class DuelManager implements Loadable {
 
             player.closeInventory();
             playerManager.create(player);
-            teleport.tryTeleport(player, locations.get(++position));
+            teleport.tryTeleport(player, position);
 
-            if (!config.isUseOwnInventoryEnabled()) {
+            if (kit != null) {
                 PlayerUtil.reset(player);
-
-                if (kit != null) {
-                    kit.equip(player);
-                }
+                kit.equip(player);
             }
 
             if (config.isStartCommandsEnabled() && !(source == null && config.isStartCommandsQueueOnly())) {
@@ -480,30 +316,109 @@ public class DuelManager implements Loadable {
         }
     }
 
-    private void handleInventories(final MatchImpl match) {
+//    private int getRating(final KitImpl kit, final UserData user) {
+//        return user != null ? user.getRating(kit) : config.getDefaultRating();
+//    }
+
+    private void handleTie(final Player player, final ArenaImpl arena, final AbstractMatch match) {
+        arena.remove(player);
+
+        if (vault != null && match.getBet() > 0) {
+            vault.add(match.getBet(), player);
+        }
+
+        if (mcMMO != null) {
+            mcMMO.enableSkills(player);
+        }
+
+        final PlayerInfo info = playerManager.get(player);
+        final List<ItemStack> items = match instanceof DuelMatch ? ((DuelMatch) match).getItems(player) : Collections.emptyList();
+
+        if (!player.isDead()) {
+            PlayerUtil.reset(player);
+            playerManager.remove(player);
+
+            if (info != null) {
+                teleport.tryTeleport(player, info.getLocation());
+                info.restore(player);
+            } else {
+                teleport.tryTeleport(player, playerManager.getLobby());
+            }
+
+            // Give back bet items
+            InventoryUtil.addOrDrop(player, items);
+        } else if (info != null) {
+            // Add bet items to giveback on respawn
+            info.getExtra().addAll(items);
+        }
+    }
+
+    private void handleWin(final Player winner, final Player opponent, final ArenaImpl arena, final AbstractMatch match) {
+        arena.remove(winner);
+
+        if (vault != null && match.getBet() > 0) {
+            final int amount = match.getBet() * 2;
+            vault.add(amount, winner);
+            lang.sendMessage(winner, "DUEL.reward.money.message", "name", opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none"), "money", amount);
+
+            final String title = lang
+                .getMessage("DUEL.reward.money.title", "name", opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none"), "money", amount);
+
+            if (title != null) {
+                Titles.send(winner, title, null, 0, 20, 50);
+            }
+        }
+
+        if (mcMMO != null) {
+            mcMMO.enableSkills(winner);
+        }
+
+        final List<ItemStack> items = match instanceof DuelMatch ? ((DuelMatch) match).getItems() : Collections.emptyList();
+        final PlayerInfo info = playerManager.get(winner);
+
+        if (!winner.isDead()) {
+            playerManager.remove(winner);
+
+            if (info != null) {
+                PlayerUtil.reset(winner);
+                teleport.tryTeleport(winner, info.getLocation());
+                info.restore(winner);
+            } else {
+                teleport.tryTeleport(winner, playerManager.getLobby());
+            }
+
+            if (InventoryUtil.addOrDrop(winner, items)) {
+                lang.sendMessage(winner, "DUEL.reward.items.message", "name", opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none"));
+            }
+        } else if (info != null) {
+            // Add won items to giveback on respawn
+            info.getExtra().addAll(items);
+        }
+    }
+
+    private void handleInventories(final AbstractMatch match) {
         if (!config.isDisplayInventories()) {
             return;
         }
 
         String color = lang.getMessage("DUEL.inventories.name-color");
-        color = color != null ? color : "";
-        boolean start = true;
         final TextBuilder builder = TextBuilder.of(lang.getMessage("DUEL.inventories.message"));
+        final Set<Player> players = match.getAllPlayers();
+        final Iterator<Player> iterator = players.iterator();
 
-        for (final Player matchPlayer : match.getAllPlayers()) {
-            if (!start) {
+        while (iterator.hasNext()) {
+            final Player player = iterator.next();
+            builder.add(StringUtil.color(color + player.getName()), Action.RUN_COMMAND, "/duel _ " + player.getUniqueId());
+
+            if (iterator.hasNext()) {
                 builder.add(StringUtil.color(color + ", "));
-            } else {
-                start = false;
             }
-
-            builder.add(StringUtil.color(color + matchPlayer.getName()), Action.RUN_COMMAND, "/duel _ " + matchPlayer.getUniqueId());
         }
 
-        builder.send(match.getAllPlayers());
+        builder.send(players);
     }
 
-    private void handleEndUsers(final MatchImpl match, final UserData winner, final UserData loser, final MatchData matchData) {
+    private void handleStats(final AbstractMatch match, final UserData winner, final UserData loser, final MatchData matchData) {
         if (winner != null && loser != null) {
             winner.addWin();
             loser.addLoss();
@@ -565,12 +480,6 @@ public class DuelManager implements Loadable {
                 return;
             }
 
-            if (!(!config.isUseOwnInventoryEnabled() || config.isUseOwnInventoryKeepItems())) {
-                return;
-            }
-
-            event.setKeepLevel(true);
-            event.setDroppedExp(0);
             event.getDrops().clear();
         }
 
@@ -587,67 +496,74 @@ public class DuelManager implements Loadable {
                 mcMMO.enableSkills(player);
             }
 
-            event.setKeepInventory(config.isUseOwnInventoryEnabled() && config.isUseOwnInventoryKeepItems());
-            inventoryManager.create(player);
+            event.setKeepLevel(true);
+            event.setDroppedExp(0);
+            event.setKeepInventory(false);
+            inventoryManager.create(player, true);
+
+            final AbstractMatch match = arena.getMatchImpl();
+            final int prevSize = match.size();
             arena.remove(player);
 
-            // Call end task only on the first death
-            if (arena.size() <= 0) {
+            if (prevSize < 2 || match.size() >= prevSize) {
                 return;
             }
 
+            final Location deadLocation = player.getEyeLocation().clone();
+
             plugin.doSyncAfter(() -> {
-                final MatchImpl match = arena.getMatch();
-
-                if (match == null) {
-                    return;
-                }
-
-                if (arena.size() == 0) {
+                if (match.size() == 0) {
                     match.getAllPlayers().forEach(matchPlayer -> {
-                        handleTiePlayer(matchPlayer, arena, match, false);
+                        handleTie(matchPlayer, arena, match);
                         lang.sendMessage(matchPlayer, "DUEL.on-end.tie");
                     });
-                    handleInventories(match);
+                    plugin.doSyncAfter(() -> handleInventories(match), 1L);
                     arena.endMatch(null, null, Reason.TIE);
                     return;
                 }
 
-                final Player winner = arena.first();
-                inventoryManager.create(winner);
+                match.setState(MatchState.END_GAME);
 
                 if (config.isSpawnFirework()) {
-                    final Firework firework = (Firework) winner.getWorld().spawnEntity(winner.getEyeLocation(), EntityType.FIREWORK);
+                    final Firework firework = (Firework) deadLocation.getWorld().spawnEntity(deadLocation, EntityType.FIREWORK);
                     final FireworkMeta meta = firework.getFireworkMeta();
                     meta.addEffect(FireworkEffect.builder().withColor(Color.RED).with(FireworkEffect.Type.BALL_LARGE).withTrail().build());
                     firework.setFireworkMeta(meta);
                 }
 
-                final double health = Math.ceil(winner.getHealth()) * 0.5;
+                final Set<Player> winners = match.getAlivePlayers();
+                winners.forEach(winner -> inventoryManager.create(winner, false));
+
                 final String kitName = match.getKit() != null ? match.getKit().getName() : lang.getMessage("GENERAL.none");
-                final long duration = System.currentTimeMillis() - match.getStart();
-                final long time = GREGORIAN_CALENDAR.getTimeInMillis();
-                final MatchData matchData = new MatchData(winner.getName(), player.getName(), kitName, time, duration, health);
-                handleEndUsers(match, userDataManager.get(winner), userDataManager.get(player), matchData);
-                handleInventories(match);
+
+//                final double health = Math.ceil(winner.getHealth()) * 0.5;
+//                final long duration = System.currentTimeMillis() - match.getStart();
+//                final long time = GREGORIAN_CALENDAR.getTimeInMillis();
+//                final MatchData matchData = new MatchData(winner.getName(), player.getName(), kitName, time, duration, health);
+//                handleStats(match, userDataManager.get(winner), userDataManager.get(player), matchData);
+
+                plugin.doSyncAfter(() -> handleInventories(match), 1L);
                 plugin.doSyncAfter(() -> {
-                    handleWinner(winner, player, arena, match);
+                    winners.forEach(winner -> {
+                        handleWin(winner, player, arena, match);
 
-                    if (config.isEndCommandsEnabled() && !(!match.isFromQueue() && config.isEndCommandsQueueOnly())) {
-                        try {
-                            for (final String command : config.getEndCommands()) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command
-                                    .replace("%winner%", winner.getName()).replace("%loser%", player.getName())
-                                    .replace("%kit%", kitName).replace("%arena%", arena.getName())
-                                    .replace("%bet_amount%", String.valueOf(match.getBet()))
-                                );
+                        if (config.isEndCommandsEnabled() && !(!match.isFromQueue() && config.isEndCommandsQueueOnly())) {
+                            try {
+                                for (final String command : config.getEndCommands()) {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command
+                                        .replace("%winner%", winner.getName()).replace("%loser%", player.getName())
+                                        .replace("%kit%", kitName).replace("%arena%", arena.getName())
+                                        .replace("%bet_amount%", String.valueOf(match.getBet()))
+                                    );
+                                }
+                            } catch (Exception ex) {
+                                Log.warn(DuelManager.this, "Error while running match end commands: " + ex.getMessage());
                             }
-                        } catch (Exception ex) {
-                            Log.warn(DuelManager.this, "Error while running match end commands: " + ex.getMessage());
                         }
-                    }
+                    });
 
-                    arena.endMatch(winner.getUniqueId(), player.getUniqueId(), Reason.OPPONENT_DEFEAT);
+//                    arena.endMatch(winner.getUniqueId(), player.getUniqueId(), Reason.OPPONENT_DEFEAT);
+                    arena.endMatch(null, null, Reason.OPPONENT_DEFEAT);
                 }, config.getTeleportDelay() * 20L);
             }, 1L);
         }
@@ -661,11 +577,26 @@ public class DuelManager implements Loadable {
             final Player player = (Player) event.getEntity();
             final ArenaImpl arena = arenaManager.get(player);
 
-            if (arena == null || !arena.isEndGame()) {
+            if (arena == null) {
                 return;
             }
 
-            event.setCancelled(true);
+            final AbstractMatch match = arena.getMatchImpl();
+
+            if (arena.isEndGame()) {
+                event.setCancelled(true);
+            } else if (event instanceof EntityDamageByEntityEvent && match instanceof PartyDuelMatch) {
+                final Player damager = EventUtil.getDamager((EntityDamageByEntityEvent) event);
+
+                if (damager == null || !((PartyDuelMatch) match).isInSameParty(player, damager)) {
+                    return;
+                }
+
+                event.setCancelled(true);
+
+                // TODO: 4/3/21 Implement cancel damage msg between parties in team duels
+                damager.sendMessage("Friendly fire is not allowed.");
+            }
         }
 
         @EventHandler
@@ -718,7 +649,10 @@ public class DuelManager implements Loadable {
             final Player player = event.getPlayer();
             final Location to = event.getTo();
 
-            if (!config.isLimitTeleportEnabled() || event.getCause() == TeleportCause.ENDER_PEARL || !arenaManager.isInMatch(player)) {
+            if (!config.isLimitTeleportEnabled()
+                || event.getCause() == TeleportCause.ENDER_PEARL
+                || event.getCause() == TeleportCause.SPECTATE
+                || !arenaManager.isInMatch(player)) {
                 return;
             }
 
@@ -746,15 +680,6 @@ public class DuelManager implements Loadable {
 
             event.setCancelled(true);
             lang.sendMessage(player, "DUEL.prevent.inventory-open");
-        }
-
-        @EventHandler(ignoreCancelled = true)
-        public void on(final PlayerItemDamageEvent event) {
-            if (!config.isUseOwnInventoryEnabled() || !config.isUseOwnInventoryPreventDurabLoss() || !arenaManager.isInMatch(event.getPlayer())) {
-                return;
-            }
-
-            event.setCancelled(true);
         }
     }
 }

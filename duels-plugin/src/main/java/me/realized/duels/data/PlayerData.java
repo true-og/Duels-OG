@@ -57,7 +57,7 @@ public class PlayerData {
         for (final Map.Entry<String, Map<Integer, ItemData>> entry : items.entrySet()) {
             final Map<Integer, ItemStack> data = new HashMap<>();
             entry.getValue().forEach(((slot, itemData) -> {
-                final ItemStack item = itemData.toItemStack();
+                final ItemStack item = itemData.toItemStack(false);
 
                 if (item == null) {
                     Log.warn(String.format(ITEM_LOAD_FAILURE, itemData.toString()));

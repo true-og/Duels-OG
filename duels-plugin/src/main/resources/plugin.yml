@@ -20,6 +20,9 @@ commands:
    spectate:
      description: Spectate a duel.
      aliases: [spec]
+   party:
+    description: Create, join, and duel parties.
+    aliases: [p, duelparty, dp]
    duels:
      description: Administrative command of Duels.
      aliases: [ds]

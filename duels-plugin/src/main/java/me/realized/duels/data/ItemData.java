@@ -59,7 +59,7 @@ public class ItemData {
         }
     }
 
-    public ItemStack toItemStack() {
+    public ItemStack toItemStack(final boolean kitItem) {
         final Material type = Material.getMaterial(material);
 
         if (type == null) {
@@ -73,7 +73,11 @@ public class ItemData {
             item = NBT.parseAndSetTag(item, nbt);
         }
 
-        return NBT.setItemString(item, DUELS_ITEM_IDENTIFIER, true);
+        return kitItem ? NBT.setItemString(item, DUELS_ITEM_IDENTIFIER, true) : item;
+    }
+
+    public ItemStack toItemStack() {
+        return toItemStack(true);
     }
 
     @Override
@@ -272,7 +276,6 @@ public class ItemData {
                 }
 
                 data.nbt = NBT.toString(tag);
-                System.out.println(data.nbt);
             }
 
             return data;

@@ -17,8 +17,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.kit.KitCreateEvent;
@@ -38,6 +36,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class KitManagerImpl implements Loadable, KitManager {
 
@@ -104,7 +104,7 @@ public class KitManagerImpl implements Loadable, KitManager {
         kits.clear();
     }
 
-    private void saveKits() {
+    void saveKits() {
         final Map<String, KitData> data = new LinkedHashMap<>();
 
         for (final Map.Entry<String, KitImpl> entry : kits.entrySet()) {
@@ -121,12 +121,12 @@ public class KitManagerImpl implements Loadable, KitManager {
 
     @Nullable
     @Override
-    public KitImpl get(@Nonnull final String name) {
+    public KitImpl get(@NotNull final String name) {
         Objects.requireNonNull(name, "name");
         return kits.get(name);
     }
 
-    public KitImpl create(@Nonnull final Player creator, @Nonnull final String name, final boolean override) {
+    public KitImpl create(@NotNull final Player creator, @NotNull final String name, final boolean override) {
         Objects.requireNonNull(creator, "creator");
         Objects.requireNonNull(name, "name");
 
@@ -146,13 +146,13 @@ public class KitManagerImpl implements Loadable, KitManager {
 
     @Nullable
     @Override
-    public KitImpl create(@Nonnull final Player creator, @Nonnull final String name) {
+    public KitImpl create(@NotNull final Player creator, @NotNull final String name) {
         return create(creator, name, false);
     }
 
     @Nullable
     @Override
-    public KitImpl remove(@Nullable CommandSender source, @Nonnull final String name) {
+    public KitImpl remove(@Nullable CommandSender source, @NotNull final String name) {
         Objects.requireNonNull(name, "name");
 
         final KitImpl kit = kits.remove(name);
@@ -173,11 +173,11 @@ public class KitManagerImpl implements Loadable, KitManager {
 
     @Nullable
     @Override
-    public KitImpl remove(@Nonnull final String name) {
+    public KitImpl remove(@NotNull final String name) {
         return remove(null, name);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Kit> getKits() {
         return Collections.unmodifiableList(Lists.newArrayList(kits.values()));

@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.api.event.queue.sign.QueueSignCreateEvent;
@@ -41,6 +39,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class QueueSignManagerImpl implements Loadable, QueueSignManager, Listener {
 
@@ -121,7 +121,7 @@ public class QueueSignManagerImpl implements Loadable, QueueSignManager, Listene
 
     @Nullable
     @Override
-    public QueueSignImpl get(@Nonnull final Sign sign) {
+    public QueueSignImpl get(@NotNull final Sign sign) {
         Objects.requireNonNull(sign, "sign");
         return get(sign.getLocation());
     }
@@ -165,7 +165,7 @@ public class QueueSignManagerImpl implements Loadable, QueueSignManager, Listene
         return signs.values();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<QueueSign> getQueueSigns() {
         return Lists.newArrayList(getSigns());

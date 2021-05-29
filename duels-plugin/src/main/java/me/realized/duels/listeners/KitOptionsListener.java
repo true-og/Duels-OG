@@ -5,9 +5,9 @@ import me.realized.duels.api.event.match.MatchEndEvent;
 import me.realized.duels.api.event.match.MatchStartEvent;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.arena.ArenaManagerImpl;
-import me.realized.duels.arena.MatchImpl;
 import me.realized.duels.config.Config;
 import me.realized.duels.kit.KitImpl.Characteristic;
+import me.realized.duels.match.AbstractMatch;
 import me.realized.duels.util.PlayerUtil;
 import me.realized.duels.util.compat.CompatUtil;
 import me.realized.duels.util.compat.Items;
@@ -44,17 +44,12 @@ public class KitOptionsListener implements Listener {
         this.config = plugin.getConfiguration();
         this.arenaManager = plugin.getArenaManager();
 
-        // Do not register the listener if own inventory is enabled
-        if (config.isUseOwnInventoryEnabled()) {
-            return;
-        }
-
         Bukkit.getPluginManager().registerEvents(this, plugin);
         Bukkit.getPluginManager().registerEvents(CompatUtil.isPre1_14() ? new ComboPre1_14Listener() : new ComboPost1_14Listener(), plugin);
     }
 
     private boolean isEnabled(final ArenaImpl arena, final Characteristic characteristic) {
-        final MatchImpl match = arena.getMatch();
+        final AbstractMatch match = arena.getMatchImpl();
         return match != null && match.getKit() != null && match.getKit().hasCharacteristic(characteristic);
     }
 
@@ -177,7 +172,7 @@ public class KitOptionsListener implements Listener {
                 return;
             }
 
-            final MatchImpl match = arena.getMatch();
+            final AbstractMatch match = arena.getMatchImpl();
 
             if (match == null) {
                 return;

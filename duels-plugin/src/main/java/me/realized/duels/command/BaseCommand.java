@@ -13,6 +13,7 @@ import me.realized.duels.duel.DuelManager;
 import me.realized.duels.hook.HookManager;
 import me.realized.duels.inventories.InventoryManager;
 import me.realized.duels.kit.KitManagerImpl;
+import me.realized.duels.party.PartyManager;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.queue.QueueManager;
 import me.realized.duels.queue.sign.QueueSignManagerImpl;
@@ -38,6 +39,7 @@ public abstract class BaseCommand extends AbstractCommand<DuelsPlugin> {
     protected final BettingManager bettingManager;
     protected final InventoryManager inventoryManager;
     protected final DuelManager duelManager;
+    protected final PartyManager partyManager;
     protected final RequestManager requestManager;
     protected final HookManager hookManager;
 
@@ -61,6 +63,7 @@ public abstract class BaseCommand extends AbstractCommand<DuelsPlugin> {
         this.bettingManager = plugin.getBettingManager();
         this.inventoryManager = plugin.getInventoryManager();
         this.duelManager = plugin.getDuelManager();
+        this.partyManager = plugin.getPartyManager();
         this.requestManager = plugin.getRequestManager();
         this.hookManager = plugin.getHookManager();
     }
@@ -100,7 +103,7 @@ public abstract class BaseCommand extends AbstractCommand<DuelsPlugin> {
 
     protected List<String> handleTabCompletion(final String argument, final Collection<String> collection) {
         return collection.stream()
-            .filter(value ->value.toLowerCase().startsWith(argument.toLowerCase()))
+            .filter(value -> value.toLowerCase().startsWith(argument.toLowerCase()))
             .map(value -> value.replace(" ", "-"))
             .collect(Collectors.toList());
     }

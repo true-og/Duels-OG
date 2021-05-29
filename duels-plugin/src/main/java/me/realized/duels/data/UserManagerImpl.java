@@ -16,8 +16,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
@@ -38,6 +36,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class UserManagerImpl implements Loadable, Listener, UserManager {
 
@@ -178,7 +178,7 @@ public class UserManagerImpl implements Loadable, Listener, UserManager {
 
     @Nullable
     @Override
-    public UserData get(@Nonnull final String name) {
+    public UserData get(@NotNull final String name) {
         Objects.requireNonNull(name, "name");
         final UUID uuid = names.get(name.toLowerCase());
         return uuid != null ? get(uuid) : null;
@@ -186,14 +186,14 @@ public class UserManagerImpl implements Loadable, Listener, UserManager {
 
     @Nullable
     @Override
-    public UserData get(@Nonnull final UUID uuid) {
+    public UserData get(@NotNull final UUID uuid) {
         Objects.requireNonNull(uuid, "uuid");
         return users.get(uuid);
     }
 
     @Nullable
     @Override
-    public UserData get(@Nonnull final Player player) {
+    public UserData get(@NotNull final Player player) {
         Objects.requireNonNull(player, "player");
         return get(player.getUniqueId());
     }
@@ -218,7 +218,7 @@ public class UserManagerImpl implements Loadable, Listener, UserManager {
 
     @Nullable
     @Override
-    public TopEntry getTopRatings(@Nonnull final Kit kit) {
+    public TopEntry getTopRatings(@NotNull final Kit kit) {
         Objects.requireNonNull(kit, "kit");
         return topRatings.get(kit);
     }

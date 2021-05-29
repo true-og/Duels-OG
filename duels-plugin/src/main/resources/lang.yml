@@ -19,6 +19,7 @@ GENERAL:
   random: 'Random'
   none: 'none'
   kit-selector: 'Kit Selector'
+  own-inventory: 'Own Inventory'
   arena-selector: 'Arena Selector'
   item-betting: 'Item Betting'
   betting: 'Betting'
@@ -53,6 +54,7 @@ ERROR:
     is-tagged: '{PREFIX} &cYou cannot duel while combat tagged.'
     not-in-duelzone: '{PREFIX} &cYou can only duel in the following regions: %regions%'
     requests-disabled: '{PREFIX} &c%name% is currently not accepting duel requests.'
+    mode-unselected: '{PREFIX} &cYou must either choose a kit or enable own inventory.'
     already-has-request: '{PREFIX} &cYou already have a request sent to %name%.'
     no-request: '{PREFIX} &cYou do not have a request from %name%.'
     already-in-match:
@@ -60,6 +62,24 @@ ERROR:
       target: '{PREFIX} &c%name% is already in a duel.'
     already-in-queue: '{PREFIX} &cYou cannot do this while in a queue.'
     prevent-teleportation: '{PREFIX} &cCannot teleport to a player in a duel.'
+  party:
+    is-self: '{PREFIX} &cYou cannot create a party with yourself.'
+    is-not-owner: '{PREFIX} &cYou must be the owner of this party to do this.'
+    requests-disabled: '{PREFIX} &c%name% is currently not accepting party requests.'
+    already-has-invite: '{PREFIX} &cYou already have a invite sent to %name%.'
+    no-invite: '{PREFIX} &cYou do not have an invite from %name%.'
+    already-in-party:
+      sender: '{PREFIX} &cYou cannot do this while in a party.'
+      target: '{PREFIX} &c%name% is already in a party.'
+    not-in-party:
+      sender: '{PREFIX} &cYou must be in a party to do this.'
+      target: '{PREFIX} &c%name% is not in a party.'
+    not-a-member: '{PREFIX} &c%name% is not a member of your party.'
+    in-same-party: '{PREFIX} &c%name% is in your party.'
+    is-not-same-size: '{PREFIX} &cParty sizes must match to do this.'
+    is-not-online:
+      sender: '{PREFIX} &cAll members of your party must be online!'
+      target: '{PREFIX} &cAll members of %name%''s party must be online!'
   spectate:
     already-spectating:
       sender: '{PREFIX} &cYou cannot do this while in spectator mode.'
@@ -279,13 +299,39 @@ COMMAND:
     start-spectate: '{PREFIX} &7You are now spectating &f%name%&7. Type &f/spectate &7again to stop spectating.'
     stop-spectate: '{PREFIX} &7You are no longer spectating &f%name%&7.'
 
+  party:
+    usage:
+      - '{LINE}'
+      - '&f/%command% [player] &e- &7Sends a party request to a player.'
+      - '&f/%command% list &e- &7Lists the current party''s members.'
+      - '&f/%command% join [player] &e- &7Joins a player''s party.'
+      - '&f/%command% leave &e- &7Leaves the current party.'
+      - '&f/%command% disband &e- &7Disbands the current party.'
+      - '&f/%command% toggle &e- &7Toggles party requests.'
+      - '{LINE}'
+    toggle:
+      enabled: '{PREFIX} &aYou are now receiving party requests.'
+      disabled: '{PREFIX} &cYou are no longer accepting party requests.'
+    list:
+      - '{HALF_LINE} &f%owner%&7''s Party {HALF_LINE}'
+      - '&7Members (&r%members_count%&7): &r%members%'
+      - '{HALF_LINE} &f%owner%&7''s Party {HALF_LINE}'
+    invite:
+      send:
+        sender: '{PREFIX} &7Party invite sent to &f%name%&7.'
+        receiver: '{PREFIX} &7Party invite received from &f%name%&7. Type &f/party join %name% &7to join.'
+      accept:
+        members: '{PREFIX} &f%name% &7has joined the party!'
+        receiver: '{PREFIX} &7Accepted the party invite from &f%name%&7.'
+
   sub-command-usage: '{PREFIX} &f/%command% %usage% &e- &7%description%'
 
 
 DUEL:
   start-failure:
-    no-kit-selected: '{FAIL_PREFIX} No kit was selected!'
+    mode-unselected: '{FAIL_PREFIX} &cYou must either choose a kit or enable own inventory.'
     player-is-dead: '{FAIL_PREFIX} You or your opponent is not alive!'
+    inventory-not-empty: '{FAIL_PREFIX} &cYou or your opponent does not have a cleared inventory!'
     in-blacklisted-world: '{FAIL_PREFIX} You or your opponent is in a blacklisted world!'
     is-tagged: '{FAIL_PREFIX} You or your opponent is in combat!'
     player-moved: '{FAIL_PREFIX} You or your opponent moved after sending/accepting the request!'
@@ -347,6 +393,7 @@ GUI:
         lore:
         - '&7Opponent: &f%opponent%'
         - '&7Kit: &3%kit%'
+        - '&7Own Inventory: &r%own_inventory%'
         - '&7Arena: &e%arena%'
         - '&7Bet Items: &r%item_betting%'
         - '&7Bet: &6$%bet_amount%'
@@ -360,6 +407,18 @@ GUI:
         - '&7Selected Kit: &3%kit%'
         - ' '
         - '&aClick to Change Kit!'
+        lore-no-permission:
+          - '&cYou do not have permission to'
+          - '&cuse this option.'
+      use-own-inventory:
+        name: '&9Use Own Inventory'
+        lore:
+          - '&7Own Inventory: &r%own_inventory%'
+          - ' '
+          - '&aClick to Toggle Own Inventory!'
+        lore-no-permission:
+          - '&cYou do not have permission to'
+          - '&cuse this option.'
       arena-selector:
         name: '&9Arena Selection'
         lore:
