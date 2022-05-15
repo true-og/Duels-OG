@@ -4,8 +4,8 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.api.spectate.SpectateManager.Result;
 import me.realized.duels.arena.ArenaImpl;
-import me.realized.duels.arena.MatchImpl;
 import me.realized.duels.command.BaseCommand;
+import me.realized.duels.match.DuelMatch;
 import me.realized.duels.spectate.SpectatorImpl;
 import me.realized.duels.util.inventory.InventoryUtil;
 import org.bukkit.Bukkit;
@@ -72,7 +72,7 @@ public class SpectateCommand extends BaseCommand {
                     return;
                 }
 
-                final MatchImpl match = arena.getMatch();
+                final DuelMatch match = arena.getMatch();
                 final String kit = match.getKit() != null ? match.getKit().getName() : lang.getMessage("GENERAL.none");
                 lang.sendMessage(player, "COMMAND.spectate.start-spectate",
                     "name", target.getName(),

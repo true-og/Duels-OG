@@ -20,10 +20,10 @@ import me.realized.duels.api.spectate.SpectateManager;
 import me.realized.duels.api.spectate.Spectator;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.arena.ArenaManagerImpl;
-import me.realized.duels.arena.MatchImpl;
 import me.realized.duels.config.Config;
 import me.realized.duels.config.Lang;
 import me.realized.duels.hook.hooks.MyPetHook;
+import me.realized.duels.match.DuelMatch;
 import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.teleport.Teleport;
@@ -133,7 +133,7 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
             return Result.EVENT_CANCELLED;
         }
 
-        final MatchImpl match = arena.getMatch();
+        final DuelMatch match = arena.getMatch();
 
         // Hide from players in match
         if (match != null) {
@@ -218,7 +218,7 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
             teleport.tryTeleport(player, playerManager.getLobby());
         }
 
-        final MatchImpl match = spectator.getArena().getMatch();
+        final DuelMatch match = spectator.getArena().getMatch();
 
         // Show to players in match
         if (match != null) {

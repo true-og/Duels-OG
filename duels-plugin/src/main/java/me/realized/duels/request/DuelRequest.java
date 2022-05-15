@@ -9,7 +9,7 @@ import me.realized.duels.setting.Settings;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-public class RequestImpl implements Request {
+public class DuelRequest implements Request {
 
     @Getter
     private final UUID sender;
@@ -20,7 +20,7 @@ public class RequestImpl implements Request {
     @Getter
     private final long creation;
 
-    RequestImpl(final Player sender, final Player target, final Settings setting) {
+    public DuelRequest(final Player sender, final Player target, final Settings setting) {
         this.sender = sender.getUniqueId();
         this.target = target.getUniqueId();
         this.settings = setting.lightCopy();

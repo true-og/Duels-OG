@@ -7,7 +7,7 @@ import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
-import me.realized.duels.request.RequestImpl;
+import me.realized.duels.request.DuelRequest;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.inventory.InventoryUtil;
 import org.bukkit.Bukkit;
@@ -75,7 +75,7 @@ public class AcceptCommand extends BaseCommand {
             return;
         }
 
-        final RequestImpl request = requestManager.get(target, player);
+        final DuelRequest request = requestManager.get(target, player);
 
         if (request == null) {
             lang.sendMessage(sender, "ERROR.duel.no-request", "name", target.getName());

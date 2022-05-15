@@ -15,7 +15,6 @@ import me.realized.duels.api.event.match.MatchEndEvent.Reason;
 import me.realized.duels.api.event.match.MatchStartEvent;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.arena.ArenaManagerImpl;
-import me.realized.duels.arena.MatchImpl;
 import me.realized.duels.config.Config;
 import me.realized.duels.config.Lang;
 import me.realized.duels.data.MatchData;
@@ -31,6 +30,7 @@ import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
 import me.realized.duels.inventories.InventoryManager;
 import me.realized.duels.kit.KitImpl;
+import me.realized.duels.match.DuelMatch;
 import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.queue.Queue;
@@ -125,7 +125,7 @@ public class DuelManager implements Loadable {
         if (config.getMaxDuration() > 0) {
             this.durationCheckTask = plugin.doSyncRepeat(() -> {
                 for (final ArenaImpl arena : arenaManager.getArenasImpl()) {
-                    final MatchImpl match = arena.getMatch();
+                    final DuelMatch match = arena.getMatch();
 
                     // Only handle undecided matches (size > 1)
                     if (match == null || match.getDurationInMillis() < (config.getMaxDuration() * 60 * 1000L) || arena.size() <= 1) {
@@ -154,7 +154,7 @@ public class DuelManager implements Loadable {
         3. size = 0: Match ended in a tie (or winner killed themselves during ENDGAME phase) and is in ENDGAME phase
         */
         for (final ArenaImpl arena : arenaManager.getArenasImpl()) {
-            final MatchImpl match = arena.getMatch();
+            final DuelMatch match = arena.getMatch();
 
             if (match == null) {
                 continue;
@@ -188,7 +188,7 @@ public class DuelManager implements Loadable {
      * @param match Match the player is in
      * @param alive Whether the player was alive in the match when the method was called.
      */
-    private void handleTie(final Player player, final ArenaImpl arena, final MatchImpl match, boolean alive) {
+    private void handleTie(final Player player, final ArenaImpl arena, final DuelMatch match, boolean alive) {
         arena.remove(player);
 
         // Reset player balance if there was a bet placed.
@@ -233,7 +233,7 @@ public class DuelManager implements Loadable {
      * @param arena Arena the match is taking place
      * @param match Match the player is in
      */
-    private void handleWin(final Player player, final Player opponent, final ArenaImpl arena, final MatchImpl match) {
+    private void handleWin(final Player player, final Player opponent, final ArenaImpl arena, final DuelMatch match) {
         arena.remove(player);
 
         final String opponentName = opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none");
@@ -348,7 +348,7 @@ public class DuelManager implements Loadable {
             vault.remove(bet, first, second);
         }
 
-        final MatchImpl match = arena.startMatch(kit, items, settings.getBet(), source);
+        final DuelMatch match = arena.startMatch(kit, items, settings.getBet(), source);
         addPlayers(match, arena, kit, arena.getPositions(), first, second);
 
         if (config.isCdEnabled()) {
@@ -398,7 +398,7 @@ public class DuelManager implements Loadable {
         return user != null ? user.getRating(kit) : config.getDefaultRating();
     }
 
-    private void addPlayers(final MatchImpl match, final ArenaImpl arena, final KitImpl kit, final Map<Integer, Location> locations, final Player... players) {
+    private void addPlayers(final DuelMatch match, final ArenaImpl arena, final KitImpl kit, final Map<Integer, Location> locations, final Player... players) {
         int position = 0;
 
         for (final Player player : players) {
@@ -446,7 +446,7 @@ public class DuelManager implements Loadable {
         }
     }
 
-    private void handleInventories(final MatchImpl match) {
+    private void handleInventories(final DuelMatch match) {
         if (!config.isDisplayInventories()) {
             return;
         }
@@ -468,7 +468,7 @@ public class DuelManager implements Loadable {
         builder.send(players);
     }
 
-    private void handleStats(final MatchImpl match, final UserData winner, final UserData loser, final MatchData matchData) {
+    private void handleStats(final DuelMatch match, final UserData winner, final UserData loser, final MatchData matchData) {
         if (winner != null && loser != null) {
             winner.addWin();
             loser.addLoss();
@@ -524,7 +524,7 @@ public class DuelManager implements Loadable {
                 mcMMO.enableSkills(player);
             }
 
-            final MatchImpl match = arena.getMatch();
+            final DuelMatch match = arena.getMatch();
 
             if (match == null) {
                 return;

@@ -20,6 +20,7 @@ import me.realized.duels.api.event.match.MatchEndEvent;
 import me.realized.duels.api.event.match.MatchEndEvent.Reason;
 import me.realized.duels.gui.BaseButton;
 import me.realized.duels.kit.KitImpl;
+import me.realized.duels.match.DuelMatch;
 import me.realized.duels.queue.Queue;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.compat.Items;
@@ -44,7 +45,7 @@ public class ArenaImpl extends BaseButton implements Arena {
     @Getter
     private final Map<Integer, Location> positions = new HashMap<>();
     @Getter
-    private MatchImpl match;
+    private DuelMatch match;
     @Getter(value = AccessLevel.PACKAGE)
     @Setter(value = AccessLevel.PACKAGE)
     private Countdown countdown;
@@ -150,8 +151,8 @@ public class ArenaImpl extends BaseButton implements Arena {
         return !isDisabled() && !isUsed() && getPosition(1) != null && getPosition(2) != null;
     }
 
-    public MatchImpl startMatch(final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
-        this.match = new MatchImpl(this, kit, items, bet, source);
+    public DuelMatch startMatch(final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
+        this.match = new DuelMatch(this, kit, items, bet, source);
         refreshGui(false);
         return match;
     }

@@ -5,9 +5,9 @@ import me.realized.duels.api.event.match.MatchEndEvent;
 import me.realized.duels.api.event.match.MatchStartEvent;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.arena.ArenaManagerImpl;
-import me.realized.duels.arena.MatchImpl;
 import me.realized.duels.config.Config;
 import me.realized.duels.kit.KitImpl.Characteristic;
+import me.realized.duels.match.DuelMatch;
 import me.realized.duels.util.PlayerUtil;
 import me.realized.duels.util.compat.CompatUtil;
 import me.realized.duels.util.compat.Items;
@@ -49,7 +49,7 @@ public class KitOptionsListener implements Listener {
     }
 
     private boolean isEnabled(final ArenaImpl arena, final Characteristic characteristic) {
-        final MatchImpl match = arena.getMatch();
+        final DuelMatch match = arena.getMatch();
         return match != null && match.getKit() != null && match.getKit().hasCharacteristic(characteristic);
     }
 
@@ -170,7 +170,7 @@ public class KitOptionsListener implements Listener {
                 return;
             }
 
-            final MatchImpl match = arena.getMatch();
+            final DuelMatch match = arena.getMatch();
 
             if (match == null) {
                 return;
