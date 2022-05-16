@@ -37,6 +37,7 @@ public class UserData implements User {
     @Getter
     private volatile int losses;
     private boolean requests = true;
+    private boolean partyRequests = true;
 
     private ConcurrentHashMap<String, Integer> rating;
     private List<MatchData> matches = new ArrayList<>();
@@ -81,6 +82,18 @@ public class UserData implements User {
     @Override
     public void setRequests(final boolean requests) {
         this.requests = requests;
+
+        if (!isOnline()) {
+            trySave();
+        }
+    }
+    
+    public boolean canPartyRequest() {
+        return partyRequests;
+    }
+
+    public void setPartyRequests(final boolean partyRequests) {
+        this.partyRequests = partyRequests;
 
         if (!isOnline()) {
             trySave();

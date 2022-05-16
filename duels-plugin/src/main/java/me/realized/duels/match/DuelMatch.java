@@ -16,13 +16,17 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import lombok.Getter;
+import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.match.Match;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.kit.KitImpl;
+import me.realized.duels.party.PartyManagerImpl;
 import me.realized.duels.queue.Queue;
 
 public class DuelMatch implements Match {
     
+    protected final PartyManagerImpl partyManager;
+
     @Getter
     private final long creation;
 
@@ -42,7 +46,8 @@ public class DuelMatch implements Match {
     // Default value for players is false, which is set to true if player is killed in the match.
     private final Map<Player, Boolean> players = new HashMap<>();
 
-    public DuelMatch(final ArenaImpl arena, final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
+    public DuelMatch(final DuelsPlugin plugin, final ArenaImpl arena, final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
+        this.partyManager = plugin.getPartyManager();
         this.creation = System.currentTimeMillis();
         this.arena = arena;
         this.kit = kit;
@@ -50,21 +55,9 @@ public class DuelMatch implements Match {
         this.bet = bet;
         this.source = source;
     }
-
-    public Map<Player, Boolean> getPlayerMap() {
-        return players;
-    }
-
-    public Set<Player> getAlivePlayers() {
-        return players.entrySet().stream().filter(entry -> !entry.getValue()).map(Entry::getKey).collect(Collectors.toSet());
-    }
-
-    public Set<Player> getAllPlayers() {
-        return players.keySet();
-    }
-
-    public boolean isDead(final Player player) {
-        return players.getOrDefault(player, true);
+    
+    public long getDurationInMillis() {
+        return System.currentTimeMillis() - creation;
     }
 
     public boolean isFromQueue() {
@@ -75,16 +68,38 @@ public class DuelMatch implements Match {
         return kit == null;
     }
     
-    public List<ItemStack> getItems() {
-        return items != null ? items.values().stream().flatMap(Collection::stream).collect(Collectors.toList()) : Collections.emptyList();
-    }
-
     public void setFinished() {
         finished = true;
     }
 
-    public long getDurationInMillis() {
-        return System.currentTimeMillis() - creation;
+    public void addPlayer(final Player player) {
+        players.put(player, false);
+    }
+
+    public void markAsDead(final Player player) {
+        if (players.containsKey(player)) {
+            players.put(player, true);
+        }
+    }
+
+    public boolean isDead(final Player player) {
+        return players.getOrDefault(player, true);
+    }
+
+    public Set<Player> getAlivePlayers() {
+        return players.entrySet().stream().filter(entry -> !entry.getValue()).map(Entry::getKey).collect(Collectors.toSet());
+    }
+
+    public Set<Player> getAllPlayers() {
+        return players.keySet();
+    }
+
+    public int size() {
+        return getAlivePlayers().size();
+    }
+
+    public List<ItemStack> getItems() {
+        return items != null ? items.values().stream().flatMap(Collection::stream).collect(Collectors.toList()) : Collections.emptyList();
     }
 
     @NotNull

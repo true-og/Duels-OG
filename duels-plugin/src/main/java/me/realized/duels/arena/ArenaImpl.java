@@ -152,7 +152,7 @@ public class ArenaImpl extends BaseButton implements Arena {
     }
 
     public DuelMatch startMatch(final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
-        this.match = new DuelMatch(this, kit, items, bet, source);
+        this.match = new DuelMatch(plugin, this, kit, items, bet, source);
         refreshGui(false);
         return match;
     }
@@ -193,18 +193,18 @@ public class ArenaImpl extends BaseButton implements Arena {
     @Override
     public boolean has(@NotNull final Player player) {
         Objects.requireNonNull(player, "player");
-        return isUsed() && !match.getPlayerMap().getOrDefault(player, true);
+        return isUsed() && !match.isDead(player);
     }
 
     public void add(final Player player) {
         if (isUsed()) {
-            match.getPlayerMap().put(player, false);
+            match.addPlayer(player);
         }
     }
 
     public void remove(final Player player) {
-        if (isUsed() && match.getPlayerMap().containsKey(player)) {
-            match.getPlayerMap().put(player, true);
+        if (isUsed()) {
+            match.markAsDead(player);
         }
     }
 
@@ -213,7 +213,7 @@ public class ArenaImpl extends BaseButton implements Arena {
     }
 
     public int size() {
-        return isUsed() ? match.getAlivePlayers().size() : 0;
+        return isUsed() ? match.size() : 0;
     }
 
     public Player first() {

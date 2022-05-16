@@ -1,17 +1,14 @@
 package me.realized.duels.match.party;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
-
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import me.realized.duels.DuelsPlugin;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.match.DuelMatch;
@@ -20,31 +17,56 @@ import me.realized.duels.queue.Queue;
 
 public class PartyDuelMatch extends DuelMatch {
 
-    private final Multimap<Party, Player> parties = HashMultimap.create();
+    // Track Party instances as player's party status could change during the match.
+    private final Map<Player, Party> partyMap = new HashMap<>();
+    private final Map<Party, Integer> alivePlayers = new HashMap<>();
 
-    public PartyDuelMatch(final ArenaImpl arena, final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
-        super(arena, kit, items, bet, source);
+    public PartyDuelMatch(final DuelsPlugin plugin, final ArenaImpl arena, final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
+        super(plugin,arena, kit, items, bet, source);
     }
     
-    private boolean hasAlivePlayer(final Party party) {
-        final Collection<Player> players;
-        return (players = parties.asMap().get(party)) != null && players.stream().anyMatch(player -> !isDead(player));
+    private int getAlivePlayers(final Party party) {
+        return alivePlayers.getOrDefault(party, 0);
     }
-
-    public boolean isInMatch(final Party party) {
-        return parties.containsKey(party);
-    }
-
-    // TODO add addPlayer to DuelMatch
+    
     @Override
     public void addPlayer(final Player player) {
         super.addPlayer(player);
-        parties.put(partyManager.get(player), player);
+
+        final Party party = partyManager.get(player);
+        partyMap.put(player, party);
+
+        final Integer count = alivePlayers.get(party);
+
+        if (count == null) {
+            alivePlayers.put(party, 1);
+            return;
+        }
+
+        alivePlayers.put(party, count + 1);
     }
 
-    // TODO rename size() so that it has a clearer meaning
+    @Override
+    public void markAsDead(Player player) {
+        super.markAsDead(player);
+
+        final Party party = partyMap.get(player);
+
+        if (party == null) {
+            return;
+        }
+
+        final Integer count = alivePlayers.get(party);
+
+        if (count == null) {
+            return;
+        }
+
+        alivePlayers.put(party, count - 1);
+    }
+
     @Override
     public int size() {
-        return (int) parties.keySet().stream().filter(this::hasAlivePlayer).count();
+        return (int) alivePlayers.keySet().stream().filter(party -> getAlivePlayers(party) > 0).count();
     }
 }

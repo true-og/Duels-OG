@@ -128,7 +128,7 @@ public class DuelManager implements Loadable {
                     final DuelMatch match = arena.getMatch();
 
                     // Only handle undecided matches (size > 1)
-                    if (match == null || match.getDurationInMillis() < (config.getMaxDuration() * 60 * 1000L) || arena.size() <= 1) {
+                    if (match == null || match.getDurationInMillis() < (config.getMaxDuration() * 60 * 1000L) || arena.isEndGame()) {
                         continue;
                     }
 
@@ -538,12 +538,15 @@ public class DuelManager implements Loadable {
             }
             
             inventoryManager.create(player, true);
+
+            final int prevSize = match.size();
             arena.remove(player);
 
-            // Call end task only on the first death
-            if (arena.size() <= 0) {
+            if (prevSize < 2 || match.size() >= prevSize) {
                 return;
             }
+
+            final Location deadLocation = player.getEyeLocation().clone();
 
             plugin.doSyncAfter(() -> {
                 if (arena.size() == 0) {
@@ -556,11 +559,11 @@ public class DuelManager implements Loadable {
                     return;
                 }
 
-                final Player winner = arena.first();
+                final Player winner = arena.first(); // TODO handle multiple winners for party matches
                 inventoryManager.create(winner, false);
 
                 if (config.isSpawnFirework()) {
-                    final Firework firework = (Firework) winner.getWorld().spawnEntity(winner.getEyeLocation(), EntityType.FIREWORK);
+                    final Firework firework = (Firework) deadLocation.getWorld().spawnEntity(deadLocation, EntityType.FIREWORK);
                     final FireworkMeta meta = firework.getFireworkMeta();
                     meta.addEffect(FireworkEffect.builder().withColor(Color.RED).with(FireworkEffect.Type.BALL_LARGE).withTrail().build());
                     firework.setFireworkMeta(meta);

@@ -63,4 +63,8 @@ public class Party {
     public List<Player> getOnlineMembers() {
         return members.values().stream().map(PartyMember::getPlayer).filter(Objects::nonNull).collect(Collectors.toList());
     }
+
+    public List<String> getMemberNames() {
+        return members.values().stream().map(PartyMember::getName).collect(Collectors.toList());
+    }
 }

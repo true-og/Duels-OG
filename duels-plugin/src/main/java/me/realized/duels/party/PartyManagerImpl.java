@@ -131,6 +131,6 @@ public class PartyManagerImpl implements Loadable, Listener {
     }
 
     public void disband(final Player player) {
-
+        // TODO Mark as removed
     }
 }

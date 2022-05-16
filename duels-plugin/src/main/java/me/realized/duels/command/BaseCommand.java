@@ -13,6 +13,7 @@ import me.realized.duels.duel.DuelManager;
 import me.realized.duels.hook.HookManager;
 import me.realized.duels.inventories.InventoryManager;
 import me.realized.duels.kit.KitManagerImpl;
+import me.realized.duels.party.PartyManagerImpl;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.queue.QueueManager;
 import me.realized.duels.queue.sign.QueueSignManagerImpl;
@@ -28,6 +29,7 @@ public abstract class BaseCommand extends AbstractCommand<DuelsPlugin> {
     protected final Config config;
     protected final Lang lang;
     protected final UserManagerImpl userManager;
+    protected final PartyManagerImpl partyManager;
     protected final KitManagerImpl kitManager;
     protected final ArenaManagerImpl arenaManager;
     protected final QueueManager queueManager;
@@ -51,6 +53,7 @@ public abstract class BaseCommand extends AbstractCommand<DuelsPlugin> {
         this.config = plugin.getConfiguration();
         this.lang = plugin.getLang();
         this.userManager = plugin.getUserManager();
+        this.partyManager = plugin.getPartyManager();
         this.kitManager = plugin.getKitManager();
         this.arenaManager = plugin.getArenaManager();
         this.queueManager = plugin.getQueueManager();
