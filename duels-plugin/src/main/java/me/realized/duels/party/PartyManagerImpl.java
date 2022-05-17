@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.util.Loadable;
@@ -21,7 +24,9 @@ public class PartyManagerImpl implements Loadable, Listener {
     private final Map<UUID, Party> partyMap = new HashMap<>();
     private final List<Party> parties = new ArrayList<>();
     
-    public PartyManagerImpl(final DuelsPlugin plugin) {}
+    public PartyManagerImpl(final DuelsPlugin plugin) {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
 
     @Override
     public void handleLoad() {}
@@ -130,5 +135,10 @@ public class PartyManagerImpl implements Loadable, Listener {
         party.setRemoved(true);
         party.getMembers().forEach(member -> partyMap.remove(member.getUuid()));
         parties.remove(party);
+    }
+    
+    @EventHandler
+    public void on(final PlayerQuitEvent event) {
+        invites.remove(event.getPlayer().getUniqueId());
     }
 }
