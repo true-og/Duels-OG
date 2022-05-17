@@ -10,29 +10,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
 import me.realized.duels.DuelsPlugin;
-import me.realized.duels.config.Lang;
 import me.realized.duels.util.Loadable;
 
 public class PartyManagerImpl implements Loadable, Listener {
     
     private static final int INVITE_EXPIRATION = 30;
 
-    private final Lang lang;
-
     private final Map<UUID, Map<UUID, PartyInvite>> invites = new HashMap<>();
 
     private final Map<UUID, Party> partyMap = new HashMap<>();
     private final List<Party> parties = new ArrayList<>();
     
-    public PartyManagerImpl(final DuelsPlugin plugin) {
-        this.lang = plugin.getLang();
-    }
+    public PartyManagerImpl(final DuelsPlugin plugin) {}
 
     @Override
     public void handleLoad() {}
 
     @Override
     public void handleUnload() {
+        invites.clear();
         parties.clear();
         partyMap.clear();
     }
@@ -97,8 +93,6 @@ public class PartyManagerImpl implements Loadable, Listener {
     public void sendInvite(final Player sender, final Player target, final Party party) {
         final PartyInvite invite = new PartyInvite(sender, target, party);
         getInvites(sender, true).put(target.getUniqueId(), invite);
-        lang.sendMessage(sender, "COMMAND.party.invite.send.sender", "name", target.getName());
-        lang.sendMessage(target, "COMMAND.party.invite.send.receiver", "name", sender.getName());
     }
 
     public Party get(final Player player) {
@@ -123,14 +117,18 @@ public class PartyManagerImpl implements Loadable, Listener {
     }
 
     public void join(final Player player, final Party party) {
-        
+        party.add(player);
+        partyMap.put(player.getUniqueId(), party);
     }
 
-    public void leave(final Player player) {
-
+    public void remove(final Player player, final Party party) {
+        party.remove(player);
+        partyMap.remove(player.getUniqueId());
     }
 
-    public void disband(final Player player) {
-        // TODO Mark as removed
+    public void remove(final Party party) {
+        party.setRemoved(true);
+        party.getMembers().forEach(member -> partyMap.remove(member.getUuid()));
+        parties.remove(party);
     }
 }

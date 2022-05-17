@@ -1,5 +1,6 @@
 package me.realized.duels.command.commands.party.subcommands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -10,6 +11,7 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.command.BaseCommand;
 import me.realized.duels.party.Party;
+import me.realized.duels.party.PartyMember;
 import me.realized.duels.util.StringUtil;
 
 public class ListCommand extends BaseCommand {
@@ -39,7 +41,7 @@ public class ListCommand extends BaseCommand {
             party = partyManager.get(target);
 
             if (party == null) {
-                lang.sendMessage(sender, "ERROR.party.not-in-party.target");
+                lang.sendMessage(sender, "ERROR.party.not-in-party.target", "name", target.getName());
                 return;
             }
 
@@ -63,10 +65,22 @@ public class ListCommand extends BaseCommand {
             return;
         }
 
-        final List<String> memberNames = party.getMemberNames();
+        final List<String> memberNames = new ArrayList<>(party.size());
+        final List<String> onlineNames = new ArrayList<>();
+        
+        for (final PartyMember member : party.getMembers()) {
+            memberNames.add(member.getName());
+
+            if (member.isOnline()) {
+                onlineNames.add(member.getName());
+            }
+        }
+
         lang.sendMessage(sender, "COMMAND.party.list",
             "members_count", memberNames.size(),
-            "members", !memberNames.isEmpty() ? StringUtil.join(party.getMemberNames(), ", ") : lang.getMessage("GENERAL.none"),
+            "members", !memberNames.isEmpty() ? StringUtil.join(memberNames, ", ") : lang.getMessage("GENERAL.none"),
+            "online_count", onlineNames.size(),
+            "online_members", !memberNames.isEmpty() ? StringUtil.join(memberNames, ", ") : lang.getMessage("GENERAL.none"),
             "owner", party.getOwner().getName()
         );
     }

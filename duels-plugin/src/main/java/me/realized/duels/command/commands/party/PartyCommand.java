@@ -11,10 +11,12 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.command.BaseCommand;
 import me.realized.duels.command.commands.party.subcommands.DisbandCommand;
-import me.realized.duels.command.commands.party.subcommands.JoinCommand;
+import me.realized.duels.command.commands.party.subcommands.KickCommand;
+import me.realized.duels.command.commands.party.subcommands.AcceptCommand;
 import me.realized.duels.command.commands.party.subcommands.LeaveCommand;
 import me.realized.duels.command.commands.party.subcommands.ListCommand;
 import me.realized.duels.command.commands.party.subcommands.ToggleCommand;
+import me.realized.duels.command.commands.party.subcommands.TransferCommand;
 import me.realized.duels.data.UserData;
 import me.realized.duels.party.Party;
 
@@ -23,11 +25,13 @@ public class PartyCommand extends BaseCommand {
     public PartyCommand(final DuelsPlugin plugin) {
         super(plugin, "party", Permissions.PARTY, true);
         child(
-            new JoinCommand(plugin),
+            new AcceptCommand(plugin),
             new ListCommand(plugin),
             new LeaveCommand(plugin),
+            new KickCommand(plugin),
             new DisbandCommand(plugin),
-            new ToggleCommand(plugin)
+            new ToggleCommand(plugin),
+            new TransferCommand(plugin)
         );
     }
 
@@ -86,6 +90,8 @@ public class PartyCommand extends BaseCommand {
         }
 
         partyManager.sendInvite(player, target, party);
+        lang.sendMessage(sender, "COMMAND.party.invite.send.sender", "name", target.getName());
+        lang.sendMessage(target, "COMMAND.party.invite.send.receiver", "name", sender.getName());
         return true;
     }
 

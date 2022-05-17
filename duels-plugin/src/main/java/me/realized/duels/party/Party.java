@@ -1,5 +1,6 @@
 package me.realized.duels.party;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,19 +53,33 @@ public class Party {
         return true;
     }
 
+    public boolean remove(final Player player) {
+        return members.remove(player.getUniqueId()) != null;
+    }
+    
     public boolean isOwner(final Player player) {
         return owner != null && owner.equals(get(player));
+    }
+
+    public void setOwner(final Player other) {
+        PartyMember member = get(other);
+
+        if (member == null) {
+            return;
+        }
+
+        this.owner = member;
     }
 
     public int size() {
         return members.size();
     }
 
-    public List<Player> getOnlineMembers() {
-        return members.values().stream().map(PartyMember::getPlayer).filter(Objects::nonNull).collect(Collectors.toList());
+    public Collection<PartyMember> getMembers() {
+        return members.values();
     }
 
-    public List<String> getMemberNames() {
-        return members.values().stream().map(PartyMember::getName).collect(Collectors.toList());
+    public List<Player> getOnlineMembers() {
+        return members.values().stream().map(PartyMember::getPlayer).filter(Objects::nonNull).collect(Collectors.toList());
     }
 }

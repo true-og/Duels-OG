@@ -10,10 +10,10 @@ import me.realized.duels.command.BaseCommand;
 import me.realized.duels.party.Party;
 import me.realized.duels.party.PartyInvite;
 
-public class JoinCommand extends BaseCommand {
+public class AcceptCommand extends BaseCommand {
     
-    public JoinCommand(final DuelsPlugin plugin) {
-        super(plugin, "join", null, null, Permissions.PARTY, 2, true, "j");
+    public AcceptCommand(final DuelsPlugin plugin) {
+        super(plugin, "accept", null, null, Permissions.PARTY, 2, true, "a");
     }
 
     @Override
@@ -39,8 +39,6 @@ public class JoinCommand extends BaseCommand {
             return;
         }
 
-        lang.sendMessage(player, "COMMAND.party.invite.accept.receiver", "name", target.getName());
-
         final Party party = invite.getParty();
 
         if (party.isRemoved()) {
@@ -48,7 +46,9 @@ public class JoinCommand extends BaseCommand {
             return;
         }
         
-        partyManager.join(player, party);
+        lang.sendMessage(target, "COMMAND.party.accept.sender", "name", player.getName());
+        lang.sendMessage(player, "COMMAND.party.accept.receiver", "name", target.getName());
         lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.invite.accept.members", "name", player.getName());
+        partyManager.join(player, party);
     }
 }

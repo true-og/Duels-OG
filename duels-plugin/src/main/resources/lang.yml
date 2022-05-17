@@ -65,6 +65,7 @@ ERROR:
   party:
     is-self: '{PREFIX} &cYou cannot create a party with yourself.'
     is-not-owner: '{PREFIX} &cYou must be the owner of this party to do this.'
+    is-owner: '{PREFIX} &cYou cannot leave this party as you are the owner. You must either transfer the ownership of the party using ''/party transfer'' or disband the party using ''/party disband''.'
     requests-disabled: '{PREFIX} &c%name% is currently not accepting party requests.'
     already-has-invite: '{PREFIX} &cYou already have a invite sent to %name%.'
     no-invite: '{PREFIX} &cYou do not have an invite from %name%.'
@@ -318,14 +319,43 @@ COMMAND:
     list:
       - '{HALF_LINE} &f%owner%&7''s Party {HALF_LINE}'
       - '&7Members (&r%members_count%&7): &r%members%'
-      - '{HALF_LINE} &f%owner%&7''s Party {HALF_LINE}'
+      - '&7Online (&r%online_count%&7): &r%online_members%'
+      - '{LINE}'
     invite:
-      send:
-        sender: '{PREFIX} &7Party invite sent to &f%name%&7.'
-        receiver: '{PREFIX} &7Party invite received from &f%name%&7. Type &f/party join %name% &7to join.'
-      accept:
-        members: '{PREFIX} &f%name% &7has joined the party!'
-        receiver: '{PREFIX} &7Accepted the party invite from &f%name%&7.'
+      members: 
+      - '{LINE}'
+      - '{PREFIX} &f%owner% &7has invited &f%name% to the party!'
+      - '{LINE}'
+      receiver: 
+      - '{LINE}'
+      - '{PREFIX} &7Party invite received from &f%name%&7. Type &f/party join %name% &7to join.'
+      - '{LINE}'
+    accept:
+      receiver: 
+      - '{LINE}'
+      - '{PREFIX} &7Accepted the party invite from &f%name%&7.'
+      - '{LINE}'
+      members: 
+      - '{LINE}'
+      - '{PREFIX} &f%name% &7has joined the party!'
+      - '{LINE}'
+    kick:
+      receiver: 
+      - '{LINE}'
+      - '{PREFIX} &f%owner% &7has kicked you from the party!'
+      - '{LINE}'
+      members: 
+      - '{LINE}'
+      - '{PREFIX} &f%owner% &7has kicked &f%name% &7from the party!'
+      - '{LINE}'
+    transfer:
+    - '{LINE}'
+    - '{PREFIX} &f%owner% &7has transferred the party to &f%name%&7.'
+    - '{LINE}'
+    disband:
+    - '{LINE}'
+    - '{PREFIX} &f%owner% &7has disbanded the party.'
+    - '{LINE}'
   
   sub-command-usage: '{PREFIX} &f/%command% %usage% &e- &7%description%'
 

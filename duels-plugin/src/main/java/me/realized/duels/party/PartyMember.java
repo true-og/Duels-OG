@@ -31,6 +31,10 @@ public class PartyMember {
         return Bukkit.getPlayer(uuid);
     }
 
+    public boolean isOnline() {
+        return getPlayer() != null;
+    }
+    
     @Override
     public boolean equals(final Object other) {
         if (this == other) {
