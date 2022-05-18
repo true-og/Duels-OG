@@ -75,6 +75,10 @@ public class Party {
         return members.size();
     }
 
+    public boolean isAllOnline() {
+        return members.values().stream().allMatch(PartyMember::isOnline);
+    }
+
     public Collection<PartyMember> getMembers() {
         return members.values();
     }

@@ -1,8 +1,12 @@
 package me.realized.duels.request;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import com.google.common.collect.ImmutableList;
+
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.request.RequestSendEvent;
 import me.realized.duels.config.Config;
@@ -10,6 +14,18 @@ import me.realized.duels.config.Lang;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.Loadable;
 import me.realized.duels.util.TextBuilder;
+import me.realized.duels.util.validate.BiValidator;
+import me.realized.duels.util.validate.TriValidator;
+import me.realized.duels.util.validate.Validators;
+import me.realized.duels.validator.validators.request.self.SelfBlacklistedWorldValidator;
+import me.realized.duels.validator.validators.request.self.SelfCheckMatchValidator;
+import me.realized.duels.validator.validators.request.self.SelfCheckSpectateValidator;
+import me.realized.duels.validator.validators.request.self.SelfCombatTagValidator;
+import me.realized.duels.validator.validators.request.self.SelfDuelZoneValidator;
+import me.realized.duels.validator.validators.request.self.SelfEmptyInventoryValidator;
+import me.realized.duels.validator.validators.request.self.SelfPreventCreativeValidator;
+import me.realized.duels.validator.validators.request.target.TargetCanRequestValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckSelfValidator;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import org.bukkit.Bukkit;
@@ -18,20 +34,43 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import lombok.Getter;
+
 public class RequestManager implements Loadable, Listener {
 
+    private final DuelsPlugin plugin;
     private final Config config;
     private final Lang lang;
     private final Map<UUID, Map<UUID, DuelRequest>> requests = new HashMap<>();
 
+    @Getter
+    private ImmutableList<BiValidator<Player, Collection<Player>>> selfValidators;
+    @Getter
+    private ImmutableList<TriValidator<Player, Player, Collection<Player>>> targetValidators;
+
     public RequestManager(final DuelsPlugin plugin) {
+        this.plugin = plugin;
         this.config = plugin.getConfiguration();
         this.lang = plugin.getLang();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
-    public void handleLoad() {}
+    public void handleLoad() {
+        this.selfValidators = Validators.buildChain(
+            new SelfEmptyInventoryValidator(plugin),
+            new SelfPreventCreativeValidator(plugin),
+            new SelfBlacklistedWorldValidator(plugin),
+            new SelfCombatTagValidator(plugin),
+            new SelfDuelZoneValidator(plugin),
+            new SelfCheckMatchValidator(plugin),
+            new SelfCheckSpectateValidator(plugin)
+        );
+        this.targetValidators = Validators.buildChain(
+            new TargetCheckSelfValidator(plugin),
+            new TargetCanRequestValidator(plugin)
+        );
+    }
 
     @Override
     public void handleUnload() {
