@@ -6,10 +6,11 @@ import java.util.Collection;
 
 import org.bukkit.GameMode;
 
-import me.realized.duels.validator.BaseBiValidator;
+import me.realized.duels.validator.BaseTriValidator;
 import me.realized.duels.DuelsPlugin;
+import me.realized.duels.party.Party;
 
-public class SelfPreventCreativeValidator extends BaseBiValidator<Player, Collection<Player>> {
+public class SelfPreventCreativeValidator extends BaseTriValidator<Player, Party, Collection<Player>> {
     
     public SelfPreventCreativeValidator(final DuelsPlugin plugin) {
         super(plugin);
@@ -21,7 +22,7 @@ public class SelfPreventCreativeValidator extends BaseBiValidator<Player, Collec
     }
 
     @Override
-    public boolean validate(final Player sender, final Collection<Player> players) {
+    public boolean validate(final Player sender, final Party party, final Collection<Player> players) {
         if (players.stream().anyMatch(player -> player.getGameMode() == GameMode.CREATIVE)) {
             lang.sendMessage(sender, "ERROR.duel.in-creative-mode");
             return false;

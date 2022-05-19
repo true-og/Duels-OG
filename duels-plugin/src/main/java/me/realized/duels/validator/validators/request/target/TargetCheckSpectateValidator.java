@@ -6,40 +6,22 @@ import org.bukkit.entity.Player;
 
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.party.Party;
+import me.realized.duels.util.function.Pair;
 import me.realized.duels.validator.BaseTriValidator;
 
-public class TargetCheckSpectateValidator extends BaseTriValidator<Player, Player, Collection<Player>> {
+public class TargetCheckSpectateValidator extends BaseTriValidator<Pair<Player, Player>, Party, Collection<Player>> {
     
     public TargetCheckSpectateValidator(final DuelsPlugin plugin) {
         super(plugin);
     }
 
     @Override
-    public boolean validate(final Player sender, final Player target, final Collection<Player> players) {
-        final Party party = partyManager.get(target);
-
-        // Skip for 1v1s
-        if (party == null) {
-            // If sender is but target is not in a party
-            if (partyManager.isInParty(sender)) {
-                // TODO send message
-                return false;
-            }
-            return true;
-        }
-
-        // If sender is in the same party as target
-        if (party.isMember(sender)) {
-
-            // TODO send message
+    public boolean validate(final Pair<Player, Player> pair, final Party party, final Collection<Player> players) {
+        if (players.stream().anyMatch(player -> spectateManager.isSpectating(player))) {
+            lang.sendMessage(pair.getKey(), "ERROR.spectate.already-spectating.target");
             return false;
         }
 
-        if (players.size() != party.size()) {
-            lang.sendMessage(sender, "ERROR.party.is-not-online.target", "name", target.getName());
-            return false;
-        }
-        
         return true;
     }
 }

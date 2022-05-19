@@ -6,9 +6,10 @@ import org.bukkit.entity.Player;
 
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
-import me.realized.duels.validator.BaseBiValidator;
+import me.realized.duels.party.Party;
+import me.realized.duels.validator.BaseTriValidator;
 
-public class SelfDuelZoneValidator extends BaseBiValidator<Player, Collection<Player>> {
+public class SelfDuelZoneValidator extends BaseTriValidator<Player, Party, Collection<Player>> {
     
     private final WorldGuardHook worldGuard;
 
@@ -23,7 +24,7 @@ public class SelfDuelZoneValidator extends BaseBiValidator<Player, Collection<Pl
     }
 
     @Override
-    public boolean validate(final Player sender, final Collection<Player> players) {
+    public boolean validate(final Player sender, final Party party, final Collection<Player> players) {
         if (players.stream().anyMatch(player -> worldGuard.findDuelZone(player) == null)) {
             lang.sendMessage(sender, "ERROR.duel.not-in-duelzone", "regions", config.getDuelzones());
         }

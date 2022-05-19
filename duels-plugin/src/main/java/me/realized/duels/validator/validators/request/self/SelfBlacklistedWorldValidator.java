@@ -5,9 +5,13 @@ import java.util.Collection;
 import org.bukkit.entity.Player;
 
 import me.realized.duels.DuelsPlugin;
-import me.realized.duels.validator.BaseBiValidator;
+import me.realized.duels.party.Party;
+import me.realized.duels.validator.BaseTriValidator;
 
-public class SelfBlacklistedWorldValidator extends BaseBiValidator<Player, Collection<Player>> {
+public class SelfBlacklistedWorldValidator extends BaseTriValidator<Player, Party, Collection<Player>> {
+
+    private static final String MESSAGE_KEY = "ERROR.duel.in-blacklisted-world";
+    private static final String PARTY_MESSAGE_KEY = "ERROR.party-duel.in-blacklisted-world";
     
     public SelfBlacklistedWorldValidator(final DuelsPlugin plugin) {
         super(plugin);
@@ -23,9 +27,9 @@ public class SelfBlacklistedWorldValidator extends BaseBiValidator<Player, Colle
     }
 
     @Override
-    public boolean validate(final Player sender, final Collection<Player> players) {
+    public boolean validate(final Player sender, final Party party, final Collection<Player> players) {
         if (players.stream().anyMatch(this::isBlacklistedWorld)) {
-            lang.sendMessage(sender, "ERROR.duel.in-blacklisted-world");
+            lang.sendMessage(sender, party != null ? PARTY_MESSAGE_KEY : MESSAGE_KEY);
             return false;
         }
 

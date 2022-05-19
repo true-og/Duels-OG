@@ -11,12 +11,13 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.request.RequestSendEvent;
 import me.realized.duels.config.Config;
 import me.realized.duels.config.Lang;
+import me.realized.duels.party.Party;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.Loadable;
 import me.realized.duels.util.TextBuilder;
-import me.realized.duels.util.validate.BiValidator;
+import me.realized.duels.util.function.Pair;
 import me.realized.duels.util.validate.TriValidator;
-import me.realized.duels.util.validate.Validators;
+import me.realized.duels.util.validate.ValidatorUtil;
 import me.realized.duels.validator.validators.request.self.SelfBlacklistedWorldValidator;
 import me.realized.duels.validator.validators.request.self.SelfCheckMatchValidator;
 import me.realized.duels.validator.validators.request.self.SelfCheckSpectateValidator;
@@ -25,7 +26,10 @@ import me.realized.duels.validator.validators.request.self.SelfDuelZoneValidator
 import me.realized.duels.validator.validators.request.self.SelfEmptyInventoryValidator;
 import me.realized.duels.validator.validators.request.self.SelfPreventCreativeValidator;
 import me.realized.duels.validator.validators.request.target.TargetCanRequestValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckMatchValidator;
 import me.realized.duels.validator.validators.request.target.TargetCheckSelfValidator;
+import me.realized.duels.validator.validators.request.target.TargetCheckSpectateValidator;
+import me.realized.duels.validator.validators.request.target.TargetPartyValidator;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import org.bukkit.Bukkit;
@@ -44,9 +48,9 @@ public class RequestManager implements Loadable, Listener {
     private final Map<UUID, Map<UUID, DuelRequest>> requests = new HashMap<>();
 
     @Getter
-    private ImmutableList<BiValidator<Player, Collection<Player>>> selfValidators;
+    private ImmutableList<TriValidator<Player, Party, Collection<Player>>> selfValidators;
     @Getter
-    private ImmutableList<TriValidator<Player, Player, Collection<Player>>> targetValidators;
+    private ImmutableList<TriValidator<Pair<Player, Player>, Party, Collection<Player>>> targetValidators;
 
     public RequestManager(final DuelsPlugin plugin) {
         this.plugin = plugin;
@@ -57,7 +61,7 @@ public class RequestManager implements Loadable, Listener {
 
     @Override
     public void handleLoad() {
-        this.selfValidators = Validators.buildChain(
+        this.selfValidators = ValidatorUtil.buildChain(
             new SelfEmptyInventoryValidator(plugin),
             new SelfPreventCreativeValidator(plugin),
             new SelfBlacklistedWorldValidator(plugin),
@@ -66,9 +70,12 @@ public class RequestManager implements Loadable, Listener {
             new SelfCheckMatchValidator(plugin),
             new SelfCheckSpectateValidator(plugin)
         );
-        this.targetValidators = Validators.buildChain(
+        this.targetValidators = ValidatorUtil.buildChain(
             new TargetCheckSelfValidator(plugin),
-            new TargetCanRequestValidator(plugin)
+            new TargetCanRequestValidator(plugin),
+            new TargetPartyValidator(plugin),
+            new TargetCheckMatchValidator(plugin),
+            new TargetCheckSpectateValidator(plugin)
         );
     }
 

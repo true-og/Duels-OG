@@ -6,21 +6,24 @@ import org.bukkit.entity.Player;
 
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.party.Party;
-import me.realized.duels.validator.BaseBiValidator;
+import me.realized.duels.validator.BaseTriValidator;
 
-public class SelfPartyOnlineValidator extends BaseBiValidator<Player, Collection<Player>> {
+public class SelfPartyValidator extends BaseTriValidator<Player, Party, Collection<Player>> {
 
-    public SelfPartyOnlineValidator(final DuelsPlugin plugin) {
+    public SelfPartyValidator(final DuelsPlugin plugin) {
         super(plugin);
     }
 
     @Override
-    public boolean validate(final Player sender, final Collection<Player> players) {
-        final Party party = partyManager.get(sender);
-
+    public boolean validate(final Player sender, final Party party, final Collection<Player> players) {
         // Skip for 1v1s
         if (party == null) {
             return true;
+        }
+
+        if (!party.isOwner(sender)) {
+            lang.sendMessage(sender, "ERROR.party.is-not-owner");
+            return false;
         }
 
         if (players.size() != party.size()) {

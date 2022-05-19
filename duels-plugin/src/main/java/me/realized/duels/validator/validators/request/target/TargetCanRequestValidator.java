@@ -7,25 +7,27 @@ import org.bukkit.entity.Player;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.data.UserData;
+import me.realized.duels.party.Party;
+import me.realized.duels.util.function.Pair;
 import me.realized.duels.validator.BaseTriValidator;
 
-public class TargetCanRequestValidator extends BaseTriValidator<Player, Player, Collection<Player>> {
+public class TargetCanRequestValidator extends BaseTriValidator<Pair<Player, Player>, Party, Collection<Player>> {
     
     public TargetCanRequestValidator(final DuelsPlugin plugin) {
         super(plugin);
     }
 
     @Override
-    public boolean validate(final Player sender, final Player target, final Collection<Player> players) {
-        final UserData user = userManager.get(target);
+    public boolean validate(final Pair<Player, Player> pair, final Party party, final Collection<Player> players) {
+        final UserData user = userManager.get(pair.getValue());
 
         if (user == null) {
-            lang.sendMessage(sender, "ERROR.data.not-found", "name", target.getName());
+            lang.sendMessage(pair.getKey(), "ERROR.data.not-found", "name", pair.getValue().getName());
             return false;
         }
 
-        if (!sender.hasPermission(Permissions.ADMIN) && !user.canRequest()) {
-            lang.sendMessage(sender, "ERROR.duel.requests-disabled", "name", target.getName());
+        if (!pair.getKey().hasPermission(Permissions.ADMIN) && !user.canRequest()) {
+            lang.sendMessage(pair.getKey(), "ERROR.duel.requests-disabled", "name",  pair.getValue().getName());
             return false;
         }
 

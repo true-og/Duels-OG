@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 
-public final class Validators {
+public final class ValidatorUtil {
     
     @SafeVarargs
     public static <T> ImmutableList<Validator<T>> buildChain(final Validator<T>... validators) {
@@ -66,5 +66,5 @@ public final class Validators {
         return chain.stream().filter(validator -> !excluded.contains(validator.getClass())).allMatch(validator -> validator.validate(first, second, third));
     }
 
-    private Validators() {}
+    private ValidatorUtil() {}
 }

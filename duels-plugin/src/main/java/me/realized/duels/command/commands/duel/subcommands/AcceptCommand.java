@@ -7,9 +7,16 @@ import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
+import me.realized.duels.party.Party;
 import me.realized.duels.request.DuelRequest;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.inventory.InventoryUtil;
+import me.realized.duels.util.validate.ValidatorUtil;
+import me.realized.duels.validator.validators.request.target.TargetCanRequestValidator;
+
+import java.util.Collection;
+import java.util.Collections;
+
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
@@ -33,38 +40,10 @@ public class AcceptCommand extends BaseCommand {
     @Override
     protected void execute(final CommandSender sender, final String label, final String[] args) {
         final Player player = (Player) sender;
+        final Party party = partyManager.get(player);
+        final Collection<Player> validated = party == null ? Collections.singleton(player) : party.getOnlineMembers();
 
-        if (config.isRequiresClearedInventory() && InventoryUtil.hasItem(player)) {
-            lang.sendMessage(sender, "ERROR.duel.inventory-not-empty");
-            return;
-        }
-
-        if (config.isPreventCreativeMode() && player.getGameMode() == GameMode.CREATIVE) {
-            lang.sendMessage(sender, "ERROR.duel.in-creative-mode");
-            return;
-        }
-
-        if ((combatTagPlus != null && combatTagPlus.isTagged(player))
-            || (pvpManager != null && pvpManager.isTagged(player))
-            || (combatLogX != null && combatLogX.isTagged(player))) {
-            lang.sendMessage(sender, "ERROR.duel.is-tagged");
-            return;
-        }
-
-        String duelzone = null;
-
-        if (worldGuard != null && config.isDuelzoneEnabled() && (duelzone = worldGuard.findDuelZone(player)) == null) {
-            lang.sendMessage(sender, "ERROR.duel.not-in-duelzone", "regions", config.getDuelzones());
-            return;
-        }
-
-        if (arenaManager.isInMatch(player)) {
-            lang.sendMessage(sender, "ERROR.duel.already-in-match.sender");
-            return;
-        }
-
-        if (spectateManager.isSpectating(player)) {
-            lang.sendMessage(sender, "ERROR.spectate.already-spectating.sender");
+        if (!ValidatorUtil.validate(requestManager.getSelfValidators(), player, validated)) {
             return;
         }
 
@@ -72,6 +51,13 @@ public class AcceptCommand extends BaseCommand {
 
         if (target == null || !player.canSee(target)) {
             lang.sendMessage(sender, "ERROR.player.not-found", "name", args[1]);
+            return;
+        }
+
+        final Party targetParty = partyManager.get(target);
+        final Collection<Player> targetValidated = targetParty == null ? Collections.singleton(target) : targetParty.getOnlineMembers();
+
+        if (!ValidatorUtil.validate(requestManager.getTargetValidators(), player, target, targetValidated, TargetCanRequestValidator.class)) {
             return;
         }
 

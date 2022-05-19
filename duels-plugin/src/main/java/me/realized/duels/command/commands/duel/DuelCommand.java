@@ -21,7 +21,7 @@ import me.realized.duels.party.Party;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.NumberUtil;
 import me.realized.duels.util.StringUtil;
-import me.realized.duels.util.validate.Validators;
+import me.realized.duels.util.validate.ValidatorUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -69,7 +69,7 @@ public class DuelCommand extends BaseCommand {
         final Party party = partyManager.get(player);
         final Collection<Player> validated = party == null ? Collections.singleton(player) : party.getOnlineMembers();
  
-        if (!Validators.validate(requestManager.getSelfValidators(), player, validated)) {
+        if (!ValidatorUtil.validate(requestManager.getSelfValidators(), player, validated)) {
             return true;
         }
 
@@ -83,7 +83,7 @@ public class DuelCommand extends BaseCommand {
         final Party targetParty = partyManager.get(target);
         final Collection<Player> targetValidated = targetParty == null ? Collections.singleton(target) : targetParty.getOnlineMembers();
 
-        if (!Validators.validate(requestManager.getTargetValidators(), player, target, targetValidated)) {
+        if (!ValidatorUtil.validate(requestManager.getTargetValidators(), player, target, targetValidated)) {
             return true;
         }
 

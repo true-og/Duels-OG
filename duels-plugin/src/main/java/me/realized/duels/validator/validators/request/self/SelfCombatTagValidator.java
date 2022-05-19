@@ -8,9 +8,10 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
-import me.realized.duels.validator.BaseBiValidator;
+import me.realized.duels.party.Party;
+import me.realized.duels.validator.BaseTriValidator;
 
-public class SelfCombatTagValidator extends BaseBiValidator<Player, Collection<Player>> {
+public class SelfCombatTagValidator extends BaseTriValidator<Player, Party, Collection<Player>> {
    
     private final CombatTagPlusHook combatTagPlus;
     private final PvPManagerHook pvpManager;
@@ -37,7 +38,7 @@ public class SelfCombatTagValidator extends BaseBiValidator<Player, Collection<P
     }
 
     @Override
-    public boolean validate(final Player sender, final Collection<Player> players) {
+    public boolean validate(final Player sender, final Party party, final Collection<Player> players) {
         if (players.stream().anyMatch(this::isTagged)) {
             lang.sendMessage(sender, "ERROR.duel.is-tagged");
             return false;
