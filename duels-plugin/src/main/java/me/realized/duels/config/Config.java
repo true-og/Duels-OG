@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
-import me.realized.duels.config.converters.ConfigConverter9_10;
+import me.realized.duels.config.converters.config.ConfigConverter9_10;
 import me.realized.duels.util.EnumUtil;
 import me.realized.duels.util.config.AbstractConfiguration;
 import org.bukkit.Sound;

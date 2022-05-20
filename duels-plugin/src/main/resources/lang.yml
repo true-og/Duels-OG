@@ -60,6 +60,10 @@ ERROR:
       target: '{PREFIX} &c%name% is already in a duel.'
     mode-unselected: '{PREFIX} &cYou must either choose a kit or enable own inventory mode.'
     mode-fixed: '{PREFIX} &cYou are not allowed to disable own inventory mode.'
+    already-spectating:
+      sender: '{PREFIX} &cYou cannot do this while in spectator mode.'
+      target: '{PREFIX} &c%name% is in spectator mode.'
+    not-in-match: '{PREFIX} &c%name% is not in a duel.'
   party-duel:
     inventory-not-empty: '{PREFIX} &cYou and your party members must have a cleared inventory to use this command.'
     in-creative-mode: '{PREFIX} &cYou or your party member is in creative mode.'
@@ -69,6 +73,9 @@ ERROR:
     already-in-match:
       sender: '{PREFIX} &cYou cannot do this while your party in a duel.'
       target: '{PREFIX} &c%name%''s party is already in a duel.'
+    already-spectating:
+      sender: '{PREFIX} &cYou cannot do this while you or your party member is in spectator mode.'
+      target: '{PREFIX} &cA member of %name%''s party is in spectator mode.'
   party:
     is-self: '{PREFIX} &cYou cannot create a party with yourself.'
     is-not-owner: '{PREFIX} &cYou must be the owner of this party to do this.'
@@ -89,11 +96,6 @@ ERROR:
     is-not-online:
       sender: '{PREFIX} &cAll members of your party must be online!'
       target: '{PREFIX} &cAll members of %name%''s party must be online!'
-  spectate:
-    already-spectating:
-      sender: '{PREFIX} &cYou cannot do this while in spectator mode.'
-      target: '{PREFIX} &c%name% is in spectator mode.'
-    not-in-match: '{PREFIX} &c%name% is not in a duel.'
   setting:
     disabled-option: '{PREFIX} &c%option% is currently disabled.'
     arena-not-applicable: '{PREFIX} &cYou cannot use kit %kit% on arena %arena%.'

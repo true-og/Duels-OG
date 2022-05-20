@@ -53,7 +53,7 @@ public class SpectateCommand extends BaseCommand {
             case EVENT_CANCELLED:
                 return;
             case IN_MATCH:
-                lang.sendMessage(player, "ERROR.spectate.already-spectating.sender");
+                lang.sendMessage(player, "ERROR.duel.already-spectating.sender");
                 return;
             case IN_QUEUE:
                 lang.sendMessage(player, "ERROR.duel.already-in-queue");
@@ -62,7 +62,7 @@ public class SpectateCommand extends BaseCommand {
                 lang.sendMessage(player, "ERROR.duel.already-in-match.sender");
                 return;
             case TARGET_NOT_IN_MATCH:
-                lang.sendMessage(player, "ERROR.spectate.not-in-match", "name", target.getName());
+                lang.sendMessage(player, "ERROR.duel.not-in-match", "name", target.getName());
                 return;
             case SUCCESS:
                 final ArenaImpl arena = arenaManager.get(target);

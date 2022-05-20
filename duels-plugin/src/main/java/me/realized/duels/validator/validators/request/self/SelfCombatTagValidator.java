@@ -13,6 +13,9 @@ import me.realized.duels.validator.BaseTriValidator;
 
 public class SelfCombatTagValidator extends BaseTriValidator<Player, Party, Collection<Player>> {
    
+    private static final String MESSAGE_KEY = "ERROR.duel.is-tagged";
+    private static final String PARTY_MESSAGE_KEY = "ERROR.party-duel.is-tagged";
+
     private final CombatTagPlusHook combatTagPlus;
     private final PvPManagerHook pvpManager;
     private final CombatLogXHook combatLogX;
@@ -40,7 +43,7 @@ public class SelfCombatTagValidator extends BaseTriValidator<Player, Party, Coll
     @Override
     public boolean validate(final Player sender, final Party party, final Collection<Player> players) {
         if (players.stream().anyMatch(this::isTagged)) {
-            lang.sendMessage(sender, "ERROR.duel.is-tagged");
+            lang.sendMessage(sender, party != null ? PARTY_MESSAGE_KEY : MESSAGE_KEY);
             return false;
         }
 

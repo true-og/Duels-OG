@@ -1,39 +1,29 @@
 package me.realized.duels.command.commands.duel.subcommands;
 
-import me.realized.duels.DuelsPlugin;
-import me.realized.duels.api.event.request.RequestAcceptEvent;
-import me.realized.duels.command.BaseCommand;
-import me.realized.duels.hook.hooks.CombatLogXHook;
-import me.realized.duels.hook.hooks.CombatTagPlusHook;
-import me.realized.duels.hook.hooks.PvPManagerHook;
-import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
-import me.realized.duels.party.Party;
-import me.realized.duels.request.DuelRequest;
-import me.realized.duels.setting.Settings;
-import me.realized.duels.util.inventory.InventoryUtil;
-import me.realized.duels.util.validate.ValidatorUtil;
-import me.realized.duels.validator.validators.request.target.TargetCanRequestValidator;
-
 import java.util.Collection;
 import java.util.Collections;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.realized.duels.DuelsPlugin;
+import me.realized.duels.api.event.request.RequestAcceptEvent;
+import me.realized.duels.command.BaseCommand;
+import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
+import me.realized.duels.party.Party;
+import me.realized.duels.request.DuelRequest;
+import me.realized.duels.setting.Settings;
+import me.realized.duels.util.function.Pair;
+import me.realized.duels.util.validate.ValidatorUtil;
+import me.realized.duels.validator.validators.request.target.TargetCanRequestValidator;
+
 public class AcceptCommand extends BaseCommand {
 
-    private final CombatTagPlusHook combatTagPlus;
-    private final PvPManagerHook pvpManager;
-    private final CombatLogXHook combatLogX;
     private final WorldGuardHook worldGuard;
 
     public AcceptCommand(final DuelsPlugin plugin) {
         super(plugin, "accept", "accept [player]", "Accepts a duel request.", 2, true);
-        this.combatTagPlus = hookManager.getHook(CombatTagPlusHook.class);
-        this.pvpManager = hookManager.getHook(PvPManagerHook.class);
-        this.combatLogX = plugin.getHookManager().getHook(CombatLogXHook.class);
         this.worldGuard = hookManager.getHook(WorldGuardHook.class);
     }
 
@@ -43,7 +33,7 @@ public class AcceptCommand extends BaseCommand {
         final Party party = partyManager.get(player);
         final Collection<Player> validated = party == null ? Collections.singleton(player) : party.getOnlineMembers();
 
-        if (!ValidatorUtil.validate(requestManager.getSelfValidators(), player, validated)) {
+        if (!ValidatorUtil.validate(requestManager.getSelfValidators(), player, party, validated)) {
             return;
         }
 
@@ -57,7 +47,7 @@ public class AcceptCommand extends BaseCommand {
         final Party targetParty = partyManager.get(target);
         final Collection<Player> targetValidated = targetParty == null ? Collections.singleton(target) : targetParty.getOnlineMembers();
 
-        if (!ValidatorUtil.validate(requestManager.getTargetValidators(), player, target, targetValidated, TargetCanRequestValidator.class)) {
+        if (!ValidatorUtil.validate(requestManager.getTargetValidators(), new Pair<>(player, target), targetParty, targetValidated, TargetCanRequestValidator.class)) {
             return;
         }
 
@@ -77,16 +67,6 @@ public class AcceptCommand extends BaseCommand {
 
         requestManager.remove(target, player);
 
-        if (arenaManager.isInMatch(target)) {
-            lang.sendMessage(sender, "ERROR.duel.already-in-match.target", "name", target.getName());
-            return;
-        }
-
-        if (spectateManager.isSpectating(target)) {
-            lang.sendMessage(sender, "ERROR.spectate.already-spectating.target", "name", target.getName());
-            return;
-        }
-
         final Settings settings = request.getSettings();
         final String kit = settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected");
         final String arena = settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random");
@@ -99,7 +79,7 @@ public class AcceptCommand extends BaseCommand {
 
         if (settings.isItemBetting()) {
             settings.setBaseLoc(player);
-            settings.setDuelzone(player, duelzone);
+            settings.setDuelzone(player, worldGuard != null ? worldGuard.findDuelZone(player) : null);
             bettingManager.open(settings, target, player);
         } else {
             duelManager.startMatch(player, target, settings, null, null);

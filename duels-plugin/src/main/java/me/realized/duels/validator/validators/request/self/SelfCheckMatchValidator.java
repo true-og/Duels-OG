@@ -10,6 +10,9 @@ import me.realized.duels.validator.BaseTriValidator;
 
 public class SelfCheckMatchValidator extends BaseTriValidator<Player, Party, Collection<Player>> {
     
+    private static final String MESSAGE_KEY = "ERROR.duel.already-in-match.sender";
+    private static final String PARTY_MESSAGE_KEY = "ERROR.party-duel.already-in-match.sender";
+    
     public SelfCheckMatchValidator(final DuelsPlugin plugin) {
         super(plugin);
     }
@@ -17,7 +20,7 @@ public class SelfCheckMatchValidator extends BaseTriValidator<Player, Party, Col
     @Override
     public boolean validate(final Player sender, final Party party, final Collection<Player> players) {
         if (players.stream().anyMatch(player -> arenaManager.isInMatch(player))) {
-            lang.sendMessage(sender, "ERROR.duel.already-in-match.sender");
+            lang.sendMessage(sender, party != null ? PARTY_MESSAGE_KEY : MESSAGE_KEY);
             return false;
         }
         

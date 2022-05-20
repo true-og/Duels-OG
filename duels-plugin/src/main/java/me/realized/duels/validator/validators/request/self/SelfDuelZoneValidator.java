@@ -11,6 +11,9 @@ import me.realized.duels.validator.BaseTriValidator;
 
 public class SelfDuelZoneValidator extends BaseTriValidator<Player, Party, Collection<Player>> {
     
+    private static final String MESSAGE_KEY = "ERROR.duel.not-in-duelzone";
+    private static final String PARTY_MESSAGE_KEY = "ERROR.party-duel.not-in-duelzone";
+
     private final WorldGuardHook worldGuard;
 
     public SelfDuelZoneValidator(final DuelsPlugin plugin) {
@@ -26,7 +29,7 @@ public class SelfDuelZoneValidator extends BaseTriValidator<Player, Party, Colle
     @Override
     public boolean validate(final Player sender, final Party party, final Collection<Player> players) {
         if (players.stream().anyMatch(player -> worldGuard.findDuelZone(player) == null)) {
-            lang.sendMessage(sender, "ERROR.duel.not-in-duelzone", "regions", config.getDuelzones());
+            lang.sendMessage(sender, party != null ? PARTY_MESSAGE_KEY : MESSAGE_KEY, "regions", config.getDuelzones());
         }
 
         return true;

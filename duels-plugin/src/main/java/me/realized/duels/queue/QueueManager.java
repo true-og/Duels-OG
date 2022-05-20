@@ -342,7 +342,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
         }
 
         if (spectateManager.isSpectating(player)) {
-            lang.sendMessage(player, "ERROR.spectate.already-spectating.sender");
+            lang.sendMessage(player, "ERROR.duel.already-spectating.sender");
             return false;
         }
 

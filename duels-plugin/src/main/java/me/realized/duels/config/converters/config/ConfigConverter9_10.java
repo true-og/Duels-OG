@@ -1,4 +1,4 @@
-package me.realized.duels.config.converters;
+package me.realized.duels.config.converters.config;
 
 import java.util.HashMap;
 import java.util.Map;

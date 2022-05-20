@@ -10,6 +10,9 @@ import me.realized.duels.validator.BaseTriValidator;
 
 public class SelfCheckSpectateValidator extends BaseTriValidator<Player, Party, Collection<Player>> {
     
+    private static final String MESSAGE_KEY = "ERROR.duel.already-spectating.sender";
+    private static final String PARTY_MESSAGE_KEY = "ERROR.party-duel.already-spectating.sender";
+
     public SelfCheckSpectateValidator(final DuelsPlugin plugin) {
         super(plugin);
     }
@@ -17,7 +20,7 @@ public class SelfCheckSpectateValidator extends BaseTriValidator<Player, Party, 
     @Override
     public boolean validate(final Player sender, final Party party, final Collection<Player> players) {
         if (players.stream().anyMatch(player -> spectateManager.isSpectating(player))) {
-            lang.sendMessage(sender, "ERROR.spectate.already-spectating.sender");
+            lang.sendMessage(sender, party != null ? PARTY_MESSAGE_KEY : MESSAGE_KEY);
             return false;
         }
 

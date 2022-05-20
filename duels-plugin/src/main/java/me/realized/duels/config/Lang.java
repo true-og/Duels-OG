@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import me.realized.duels.DuelsPlugin;
+import me.realized.duels.config.converters.lang.LangConverter11_12;
 import me.realized.duels.util.Log;
 import me.realized.duels.util.Reloadable;
 import me.realized.duels.util.StringUtil;
@@ -29,7 +30,11 @@ public class Lang extends AbstractConfiguration<DuelsPlugin> implements Reloadab
 
     @Override
     protected void loadValues(FileConfiguration configuration) throws Exception {
-        if (configuration.getInt("config-version", 0) < getLatestVersion()) {
+        final int prevVersion = configuration.getInt("config-version", 0);
+        
+        if (prevVersion < 12) {
+            configuration = convert(new LangConverter11_12());
+        } else if (prevVersion < getLatestVersion()) {
             configuration = convert(null);
         }
 
