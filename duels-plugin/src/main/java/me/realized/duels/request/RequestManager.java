@@ -95,8 +95,8 @@ public class RequestManager implements Loadable, Listener {
         return cached;
     }
 
-    public void send(final Player sender, final Player target, final Settings settings) {
-        final DuelRequest request = new DuelRequest(sender, target, settings);
+    public void send(final Player sender, final Player target, final Party senderParty, final Party targetParty, final Settings settings) {
+        final DuelRequest request = new DuelRequest(sender, target, senderParty, targetParty, settings);
         final RequestSendEvent event = new RequestSendEvent(sender, target, request);
         Bukkit.getPluginManager().callEvent(event);
 

@@ -76,6 +76,7 @@ ERROR:
     already-spectating:
       sender: '{PREFIX} &cYou cannot do this while you or your party member is in spectator mode.'
       target: '{PREFIX} &cA member of %name%''s party is in spectator mode.'
+    option-unavailable: '{PREFIX} &CThis option is currently not available for party duels.'
   party:
     is-self: '{PREFIX} &cYou cannot create a party with yourself.'
     is-not-owner: '{PREFIX} &cYou must be the owner of this party to do this.'

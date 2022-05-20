@@ -13,6 +13,7 @@ public class CachedInfo {
     @Setter
     private String duelzone;
 
+    // TODO remove?
     public CachedInfo(final Location location, final String duelzone) {
         this.location = location;
         this.duelzone = duelzone;

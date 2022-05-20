@@ -97,11 +97,16 @@ public class DuelCommand extends BaseCommand {
         settings.setBet(0);
         settings.setTarget(target);
         settings.setBaseLoc(player);
-        settings.setDuelzone(player, worldGuard != null ? worldGuard.findDuelZone(player) : null);
+        settings.setDuelzone(player, worldGuard != null ? worldGuard.findDuelZone(player) : null); // TODO not needed?
 
         boolean sendRequest = false;
 
         if (args.length > 1) {
+            if (party != null) {
+                lang.sendMessage(sender, "ERROR.party-duel.option-unavailable");
+                return true;
+            }
+
             final int amount = NumberUtil.parseInt(args[1]).orElse(0);
 
             if (amount > 0 && config.isMoneyBettingEnabled()) {
@@ -180,7 +185,7 @@ public class DuelCommand extends BaseCommand {
 
         if (sendRequest) {
             // If all settings were selected via command, send request without opening settings GUI.
-            requestManager.send(player, target, settings);
+            requestManager.send(player, target, party, targetParty, settings);
         } else if (config.isOwnInventoryEnabled()) {
             // If own inventory is enabled, prompt request settings GUI.
             settings.openGui(player);
