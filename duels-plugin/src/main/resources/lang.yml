@@ -363,7 +363,8 @@ COMMAND:
       enabled: '{PREFIX} &aYou are now receiving party requests.'
       disabled: '{PREFIX} &cYou are no longer accepting party requests.'
     list:
-      - '{HALF_LINE} &f%owner%&7''s Party {HALF_LINE}'
+      - '{LINE}'
+      - '&7Leader: &f%owner%'
       - '&7Members (&r%members_count%&7): &r%members%'
       - '&7Online (&r%online_count%&7): &r%online_members%'
       - '{LINE}'
