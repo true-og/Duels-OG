@@ -368,23 +368,24 @@ COMMAND:
       - '&7Online (&r%online_count%&7): &r%online_members%'
       - '{LINE}'
     invite:
-      receiver: 
-      - '{LINE}'
-      - '{PREFIX} &7Party invite received from &f%name%&7. Type &f/party join %name% &7to join.'
-      - '{LINE}'
-      members: 
-      - '{LINE}'
-      - '{PREFIX} &f%owner% &7has invited &f%name% to the party!'
-      - '{LINE}'
-    accept:
-      receiver: 
-      - '{LINE}'
-      - '{PREFIX} &7Accepted the party invite from &f%name%&7.'
-      - '{LINE}'
-      members: 
-      - '{LINE}'
-      - '{PREFIX} &f%name% &7has joined the party!'
-      - '{LINE}'
+      send:
+        receiver: 
+        - '{LINE}'
+        - '{PREFIX} &7Party invite received from &f%name%&7. Type &f/party join %name% &7to join.'
+        - '{LINE}'
+        members: 
+        - '{LINE}'
+        - '{PREFIX} &f%owner% &7has invited &f%name% to the party!'
+        - '{LINE}'
+      accept:
+        receiver: 
+        - '{LINE}'
+        - '{PREFIX} &7Accepted the party invite from &f%name%&7.'
+        - '{LINE}'
+        members: 
+        - '{LINE}'
+        - '{PREFIX} &f%name% &7has joined the party!'
+        - '{LINE}'
     leave:
       sender: 
       - '{LINE}'

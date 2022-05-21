@@ -46,8 +46,7 @@ public class AcceptCommand extends BaseCommand {
             return;
         }
         
-        lang.sendMessage(target, "COMMAND.party.accept.sender", "name", player.getName());
-        lang.sendMessage(player, "COMMAND.party.accept.receiver", "name", target.getName());
+        lang.sendMessage(player, "COMMAND.party.invite.accept.receiver", "name", target.getName());
         lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.invite.accept.members", "name", player.getName());
         partyManager.join(player, party);
     }

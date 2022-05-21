@@ -30,7 +30,7 @@ public class LeaveCommand extends BaseCommand {
         }
         
         partyManager.remove(player, party);
-        lang.sendMessage(player, "COMMAND.party.leave.sender");
+        lang.sendMessage(player, "COMMAND.party.leave.sender", "name", party.getOwner().getName());
         lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.leave.members", "name", player.getName());
     }
 }

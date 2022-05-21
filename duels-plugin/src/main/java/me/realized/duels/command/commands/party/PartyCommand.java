@@ -48,13 +48,6 @@ public class PartyCommand extends BaseCommand {
             return false;
         }
 
-        final Party party = partyManager.getOrCreate(player);
-
-        if (!party.isOwner(player)) {
-            lang.sendMessage(sender, "ERROR.party.is-not-owner");
-            return true;
-        }
-
         final Player target = Bukkit.getPlayerExact(args[0]);
 
         if (target == null || !player.canSee(target)) {
@@ -86,6 +79,13 @@ public class PartyCommand extends BaseCommand {
 
         if (partyManager.hasInvite(player, target)) {
             lang.sendMessage(sender, "ERROR.party.already-has-invite", "name", target.getName());
+            return true;
+        }
+        
+        final Party party = partyManager.getOrCreate(player);
+
+        if (!party.isOwner(player)) {
+            lang.sendMessage(sender, "ERROR.party.is-not-owner");
             return true;
         }
 
