@@ -67,9 +67,9 @@ public class DuelCommand extends BaseCommand {
         }
 
         final Party party = partyManager.get(player);
-        final Collection<Player> validated = party == null ? Collections.singleton(player) : party.getOnlineMembers();
+        final Collection<Player> players = party == null ? Collections.singleton(player) : party.getOnlineMembers();
  
-        if (!ValidatorUtil.validate(validatorManager.getDuelSelfValidators(), player, party, validated)) {
+        if (!ValidatorUtil.validate(validatorManager.getDuelSelfValidators(), player, party, players)) {
             return true;
         }
 
@@ -81,9 +81,9 @@ public class DuelCommand extends BaseCommand {
         }
 
         final Party targetParty = partyManager.get(target);
-        final Collection<Player> targetValidated = targetParty == null ? Collections.singleton(target) : targetParty.getOnlineMembers();
+        final Collection<Player> targetPlayers = targetParty == null ? Collections.singleton(target) : targetParty.getOnlineMembers();
 
-        if (!ValidatorUtil.validate(validatorManager.getDuelTargetValidators(), new Pair<>(player, target), targetParty, targetValidated)) {
+        if (!ValidatorUtil.validate(validatorManager.getDuelTargetValidators(), new Pair<>(player, target), targetParty, targetPlayers)) {
             return true;
         }
 
@@ -91,8 +91,10 @@ public class DuelCommand extends BaseCommand {
         // Reset bet to prevent accidents
         settings.setBet(0);
         settings.setTarget(target);
-        settings.setBaseLoc(player);
-        settings.setDuelzone(player, worldGuard != null ? worldGuard.findDuelZone(player) : null);
+        players.forEach(all -> {
+            settings.setBaseLoc(all);
+            settings.setDuelzone(all, worldGuard != null ? worldGuard.findDuelZone(all) : null);
+        });
 
         boolean sendRequest = false;
 

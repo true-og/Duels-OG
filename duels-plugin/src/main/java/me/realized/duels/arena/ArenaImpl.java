@@ -94,7 +94,7 @@ public class ArenaImpl extends BaseButton implements Arena {
             return false;
         }
 
-        positions.put(pos, location);
+        positions.put(event.getPos(), event.getLocation());
         arenaManager.saveArenas();
         refreshGui(isAvailable());
         return true;

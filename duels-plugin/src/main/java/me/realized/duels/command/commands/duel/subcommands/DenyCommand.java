@@ -30,9 +30,7 @@ public class DenyCommand extends BaseCommand {
             return;
         }
 
-        final Party targetParty = partyManager.get(target);
-
-        if (!ValidatorUtil.validate(validatorManager.getDuelDenyTargetValidators(), new Pair<>(player, target), targetParty, Collections.emptyList())) {
+        if (!ValidatorUtil.validate(validatorManager.getDuelDenyTargetValidators(), new Pair<>(player, target), partyManager.get(target), Collections.emptyList())) {
             return;
         }
         

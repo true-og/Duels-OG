@@ -30,9 +30,9 @@ public class AcceptCommand extends BaseCommand {
     protected void execute(final CommandSender sender, final String label, final String[] args) {
         final Player player = (Player) sender;
         final Party party = partyManager.get(player);
-        final Collection<Player> validated = party == null ? Collections.singleton(player) : party.getOnlineMembers();
+        final Collection<Player> players = party == null ? Collections.singleton(player) : party.getOnlineMembers();
 
-        if (!ValidatorUtil.validate(validatorManager.getDuelAcceptSelfValidators(), player, party, validated)) {
+        if (!ValidatorUtil.validate(validatorManager.getDuelAcceptSelfValidators(), player, party, players)) {
             return;
         }
 
@@ -44,9 +44,9 @@ public class AcceptCommand extends BaseCommand {
         }
 
         final Party targetParty = partyManager.get(target);
-        final Collection<Player> targetValidated = targetParty == null ? Collections.singleton(target) : targetParty.getOnlineMembers();
+        final Collection<Player> targetPlayers = targetParty == null ? Collections.singleton(target) : targetParty.getOnlineMembers();
 
-        if (!ValidatorUtil.validate(validatorManager.getDuelAcceptTargetValidators(), new Pair<>(player, target), targetParty, targetValidated)) {
+        if (!ValidatorUtil.validate(validatorManager.getDuelAcceptTargetValidators(), new Pair<>(player, target), targetParty, targetPlayers)) {
             return;
         }
 
