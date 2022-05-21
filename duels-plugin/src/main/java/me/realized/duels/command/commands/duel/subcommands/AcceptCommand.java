@@ -15,8 +15,7 @@ import me.realized.duels.party.Party;
 import me.realized.duels.request.DuelRequest;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.function.Pair;
-import me.realized.duels.util.validate.ValidatorUtil;
-import me.realized.duels.validator.validators.request.target.TargetCanRequestValidator;
+import me.realized.duels.util.validator.ValidatorUtil;
 
 public class AcceptCommand extends BaseCommand {
 
@@ -33,7 +32,7 @@ public class AcceptCommand extends BaseCommand {
         final Party party = partyManager.get(player);
         final Collection<Player> validated = party == null ? Collections.singleton(player) : party.getOnlineMembers();
 
-        if (!ValidatorUtil.validate(requestManager.getSelfValidators(), player, party, validated)) {
+        if (!ValidatorUtil.validate(validatorManager.getDuelAcceptSelfValidators(), player, party, validated)) {
             return;
         }
 
@@ -47,25 +46,18 @@ public class AcceptCommand extends BaseCommand {
         final Party targetParty = partyManager.get(target);
         final Collection<Player> targetValidated = targetParty == null ? Collections.singleton(target) : targetParty.getOnlineMembers();
 
-        if (!ValidatorUtil.validate(requestManager.getTargetValidators(), new Pair<>(player, target), targetParty, targetValidated, TargetCanRequestValidator.class)) {
+        if (!ValidatorUtil.validate(validatorManager.getDuelAcceptTargetValidators(), new Pair<>(player, target), targetParty, targetValidated)) {
             return;
         }
 
-        final DuelRequest request = requestManager.get(target, player);
-
-        if (request == null) {
-            lang.sendMessage(sender, "ERROR.duel.no-request", "name", target.getName());
-            return;
-        }
-
+        // TODO Fix the issue that /duel can be used on any member of the party, but /duel accept must be called on party leader
+        final DuelRequest request = requestManager.remove(target, player);
         final RequestAcceptEvent event = new RequestAcceptEvent(player, target, request);
         Bukkit.getPluginManager().callEvent(event);
 
         if (event.isCancelled()) {
             return;
         }
-
-        requestManager.remove(target, player);
 
         final Settings settings = request.getSettings();
         final String kit = settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected");

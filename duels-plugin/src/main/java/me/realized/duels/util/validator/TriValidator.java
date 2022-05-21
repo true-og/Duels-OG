@@ -1,4 +1,4 @@
-package me.realized.duels.util.validate;
+package me.realized.duels.util.validator;
 
 public interface TriValidator<T1, T2, T3> {
     

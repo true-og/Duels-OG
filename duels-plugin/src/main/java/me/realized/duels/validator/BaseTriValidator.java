@@ -6,8 +6,9 @@ import me.realized.duels.config.Config;
 import me.realized.duels.config.Lang;
 import me.realized.duels.data.UserManagerImpl;
 import me.realized.duels.party.PartyManagerImpl;
+import me.realized.duels.request.RequestManager;
 import me.realized.duels.spectate.SpectateManagerImpl;
-import me.realized.duels.util.validate.TriValidator;
+import me.realized.duels.util.validator.TriValidator;
 
 public abstract class BaseTriValidator<T1, T2, T3> implements TriValidator<T1, T2, T3> {
     
@@ -19,6 +20,7 @@ public abstract class BaseTriValidator<T1, T2, T3> implements TriValidator<T1, T
     protected final PartyManagerImpl partyManager;
     protected final ArenaManagerImpl arenaManager;
     protected final SpectateManagerImpl spectateManager;
+    protected final RequestManager requestManager;
 
     public BaseTriValidator(final DuelsPlugin plugin) {
         this.plugin = plugin;
@@ -28,6 +30,7 @@ public abstract class BaseTriValidator<T1, T2, T3> implements TriValidator<T1, T
         this.partyManager = plugin.getPartyManager();
         this.arenaManager = plugin.getArenaManager();
         this.spectateManager = plugin.getSpectateManager();
+        this.requestManager = plugin.getRequestManager();
     }
 
     @Override

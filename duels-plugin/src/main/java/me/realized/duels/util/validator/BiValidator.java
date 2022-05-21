@@ -1,4 +1,4 @@
-package me.realized.duels.util.validate;
+package me.realized.duels.util.validator;
 
 public interface BiValidator<T1, T2> {
 

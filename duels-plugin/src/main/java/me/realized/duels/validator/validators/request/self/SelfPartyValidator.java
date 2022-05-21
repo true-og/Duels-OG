@@ -33,5 +33,4 @@ public class SelfPartyValidator extends BaseTriValidator<Player, Party, Collecti
 
         return true;
     }
-    
 }

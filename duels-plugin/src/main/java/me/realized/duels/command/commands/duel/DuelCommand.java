@@ -21,7 +21,7 @@ import me.realized.duels.setting.Settings;
 import me.realized.duels.util.NumberUtil;
 import me.realized.duels.util.StringUtil;
 import me.realized.duels.util.function.Pair;
-import me.realized.duels.util.validate.ValidatorUtil;
+import me.realized.duels.util.validator.ValidatorUtil;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -69,7 +69,7 @@ public class DuelCommand extends BaseCommand {
         final Party party = partyManager.get(player);
         final Collection<Player> validated = party == null ? Collections.singleton(player) : party.getOnlineMembers();
  
-        if (!ValidatorUtil.validate(requestManager.getSelfValidators(), player, party, validated)) {
+        if (!ValidatorUtil.validate(validatorManager.getDuelSelfValidators(), player, party, validated)) {
             return true;
         }
 
@@ -83,12 +83,7 @@ public class DuelCommand extends BaseCommand {
         final Party targetParty = partyManager.get(target);
         final Collection<Player> targetValidated = targetParty == null ? Collections.singleton(target) : targetParty.getOnlineMembers();
 
-        if (!ValidatorUtil.validate(requestManager.getTargetValidators(), new Pair<>(player, target), targetParty, targetValidated)) {
-            return true;
-        }
-
-        if (requestManager.has(player, target)) {
-            lang.sendMessage(sender, "ERROR.duel.already-has-request", "name", target.getName());
+        if (!ValidatorUtil.validate(validatorManager.getDuelTargetValidators(), new Pair<>(player, target), targetParty, targetValidated)) {
             return true;
         }
 
@@ -97,7 +92,7 @@ public class DuelCommand extends BaseCommand {
         settings.setBet(0);
         settings.setTarget(target);
         settings.setBaseLoc(player);
-        settings.setDuelzone(player, worldGuard != null ? worldGuard.findDuelZone(player) : null); // TODO not needed?
+        settings.setDuelzone(player, worldGuard != null ? worldGuard.findDuelZone(player) : null);
 
         boolean sendRequest = false;
 

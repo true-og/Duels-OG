@@ -6,9 +6,12 @@ import java.util.Map;
 import java.util.Set;
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
-import me.realized.duels.config.converters.config.ConfigConverter9_10;
+import me.realized.duels.config.converters.config.ConfigConverter12;
+import me.realized.duels.config.converters.config.ConfigConverter10;
 import me.realized.duels.util.EnumUtil;
 import me.realized.duels.util.config.AbstractConfiguration;
+import me.realized.duels.util.config.convert.ConverterUtil;
+
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -172,10 +175,6 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private boolean cdEnabled;
     @Getter
-    private List<String> cdMessages;
-    @Getter
-    private List<String> titles;
-    @Getter
     private boolean preventMovement;
     @Getter
     private boolean preventLaunchProjectile;
@@ -183,6 +182,14 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     private boolean preventPvp;
     @Getter
     private boolean preventInteract;
+    @Getter
+    private List<String> cdDuelMessages;
+    @Getter
+    private List<String> cdDuelTitles;
+    @Getter
+    private List<String> cdPartyDuelMessages;
+    @Getter
+    private List<String> cdPartyDuelTitles;
 
     @Getter
     private boolean displayKitRatings;
@@ -255,7 +262,9 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         final int prevVersion = configuration.getInt("config-version", 0);
 
         if (prevVersion < 10) {
-            configuration = convert(new ConfigConverter9_10());
+            configuration = convert(ConverterUtil.merge(new ConfigConverter10(), new ConfigConverter12()));
+        } else if (prevVersion < 12) {
+            configuration = convert(new ConfigConverter12());
         } else if (prevVersion < getLatestVersion()) {
             configuration = convert(null);
         }
@@ -341,12 +350,14 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         specWhitelistedCommands = configuration.getStringList("spectate.whitelisted-commands");
 
         cdEnabled = configuration.getBoolean("countdown.enabled", true);
-        cdMessages = configuration.getStringList("countdown.messages");
-        titles = configuration.getStringList("countdown.titles");
         preventMovement = configuration.getBoolean("countdown.prevent.movement", true);
         preventLaunchProjectile = configuration.getBoolean("countdown.prevent.launch-projectile", true);
         preventPvp = configuration.getBoolean("countdown.prevent.pvp", true);
         preventInteract = configuration.getBoolean("countdown.prevent.interact", true);
+        cdDuelMessages = configuration.getStringList("countdown.duel.messages");
+        cdDuelTitles = configuration.getStringList("countdown.duel.titles");
+        cdPartyDuelMessages = configuration.getStringList("countdown.party-duel.messages");
+        cdPartyDuelTitles = configuration.getStringList("countdown.party-duel.titles");
 
         displayKitRatings = configuration.getBoolean("stats.display-kit-ratings", true);
         displayNoKitRating = configuration.getBoolean("stats.display-nokit-rating", false);

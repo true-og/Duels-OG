@@ -44,7 +44,7 @@ class Countdown extends BukkitRunnable {
         arena.getPlayers().forEach(player -> {
             config.playSound(player, rawMessage);
 
-            final  Pair<String, Integer> info = this.info.get(player.getUniqueId());
+            final Pair<String, Integer> info = this.info.get(player.getUniqueId());
 
             if (info != null) {
                 player.sendMessage(message

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import me.realized.duels.util.config.convert.Converter;
 
-public class LangConverter11_12 implements Converter {
+public class LangConverter12 implements Converter {
 
     @Override
     public Map<String, String> renamedKeys() {

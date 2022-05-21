@@ -56,6 +56,8 @@ import me.realized.duels.util.UpdateChecker;
 import me.realized.duels.util.command.AbstractCommand;
 import me.realized.duels.util.gui.GuiListener;
 import me.realized.duels.util.json.JsonUtil;
+import me.realized.duels.validator.ValidatorManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
@@ -112,6 +114,8 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
     private RequestManager requestManager;
     @Getter
     private HookManager hookManager;
+    @Getter
+    private ValidatorManager validatorManager;
     @Getter
     private Teleport teleport;
     @Getter
@@ -174,6 +178,7 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
         loadables.add(queueSignManager = new QueueSignManagerImpl(this));
         loadables.add(requestManager = new RequestManager(this));
         hookManager = new HookManager(this);
+        loadables.add(validatorManager = new ValidatorManager(this));
         loadables.add(teleport = new Teleport(this));
         loadables.add(extensionManager = new ExtensionManager(this));
 

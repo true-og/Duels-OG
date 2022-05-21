@@ -3,7 +3,13 @@ package me.realized.duels.command.commands.duel.subcommands;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.request.RequestDenyEvent;
 import me.realized.duels.command.BaseCommand;
+import me.realized.duels.party.Party;
 import me.realized.duels.request.DuelRequest;
+import me.realized.duels.util.function.Pair;
+import me.realized.duels.util.validator.ValidatorUtil;
+
+import java.util.Collections;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,13 +30,13 @@ public class DenyCommand extends BaseCommand {
             return;
         }
 
-        final DuelRequest request;
+        final Party targetParty = partyManager.get(target);
 
-        if ((request = requestManager.remove(target, player)) == null) {
-            lang.sendMessage(sender, "ERROR.duel.no-request", "name", target.getName());
+        if (!ValidatorUtil.validate(validatorManager.getDuelDenyTargetValidators(), new Pair<>(player, target), targetParty, Collections.emptyList())) {
             return;
         }
-
+        
+        final DuelRequest request = requestManager.remove(target, player);
         final RequestDenyEvent event = new RequestDenyEvent(player, target, request);
         Bukkit.getPluginManager().callEvent(event);
 

@@ -21,6 +21,8 @@ import me.realized.duels.request.RequestManager;
 import me.realized.duels.setting.SettingsManager;
 import me.realized.duels.spectate.SpectateManagerImpl;
 import me.realized.duels.util.command.AbstractCommand;
+import me.realized.duels.validator.ValidatorManager;
+
 import org.bukkit.command.CommandSender;
 
 public abstract class BaseCommand extends AbstractCommand<DuelsPlugin> {
@@ -42,6 +44,7 @@ public abstract class BaseCommand extends AbstractCommand<DuelsPlugin> {
     protected final DuelManager duelManager;
     protected final RequestManager requestManager;
     protected final HookManager hookManager;
+    protected final ValidatorManager validatorManager;
 
     /**
      * Constructor for a sub command
@@ -66,6 +69,7 @@ public abstract class BaseCommand extends AbstractCommand<DuelsPlugin> {
         this.duelManager = plugin.getDuelManager();
         this.requestManager = plugin.getRequestManager();
         this.hookManager = plugin.getHookManager();
+        this.validatorManager = plugin.getValidatorManager();
     }
 
     /**

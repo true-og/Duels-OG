@@ -70,6 +70,8 @@ ERROR:
     in-blacklisted-world: '{PREFIX} &cYou or your party member is in a blacklisted world.'
     is-tagged: '{PREFIX} &cYou or your party member is currently combat tagged.'
     not-in-duelzone: '{PREFIX} &cYou or your party member is currently not in one of the following regions: %regions%'
+    already-has-request: '{PREFIX} &cYou already have a request sent to %name%''s party.'
+    no-request: '{PREFIX} &cYou do not have a request from %name%''s party.'
     already-in-match:
       sender: '{PREFIX} &cYou cannot do this while your party in a duel.'
       target: '{PREFIX} &c%name%''s party is already in a duel.'

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import me.realized.duels.util.config.convert.Converter;
 
-public class ConfigConverter9_10 implements Converter {
+public class ConfigConverter10 implements Converter {
 
     @Override
     public Map<String, String> renamedKeys() {
