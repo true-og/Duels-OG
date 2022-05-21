@@ -12,7 +12,7 @@ import me.realized.duels.party.Party;
 public class KickCommand extends BaseCommand {
     
     public KickCommand(final DuelsPlugin plugin) {
-        super(plugin, "kick", null, null, Permissions.PARTY, 2, true, "remove");
+        super(plugin, "kick", "kick [player]", "Kicks a player from your party.", Permissions.PARTY, 2, true, "remove");
     }
 
     @Override

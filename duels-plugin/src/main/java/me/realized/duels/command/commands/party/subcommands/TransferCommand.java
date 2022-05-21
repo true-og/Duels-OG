@@ -12,7 +12,7 @@ import me.realized.duels.party.Party;
 public class TransferCommand extends BaseCommand {
     
     public TransferCommand(final DuelsPlugin plugin) {
-        super(plugin, "transfer", null, null, Permissions.PARTY, 2, true);
+        super(plugin, "transfer", "transfer [player]", "Transfers the party ownership to another member of your party.", Permissions.PARTY, 2, true);
     }
 
     @Override

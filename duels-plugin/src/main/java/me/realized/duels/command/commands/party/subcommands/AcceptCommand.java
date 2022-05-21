@@ -13,7 +13,7 @@ import me.realized.duels.party.PartyInvite;
 public class AcceptCommand extends BaseCommand {
     
     public AcceptCommand(final DuelsPlugin plugin) {
-        super(plugin, "accept", null, null, Permissions.PARTY, 2, true, "a");
+        super(plugin, "accept", "accept [player]", "Accepts a party invitation.", Permissions.PARTY, 2, true, "a");
     }
 
     @Override
