@@ -371,7 +371,7 @@ COMMAND:
       send:
         receiver: 
         - '{LINE}'
-        - '{PREFIX} &7Party invite received from &f%name%&7. Type &f/party join %name% &7to join.'
+        - '{PREFIX} &7Party invite received from &f%name%&7. Type &f/party accept %name% &7to join the party.'
         - '{LINE}'
         members: 
         - '{LINE}'
