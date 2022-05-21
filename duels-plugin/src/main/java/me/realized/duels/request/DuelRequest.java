@@ -19,19 +19,13 @@ public class DuelRequest implements Request {
     @Getter
     private final UUID target;
     @Getter
-    private final Party senderParty;
-    @Getter
-    private final Party targetParty;
-    @Getter
     private final Settings settings;
 
-    public DuelRequest(final Player sender, final Player target, final Party senderParty, final Party targeParty, final Settings setting) {
+    public DuelRequest(final Player sender, final Player target, final Settings settings) {
         this.creation = System.currentTimeMillis();
         this.sender = sender.getUniqueId();
         this.target = target.getUniqueId();
-        this.senderParty = senderParty;
-        this.targetParty = targeParty;
-        this.settings = setting.lightCopy();
+        this.settings = settings.lightCopy();
     }
 
     @Nullable
@@ -54,5 +48,17 @@ public class DuelRequest implements Request {
     @Override
     public int getBet() {
         return settings.getBet();
+    }
+
+    public Party getSenderParty() {
+        return settings.getSenderParty();
+    }
+
+    public Party getTargetParty() {
+        return settings.getTargetParty();
+    }
+
+    public boolean isPartyDuel() {
+        return getSenderParty() != null && getTargetParty() != null;
     }
 }

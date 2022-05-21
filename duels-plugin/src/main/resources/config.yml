@@ -618,6 +618,7 @@ sounds:
     volume: 1.0
     trigger-messages:
     - '&7Now in a match against &f%opponent%&7(&a%opponent_rating%&7) with kit &3%kit% &7in arena &e%arena%&7.'
+    - '&7Now in a match against &f%opponents %&7with kit &3%kit% &7in arena &e%arena%&7.'
   # Remove this sound if your server version is 1.8!
   countdown-end-sound-1-9:
     type: BLOCK_NOTE_PLING
@@ -625,3 +626,4 @@ sounds:
     volume: 1.0
     trigger-messages:
     - '&7Now in a match against &f%opponent%&7(&a%opponent_rating%&7) with kit &3%kit% &7in arena &e%arena%&7.'
+    - '&7Now in a match against &f%opponents %&7with kit &3%kit% &7in arena &e%arena%&7.'

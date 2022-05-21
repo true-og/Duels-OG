@@ -3,7 +3,6 @@ package me.realized.duels.command.commands.duel.subcommands;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.request.RequestDenyEvent;
 import me.realized.duels.command.BaseCommand;
-import me.realized.duels.party.Party;
 import me.realized.duels.request.DuelRequest;
 import me.realized.duels.util.function.Pair;
 import me.realized.duels.util.validator.ValidatorUtil;

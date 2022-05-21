@@ -49,8 +49,7 @@ public class AcceptCommand extends BaseCommand {
         if (!ValidatorUtil.validate(validatorManager.getDuelAcceptTargetValidators(), new Pair<>(player, target), targetParty, targetPlayers)) {
             return;
         }
-
-        // TODO Fix the issue that /duel can be used on any member of the party, but /duel accept must be called on party leader
+        
         final DuelRequest request = requestManager.remove(target, player);
         final RequestAcceptEvent event = new RequestAcceptEvent(player, target, request);
         Bukkit.getPluginManager().callEvent(event);

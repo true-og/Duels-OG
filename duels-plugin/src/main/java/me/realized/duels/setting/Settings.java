@@ -9,6 +9,8 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.gui.settings.SettingsGui;
 import me.realized.duels.kit.KitImpl;
+import me.realized.duels.party.Party;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -19,6 +21,12 @@ public class Settings {
 
     @Getter
     private UUID target;
+    @Getter
+    @Setter
+    private Party senderParty;
+    @Getter
+    @Setter
+    private Party targetParty;
     @Getter
     private KitImpl kit;
     @Getter
@@ -48,11 +56,14 @@ public class Settings {
 
     public void reset() {
         target = null;
+        senderParty = null;
+        targetParty = null;
         kit = null;
         arena = null;
         bet = 0;
         itemBetting = false;
         ownInventory = !plugin.getConfiguration().isKitSelectingEnabled();
+        clearCache();
     }
 
     public void setTarget(final Player target) {
@@ -71,6 +82,10 @@ public class Settings {
 
     public void openGui(final Player player) {
         gui.open(player);
+    }
+
+    public void clearCache() {
+        cache.clear();
     }
 
     public void setBaseLoc(final Player player) {
@@ -118,6 +133,8 @@ public class Settings {
     public Settings lightCopy() {
         final Settings copy = new Settings(plugin);
         copy.target = target;
+        copy.senderParty = senderParty;
+        copy.targetParty = targetParty;
         copy.kit = kit;
         copy.arena = arena;
         copy.bet = bet;

@@ -177,6 +177,40 @@ COMMAND:
       deny:
         sender: '{PREFIX} &7Your duel request to &f%name% &7was denied.'
         receiver: '{PREFIX} &7Denied the duel request from &f%name%&7.'
+    party-request:
+      send:
+        sender-party:
+        - '{LINE}'
+        - '&f%owner% &7has sent a duel request sent to &f%name%''s Party&7.'
+        - '&6- &7Kit: &3%kit%'
+        - '&6- &7Own Inventory: &r%own_inventory%'
+        - '&6- &7Arena: &e%arena%'
+        - '{LINE}'
+        receiver-party:
+        - '{LINE}'
+        - '&7Duel request received from &f%name%''s Party&7.'
+        - '&6- &7Kit: &3%kit%'
+        - '&6- Own Inventory: &r%own_inventory%'
+        - '&6- &7Arena: &e%arena%'
+        clickable-text:
+          info:
+            text: '&7Click to '
+            hover-text: ''
+          accept:
+            text: '&a&l[ACCEPT] '
+            hover-text: '&7Click to &aaccept &7this request.'
+          deny:
+            text: '&c&l[DENY]'
+            hover-text: '&7Click to &cdeny &7this request.'
+          extra:
+            text: '{LINE}'
+            hover-text: ''
+      accept:
+        sender-party: '{PREFIX} &f%name%''s Party &7has accepted your duel request.'
+        receiver-party: '{PREFIX} &7Accepted the duel request from &f%name%''s Party&7.'
+      deny:
+        sender-party: '{PREFIX} &7Your duel request to &f%name%''s Party &7was denied.'
+        receiver-party: '{PREFIX} &7Denied the duel request from &f%name%''s Party&7.'
     stats:
       displayed:
       - '{LINE}'
@@ -334,13 +368,13 @@ COMMAND:
       - '&7Online (&r%online_count%&7): &r%online_members%'
       - '{LINE}'
     invite:
-      members: 
-      - '{LINE}'
-      - '{PREFIX} &f%owner% &7has invited &f%name% to the party!'
-      - '{LINE}'
       receiver: 
       - '{LINE}'
       - '{PREFIX} &7Party invite received from &f%name%&7. Type &f/party join %name% &7to join.'
+      - '{LINE}'
+      members: 
+      - '{LINE}'
+      - '{PREFIX} &f%owner% &7has invited &f%name% to the party!'
       - '{LINE}'
     accept:
       receiver: 
@@ -350,6 +384,15 @@ COMMAND:
       members: 
       - '{LINE}'
       - '{PREFIX} &f%name% &7has joined the party!'
+      - '{LINE}'
+    leave:
+      sender: 
+      - '{LINE}'
+      - '{PREFIX} &7You have left &f%name%''s Party&7.'
+      - '{LINE}'
+      members: 
+      - '{LINE}'
+      - '{PREFIX} &f%name% &7has left the party!'
       - '{LINE}'
     kick:
       receiver: 

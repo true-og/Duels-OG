@@ -176,14 +176,15 @@ public class ArenaImpl extends BaseButton implements Arena {
     }
 
     public void startCountdown(final String kit, final Map<UUID, Pair<String, Integer>> info) {
-        final List<String> messages = config.getCdMessages();
+        // TODO Change countdown messages based on match type
+        // final List<String> messages = config.getCdMessages();
 
-        if (messages.isEmpty()) {
-            return;
-        }
+        // if (messages.isEmpty()) {
+        //     return;
+        // }
 
-        this.countdown = new Countdown(plugin, this, kit, info, messages, config.getTitles());
-        countdown.runTaskTimer(plugin, 0L, 20L);
+        // this.countdown = new Countdown(plugin, this, kit, info, messages, config.getTitles());
+        // countdown.runTaskTimer(plugin, 0L, 20L);
     }
 
     boolean isCounting() {

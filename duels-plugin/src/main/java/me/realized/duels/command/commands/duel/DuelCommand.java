@@ -91,6 +91,9 @@ public class DuelCommand extends BaseCommand {
         // Reset bet to prevent accidents
         settings.setBet(0);
         settings.setTarget(target);
+        settings.setSenderParty(party);
+        settings.setTargetParty(targetParty);
+        settings.clearCache();
         players.forEach(all -> {
             settings.setBaseLoc(all);
             settings.setDuelzone(all, worldGuard != null ? worldGuard.findDuelZone(all) : null);
@@ -182,7 +185,7 @@ public class DuelCommand extends BaseCommand {
 
         if (sendRequest) {
             // If all settings were selected via command, send request without opening settings GUI.
-            requestManager.send(player, target, party, targetParty, settings);
+            requestManager.send(player, target, settings);
         } else if (config.isOwnInventoryEnabled()) {
             // If own inventory is enabled, prompt request settings GUI.
             settings.openGui(player);
