@@ -129,6 +129,10 @@ public class Settings {
         }
     }
 
+    public boolean isPartyDuel() {
+        return senderParty != null && targetParty != null;
+    }
+
     // Don't copy the gui since it won't be required to start a match
     public Settings lightCopy() {
         final Settings copy = new Settings(plugin);

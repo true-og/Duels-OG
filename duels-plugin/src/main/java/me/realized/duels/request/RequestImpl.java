@@ -10,7 +10,7 @@ import me.realized.duels.setting.Settings;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
-public class DuelRequest implements Request {
+public class RequestImpl implements Request {
 
     @Getter
     private final long creation;
@@ -21,7 +21,7 @@ public class DuelRequest implements Request {
     @Getter
     private final Settings settings;
 
-    public DuelRequest(final Player sender, final Player target, final Settings settings) {
+    public RequestImpl(final Player sender, final Player target, final Settings settings) {
         this.creation = System.currentTimeMillis();
         this.sender = sender.getUniqueId();
         this.target = target.getUniqueId();
@@ -59,6 +59,6 @@ public class DuelRequest implements Request {
     }
 
     public boolean isPartyDuel() {
-        return getSenderParty() != null && getTargetParty() != null;
+        return settings.isPartyDuel();
     }
 }

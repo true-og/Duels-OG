@@ -25,7 +25,7 @@ public class RequestManager implements Loadable, Listener {
 
     private final Config config;
     private final Lang lang;
-    private final Map<UUID, Map<UUID, DuelRequest>> requests = new HashMap<>();
+    private final Map<UUID, Map<UUID, RequestImpl>> requests = new HashMap<>();
 
     public RequestManager(final DuelsPlugin plugin) {
         this.config = plugin.getConfiguration();
@@ -41,8 +41,8 @@ public class RequestManager implements Loadable, Listener {
         requests.clear();
     }
 
-    private Map<UUID, DuelRequest> get(final Player player, final boolean create) {
-        Map<UUID, DuelRequest> cached = requests.get(player.getUniqueId());
+    private Map<UUID, RequestImpl> get(final Player player, final boolean create) {
+        Map<UUID, RequestImpl> cached = requests.get(player.getUniqueId());
 
         if (cached == null && create) {
             requests.put(player.getUniqueId(), cached = new HashMap<>());
@@ -53,7 +53,7 @@ public class RequestManager implements Loadable, Listener {
     }
 
     public void send(final Player sender, final Player target, final Settings settings) {
-        final DuelRequest request = new DuelRequest(sender, target, settings);
+        final RequestImpl request = new RequestImpl(sender, target, settings);
         final RequestSendEvent event = new RequestSendEvent(sender, target, request);
         Bukkit.getPluginManager().callEvent(event);
 
@@ -100,14 +100,14 @@ public class RequestManager implements Loadable, Listener {
             .send(targets);
     }
     
-    public DuelRequest get(final Player sender, final Player target) {
-        final Map<UUID, DuelRequest> cached = get(sender, false);
+    public RequestImpl get(final Player sender, final Player target) {
+        final Map<UUID, RequestImpl> cached = get(sender, false);
 
         if (cached == null) {
             return null;
         }
 
-        final DuelRequest request = cached.get(target.getUniqueId());
+        final RequestImpl request = cached.get(target.getUniqueId());
 
         if (request == null) {
             return null;
@@ -125,14 +125,14 @@ public class RequestManager implements Loadable, Listener {
         return get(sender, target) != null;
     }
 
-    public DuelRequest remove(final Player sender, final Player target) {
-        final Map<UUID, DuelRequest> cached = get(sender, false);
+    public RequestImpl remove(final Player sender, final Player target) {
+        final Map<UUID, RequestImpl> cached = get(sender, false);
 
         if (cached == null) {
             return null;
         }
 
-        final DuelRequest request = cached.remove(target.getUniqueId());
+        final RequestImpl request = cached.remove(target.getUniqueId());
 
         if (request == null) {
             return null;

@@ -1,8 +1,28 @@
 package me.realized.duels.validator.validators.match;
 
-import me.realized.duels.setting.Settings;
-import me.realized.duels.validator.BaseTriValidator;
+import java.util.Collection;
 
-public class ModeValidator  {
+import org.bukkit.entity.Player;
+
+import me.realized.duels.DuelsPlugin;
+import me.realized.duels.setting.Settings;
+import me.realized.duels.validator.BaseBiValidator;
+
+public class ModeValidator extends BaseBiValidator<Collection<Player>, Settings> {
+
+    public ModeValidator(final DuelsPlugin plugin) {
+        super(plugin);
+    }
+
+    @Override
+    public boolean validate(final Collection<Player> players, final Settings settings) {
+        if (!settings.isOwnInventory() && settings.getKit() == null) {
+            lang.sendMessage(players, "DUEL.start-failure.mode-unselected");
+            return false;
+        }
+
+        return true;
+    }
+
     
 }

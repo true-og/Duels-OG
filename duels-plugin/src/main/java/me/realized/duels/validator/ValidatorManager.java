@@ -11,10 +11,18 @@ import org.bukkit.entity.Player;
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.party.Party;
+import me.realized.duels.setting.Settings;
 import me.realized.duels.util.Loadable;
 import me.realized.duels.util.function.Pair;
+import me.realized.duels.util.validator.BiValidator;
 import me.realized.duels.util.validator.TriValidator;
 import me.realized.duels.util.validator.ValidatorUtil;
+import me.realized.duels.validator.validators.match.BlacklistedWorldValidator;
+import me.realized.duels.validator.validators.match.CheckAliveValidator;
+import me.realized.duels.validator.validators.match.CombatTagValidator;
+import me.realized.duels.validator.validators.match.DuelZoneValidator;
+import me.realized.duels.validator.validators.match.ModeValidator;
+import me.realized.duels.validator.validators.match.PreventCreativeValidator;
 import me.realized.duels.validator.validators.request.self.SelfBlacklistedWorldValidator;
 import me.realized.duels.validator.validators.request.self.SelfCheckMatchValidator;
 import me.realized.duels.validator.validators.request.self.SelfCheckSpectateValidator;
@@ -49,6 +57,9 @@ public class ValidatorManager implements Loadable {
     
     @Getter
     private ImmutableList<TriValidator<Pair<Player, Player>, Party, Collection<Player>>> duelDenyTargetValidators;
+
+    @Getter
+    private ImmutableList<BiValidator<Collection<Player>, Settings>> matchValidators;
 
     public ValidatorManager(final DuelsPlugin plugin) {
         this.plugin = plugin;
@@ -102,6 +113,16 @@ public class ValidatorManager implements Loadable {
 
         duelDenyTargetValidators = ValidatorUtil.buildList(
             target(TargetNoRequestValidator.class)
+        );
+
+        matchValidators = ValidatorUtil.buildList(
+            new ModeValidator(plugin),
+            new CheckAliveValidator(plugin),
+            new PreventCreativeValidator(plugin),
+            new CheckAliveValidator(plugin),
+            new BlacklistedWorldValidator(plugin),
+            new CombatTagValidator(plugin),
+            new DuelZoneValidator(plugin)
         );
     }
 

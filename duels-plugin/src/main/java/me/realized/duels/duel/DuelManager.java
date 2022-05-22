@@ -2,6 +2,7 @@ package me.realized.duels.duel;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -20,14 +21,10 @@ import me.realized.duels.config.Lang;
 import me.realized.duels.data.MatchData;
 import me.realized.duels.data.UserData;
 import me.realized.duels.data.UserManagerImpl;
-import me.realized.duels.hook.hooks.CombatLogXHook;
-import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.EssentialsHook;
 import me.realized.duels.hook.hooks.McMMOHook;
 import me.realized.duels.hook.hooks.MyPetHook;
-import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.VaultHook;
-import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
 import me.realized.duels.inventories.InventoryManager;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.match.DuelMatch;
@@ -47,11 +44,12 @@ import me.realized.duels.util.compat.CompatUtil;
 import me.realized.duels.util.compat.Titles;
 import me.realized.duels.util.function.Pair;
 import me.realized.duels.util.inventory.InventoryUtil;
+import me.realized.duels.util.validator.ValidatorUtil;
+import me.realized.duels.validator.ValidatorManager;
 import net.md_5.bungee.api.chat.ClickEvent.Action;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -83,16 +81,13 @@ public class DuelManager implements Loadable {
     private final ArenaManagerImpl arenaManager;
     private final PlayerInfoManager playerManager;
     private final InventoryManager inventoryManager;
+    private final ValidatorManager validatorManager;
 
     private QueueManager queueManager;
     private Teleport teleport;
-    private CombatTagPlusHook combatTagPlus;
-    private PvPManagerHook pvpManager;
-    private CombatLogXHook combatLogX;
     private VaultHook vault;
     private EssentialsHook essentials;
     private McMMOHook mcMMO;
-    private WorldGuardHook worldGuard;
     private MyPetHook myPet;
 
     private int durationCheckTask;
@@ -105,6 +100,7 @@ public class DuelManager implements Loadable {
         this.arenaManager = plugin.getArenaManager();
         this.playerManager = plugin.getPlayerManager();
         this.inventoryManager = plugin.getInventoryManager();
+        this.validatorManager = plugin.getValidatorManager();
 
         plugin.doSyncAfter(() -> Bukkit.getPluginManager().registerEvents(new DuelListener(), plugin), 1L);
     }
@@ -113,13 +109,9 @@ public class DuelManager implements Loadable {
     public void handleLoad() {
         this.queueManager = plugin.getQueueManager();
         this.teleport = plugin.getTeleport();
-        this.combatTagPlus = plugin.getHookManager().getHook(CombatTagPlusHook.class);
-        this.pvpManager = plugin.getHookManager().getHook(PvPManagerHook.class);
-        this.combatLogX = plugin.getHookManager().getHook(CombatLogXHook.class);
         this.vault = plugin.getHookManager().getHook(VaultHook.class);
         this.essentials = plugin.getHookManager().getHook(EssentialsHook.class);
         this.mcMMO = plugin.getHookManager().getHook(McMMOHook.class);
-        this.worldGuard = plugin.getHookManager().getHook(WorldGuardHook.class);
         this.myPet = plugin.getHookManager().getHook(MyPetHook.class);
 
         if (config.getMaxDuration() > 0) {
@@ -278,61 +270,25 @@ public class DuelManager implements Loadable {
     }
 
     public void startMatch(final Player first, final Player second, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
+        final Collection<Player> players = Arrays.asList(first, second);
+        
+        if (ValidatorUtil.validate(validatorManager.getMatchValidators(), players, settings)) {
+            refundItems(items, players);
+            return;
+        }
+
         final KitImpl kit = settings.getKit();
-
-        if (!settings.isOwnInventory() && kit == null) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.mode-unselected");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (first.isDead() || second.isDead()) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.player-is-dead");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (isBlacklistedWorld(first) || isBlacklistedWorld(second)) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.in-blacklisted-world");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (isTagged(first) || isTagged(second)) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.is-tagged");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (config.isCancelIfMoved() && (notInLoc(first, settings.getBaseLoc(first)) || notInLoc(second, settings.getBaseLoc(second)))) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.player-moved");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (config.isDuelzoneEnabled() && worldGuard != null && (notInDz(first, settings.getDuelzone(first)) || notInDz(second, settings.getDuelzone(second)))) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-in-duelzone");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (config.isPreventCreativeMode() && (first.getGameMode() == GameMode.CREATIVE || second.getGameMode() == GameMode.CREATIVE)) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.in-creative-mode");
-            refundItems(items, first, second);
-            return;
-        }
-
         final ArenaImpl arena = settings.getArena() != null ? settings.getArena() : arenaManager.randomArena(kit);
 
         if (arena == null || !arena.isAvailable()) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure." + (settings.getArena() != null ? "arena-in-use" : "no-arena-available"));
-            refundItems(items, first, second);
+            lang.sendMessage(players, "DUEL.start-failure." + (settings.getArena() != null ? "arena-in-use" : "no-arena-available"));
+            refundItems(items, players);
             return;
         }
 
         if (kit != null && !arenaManager.isSelectable(kit, arena)) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.arena-not-applicable", "kit", kit.getName(), "arena", arena.getName());
-            refundItems(items, first, second);
+            lang.sendMessage(players, "DUEL.start-failure.arena-not-applicable", "kit", kit.getName(), "arena", arena.getName());
+            refundItems(items, players);
             return;
         }
 
@@ -340,8 +296,8 @@ public class DuelManager implements Loadable {
 
         if (bet > 0 && vault != null && vault.getEconomy() != null) {
             if (!vault.has(bet, first, second)) {
-                lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-enough-money", "bet_amount", bet);
-                refundItems(items, first, second);
+                lang.sendMessage(players, "DUEL.start-failure.not-enough-money", "bet_amount", bet);
+                refundItems(items, players);
                 return;
             }
 
@@ -349,7 +305,7 @@ public class DuelManager implements Loadable {
         }
 
         final DuelMatch match = arena.startMatch(kit, items, settings.getBet(), source);
-        addPlayers(match, arena, kit, arena.getPositions(), first, second);
+        addPlayers(players, match, arena, kit, arena.getPositions());
 
         if (config.isCdEnabled()) {
             final Map<UUID, Pair<String, Integer>> info = new HashMap<>();
@@ -362,43 +318,17 @@ public class DuelManager implements Loadable {
         Bukkit.getPluginManager().callEvent(event);
     }
 
-    private void refundItems(final Map<UUID, List<ItemStack>> items, final Player... players) {
+    private void refundItems(final Map<UUID, List<ItemStack>> items, final Collection<Player> players) {
         if (items != null) {
-            Arrays.stream(players).forEach(player -> InventoryUtil.addOrDrop(player, items.getOrDefault(player.getUniqueId(), Collections.emptyList())));
+            players.forEach(player -> InventoryUtil.addOrDrop(player, items.getOrDefault(player.getUniqueId(), Collections.emptyList())));
         }
-    }
-
-    private boolean isBlacklistedWorld(final Player player) {
-        return config.getBlacklistedWorlds().contains(player.getWorld().getName());
-    }
-
-    private boolean isTagged(final Player player) {
-        return (combatTagPlus != null && combatTagPlus.isTagged(player))
-            || (pvpManager != null && pvpManager.isTagged(player))
-            || (combatLogX != null && combatLogX.isTagged(player));
-    }
-
-    private boolean notInLoc(final Player player, final Location location) {
-        if (location == null) {
-            return false;
-        }
-
-        final Location source = player.getLocation();
-        return !source.getWorld().equals(location.getWorld())
-            || source.getBlockX() != location.getBlockX()
-            || source.getBlockY() != location.getBlockY()
-            || source.getBlockZ() != location.getBlockZ();
-    }
-
-    private boolean notInDz(final Player player, final String duelzone) {
-        return duelzone != null && !duelzone.equals(worldGuard.findDuelZone(player));
     }
 
     private int getRating(final KitImpl kit, final UserData user) {
         return user != null ? user.getRating(kit) : config.getDefaultRating();
     }
 
-    private void addPlayers(final DuelMatch match, final ArenaImpl arena, final KitImpl kit, final Map<Integer, Location> locations, final Player... players) {
+    private void addPlayers(final Collection<Player> players, final DuelMatch match, final ArenaImpl arena, final KitImpl kit, final Map<Integer, Location> locations) {
         int position = 0;
 
         for (final Player player : players) {

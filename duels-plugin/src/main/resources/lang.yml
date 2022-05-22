@@ -206,11 +206,23 @@ COMMAND:
             text: '{LINE}'
             hover-text: ''
       accept:
-        sender-party: '{PREFIX} &f%name%''s Party &7has accepted your duel request.'
-        receiver-party: '{PREFIX} &7Accepted the duel request from &f%name%''s Party&7.'
+        sender-party: 
+        - '{LINE}'
+        - '{PREFIX} &f%name%''s Party &7has accepted &f%owner%&7''s duel request.'
+        - '{LINE}'
+        receiver-party: 
+        - '{LINE}'
+        - '{PREFIX} &f%owner% &7has accepted the duel request from &f%name%''s Party&7.'
+        - '{LINE}'
       deny:
-        sender-party: '{PREFIX} &7Your duel request to &f%name%''s Party &7was denied.'
-        receiver-party: '{PREFIX} &7Denied the duel request from &f%name%''s Party&7.'
+        sender-party: 
+        - '{LINE}'
+        - '{PREFIX} &f%name%''s Party &7has declined &f%owner%&7''s duel request.'
+        - '{LINE}'
+        receiver-party: 
+        - '{LINE}'
+        - '{PREFIX} &7&f%owner%&7''s has declined the duel request from &f%name%''s Party&7.'
+        - '{LINE}'
     stats:
       displayed:
       - '{LINE}'
@@ -419,17 +431,24 @@ COMMAND:
 
 DUEL:
   start-failure:
-    mode-unselected: '{FAIL_PREFIX} &cYou must either choose a kit or enable own inventory.'
-    player-is-dead: '{FAIL_PREFIX} You or your opponent is not alive!'
+    mode-unselected: '{FAIL_PREFIX} &cEither a kit or own inventory must be selected to start a duel.'
+    player-is-dead: '{FAIL_PREFIX} You or your opponent is currently dead!'
     in-blacklisted-world: '{FAIL_PREFIX} You or your opponent is in a blacklisted world!'
     is-tagged: '{FAIL_PREFIX} You or your opponent is in combat!'
     player-moved: '{FAIL_PREFIX} You or your opponent moved after sending/accepting the request!'
     not-in-duelzone: '{FAIL_PREFIX} You or your opponent moved out of the duelzone sending/accepting the request!'
     in-creative-mode: '{FAIL_PREFIX} You or your opponent is in creative mode!'
     no-arena-available: '{FAIL_PREFIX} No arenas are currently available. Please try again later.'
-    arena-in-use: '{FAIL_PREFIX} That arena is already in use. Please select a different arena.'
-    arena-not-applicable: '{FAIL_PREFIX} You cannot use kit %kit% on this arena.'
+    arena-in-use: '{FAIL_PREFIX} The selected arena is already in use. Please select a different arena.'
+    arena-not-applicable: '{FAIL_PREFIX} Kit %kit% cannot be used on the selected arena.'
     not-enough-money: '{FAIL_PREFIX} You or your opponent does not have $%bet_amount%.'
+  party-start-failure:
+    player-is-dead: '{FAIL_PREFIX} One or more player is currently dead!'
+    in-blacklisted-world: '{FAIL_PREFIX} One or more player is in a blacklisted world!'
+    is-tagged: '{FAIL_PREFIX} One or more player is in combat!'
+    player-moved: '{FAIL_PREFIX} One or more player moved after sending/accepting the request!'
+    not-in-duelzone: '{FAIL_PREFIX} One or more player moved out of the duelzone after sending/accepting the request!'
+    in-creative-mode: '{FAIL_PREFIX} One or more player is is in creative mode!'
   prevent:
     item-drop: '&cYou cannot drop items while in a duel.'
     command: '&cYou cannot use ''%command%'' while in a duel.'
@@ -439,7 +458,8 @@ DUEL:
   on-end:
     tie: '{PREFIX} &7Tie Game!'
     plugin-disable: '{PREFIX} &cPlugin is disabling! Ending match automatically.'
-    opponent-defeat: '{PREFIX} &f%winner% &a(%winner_rating%) (+%change%) &7has defeated &f%loser% &c(%loser_rating%) (-%change%) &7on kit &3%kit% &7with &d%health%❤'
+    opponent-defeat: '{PREFIX} &f%winner% &a(%winner_rating%) (+%change%) &7has defeated &f%loser% &c(%loser_rating%) (-%change%) &7on kit &3%kit% &7with &d%health%❤&7.'
+    party-opponent-defeat: '{PREFIX} &f%winners% &7has defeated &f%losers% &7on kit &3%kit%&7.'
   inventories:
     message: '&7Inventories (click on the name to view): '
     name-color: '&b'

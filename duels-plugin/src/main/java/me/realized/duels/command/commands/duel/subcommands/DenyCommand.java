@@ -3,10 +3,11 @@ package me.realized.duels.command.commands.duel.subcommands;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.request.RequestDenyEvent;
 import me.realized.duels.command.BaseCommand;
-import me.realized.duels.request.DuelRequest;
+import me.realized.duels.request.RequestImpl;
 import me.realized.duels.util.function.Pair;
 import me.realized.duels.util.validator.ValidatorUtil;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import org.bukkit.Bukkit;
@@ -33,11 +34,18 @@ public class DenyCommand extends BaseCommand {
             return;
         }
         
-        final DuelRequest request = requestManager.remove(target, player);
+        final RequestImpl request = requestManager.remove(target, player);
         final RequestDenyEvent event = new RequestDenyEvent(player, target, request);
         Bukkit.getPluginManager().callEvent(event);
 
-        lang.sendMessage(player, "COMMAND.duel.request.deny.receiver", "name", target.getName());
-        lang.sendMessage(target, "COMMAND.duel.request.deny.sender", "name", player.getName());
+        if (request.isPartyDuel()) {
+            final Collection<Player> senderPartyMembers = request.getSenderParty().getOnlineMembers();
+            final Collection<Player> targetPartyMembers = request.getTargetParty().getOnlineMembers();
+            lang.sendMessage(senderPartyMembers, "COMMAND.duel.party-request.deny.receiver-party", "owner", player.getName(), "name", target.getName());
+            lang.sendMessage(targetPartyMembers, "COMMAND.duel.party-request.deny.sender-party", "owner", target.getName(), "name", player.getName());
+        } else {
+            lang.sendMessage(player, "COMMAND.duel.request.deny.receiver", "name", target.getName());
+            lang.sendMessage(target, "COMMAND.duel.request.deny.sender", "name", player.getName());
+        }
     }
 }
