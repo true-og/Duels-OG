@@ -18,13 +18,15 @@ import me.realized.duels.api.event.arena.ArenaSetPositionEvent;
 import me.realized.duels.api.event.arena.ArenaStateChangeEvent;
 import me.realized.duels.api.event.match.MatchEndEvent;
 import me.realized.duels.api.event.match.MatchEndEvent.Reason;
+import me.realized.duels.countdown.DuelCountdown;
+import me.realized.duels.countdown.party.PartyDuelCountdown;
 import me.realized.duels.gui.BaseButton;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.match.DuelMatch;
+import me.realized.duels.match.party.PartyDuelMatch;
 import me.realized.duels.queue.Queue;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.compat.Items;
-import me.realized.duels.util.function.Pair;
 import me.realized.duels.util.inventory.ItemBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -46,9 +48,8 @@ public class ArenaImpl extends BaseButton implements Arena {
     private final Map<Integer, Location> positions = new HashMap<>();
     @Getter
     private DuelMatch match;
-    @Getter(value = AccessLevel.PACKAGE)
-    @Setter(value = AccessLevel.PACKAGE)
-    private Countdown countdown;
+    @Setter
+    private DuelCountdown countdown;
     @Getter
     @Setter(value = AccessLevel.PACKAGE)
     private boolean removed;
@@ -151,8 +152,8 @@ public class ArenaImpl extends BaseButton implements Arena {
         return !isDisabled() && !isUsed() && getPosition(1) != null && getPosition(2) != null;
     }
 
-    public DuelMatch startMatch(final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
-        this.match = new DuelMatch(plugin, this, kit, items, bet, source);
+    public DuelMatch startMatch(final KitImpl kit, final Map<UUID, List<ItemStack>> items, final Settings settings, final Queue source) {
+        this.match = settings.isPartyDuel() ? new PartyDuelMatch(plugin, this, kit, items, settings.getBet(), source) : new DuelMatch(plugin, this, kit, items, settings.getBet(), source);
         refreshGui(false);
         return match;
     }
@@ -175,16 +176,9 @@ public class ArenaImpl extends BaseButton implements Arena {
         refreshGui(true);
     }
 
-    public void startCountdown(final String kit, final Map<UUID, Pair<String, Integer>> info) {
-        // TODO Change countdown messages based on match type
-        // final List<String> messages = config.getCdMessages();
-
-        // if (messages.isEmpty()) {
-        //     return;
-        // }
-
-        // this.countdown = new Countdown(plugin, this, kit, info, messages, config.getTitles());
-        // countdown.runTaskTimer(plugin, 0L, 20L);
+    public void startCountdown() {
+        this.countdown = match instanceof PartyDuelMatch ? new PartyDuelCountdown(plugin, this, (PartyDuelMatch) match) : new DuelCountdown(plugin, this, match);
+        countdown.runTaskTimer(plugin, 0L, 20L);
     }
 
     boolean isCounting() {

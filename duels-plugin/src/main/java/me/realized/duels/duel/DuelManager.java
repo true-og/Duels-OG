@@ -1,11 +1,10 @@
 package me.realized.duels.duel;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.inventories.InventoryManager;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.match.DuelMatch;
+import me.realized.duels.party.Party;
 import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.queue.Queue;
@@ -42,7 +42,6 @@ import me.realized.duels.util.StringUtil;
 import me.realized.duels.util.TextBuilder;
 import me.realized.duels.util.compat.CompatUtil;
 import me.realized.duels.util.compat.Titles;
-import me.realized.duels.util.function.Pair;
 import me.realized.duels.util.inventory.InventoryUtil;
 import me.realized.duels.util.validator.ValidatorUtil;
 import me.realized.duels.validator.ValidatorManager;
@@ -269,12 +268,20 @@ public class DuelManager implements Loadable {
         }
     }
 
-    public void startMatch(final Player first, final Player second, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
-        final Collection<Player> players = Arrays.asList(first, second);
-        
+    private void refundItems(final Collection<Player> players, final Map<UUID, List<ItemStack>> items) {
+        if (items != null) {
+            players.forEach(player -> InventoryUtil.addOrDrop(player, items.getOrDefault(player.getUniqueId(), Collections.emptyList())));
+        }
+    }
+
+    public boolean startMatch(final Collection<Player> first, final Collection<Player> second, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
+        final Collection<Player> players = new ArrayList<>(first.size() + second.size());
+        players.addAll(first);
+        players.addAll(second);
+
         if (ValidatorUtil.validate(validatorManager.getMatchValidators(), players, settings)) {
-            refundItems(items, players);
-            return;
+            refundItems(players, items);
+            return false;
         }
 
         final KitImpl kit = settings.getKit();
@@ -282,55 +289,50 @@ public class DuelManager implements Loadable {
 
         if (arena == null || !arena.isAvailable()) {
             lang.sendMessage(players, "DUEL.start-failure." + (settings.getArena() != null ? "arena-in-use" : "no-arena-available"));
-            refundItems(items, players);
-            return;
+            refundItems(players, items);
+            return false;
         }
 
         if (kit != null && !arenaManager.isSelectable(kit, arena)) {
             lang.sendMessage(players, "DUEL.start-failure.arena-not-applicable", "kit", kit.getName(), "arena", arena.getName());
-            refundItems(items, players);
-            return;
+            refundItems(players, items);
+            return false;
         }
 
         final int bet = settings.getBet();
 
-        if (bet > 0 && vault != null && vault.getEconomy() != null) {
-            if (!vault.has(bet, first, second)) {
+        if (bet > 0 && vault != null) {
+            if (!vault.has(bet, players)) {
                 lang.sendMessage(players, "DUEL.start-failure.not-enough-money", "bet_amount", bet);
-                refundItems(items, players);
-                return;
+                refundItems(players, items);
+                return false;
             }
 
-            vault.remove(bet, first, second);
+            vault.remove(bet, players);
         }
 
-        final DuelMatch match = arena.startMatch(kit, items, settings.getBet(), source);
-        addPlayers(players, match, arena, kit, arena.getPositions());
+        final DuelMatch match = arena.startMatch(kit, items, settings, source);
+        addPlayers(first, match, arena, kit, arena.getPosition(1));
+        addPlayers(second, match, arena, kit, arena.getPosition(2));
 
         if (config.isCdEnabled()) {
-            final Map<UUID, Pair<String, Integer>> info = new HashMap<>();
-            info.put(first.getUniqueId(), new Pair<>(second.getName(), getRating(kit, userDataManager.get(second))));
-            info.put(second.getUniqueId(), new Pair<>(first.getName(), getRating(kit, userDataManager.get(first))));
-            arena.startCountdown(kit != null ? kit.getName() : lang.getMessage("GENERAL.none"), info);
+            arena.startCountdown();
         }
 
-        final MatchStartEvent event = new MatchStartEvent(match, first, second);
+        final MatchStartEvent event = new MatchStartEvent(match, players.toArray(new Player[players.size()]));
         Bukkit.getPluginManager().callEvent(event);
+        return true;
     }
 
-    private void refundItems(final Map<UUID, List<ItemStack>> items, final Collection<Player> players) {
-        if (items != null) {
-            players.forEach(player -> InventoryUtil.addOrDrop(player, items.getOrDefault(player.getUniqueId(), Collections.emptyList())));
+    public boolean startMatch(final Player first, final Player second, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
+        if (settings.isPartyDuel()) {
+            return startMatch(settings.getSenderParty().getOnlineMembers(), settings.getTargetParty().getOnlineMembers(), settings, items, source);
+        } else {
+            return startMatch(Collections.singleton(first), Collections.singleton(second), settings, items, source);
         }
     }
-
-    private int getRating(final KitImpl kit, final UserData user) {
-        return user != null ? user.getRating(kit) : config.getDefaultRating();
-    }
-
-    private void addPlayers(final Collection<Player> players, final DuelMatch match, final ArenaImpl arena, final KitImpl kit, final Map<Integer, Location> locations) {
-        int position = 0;
-
+    
+    private void addPlayers(final Collection<Player> players, final DuelMatch match, final ArenaImpl arena, final KitImpl kit, final Location location) {
         for (final Player player : players) {
             if (match.getSource() == null) {
                 queueManager.remove(player);
@@ -343,7 +345,7 @@ public class DuelManager implements Loadable {
 
             player.closeInventory();
             playerManager.create(player, match.isOwnInventory() && config.isOwnInventoryDropInventoryItems());
-            teleport.tryTeleport(player, locations.get(++position));
+            teleport.tryTeleport(player, location);
 
             if (kit != null) {
                 PlayerUtil.reset(player);

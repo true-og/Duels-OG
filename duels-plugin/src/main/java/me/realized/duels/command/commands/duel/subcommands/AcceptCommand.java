@@ -80,8 +80,10 @@ public class AcceptCommand extends BaseCommand {
         }
 
         if (settings.isItemBetting()) {
-            settings.setBaseLoc(player);
-            settings.setDuelzone(player, worldGuard != null ? worldGuard.findDuelZone(player) : null);
+            players.forEach(all -> {
+                settings.setBaseLoc(all);
+                settings.setDuelzone(all, worldGuard != null ? worldGuard.findDuelZone(all) : null);
+            });
             bettingManager.open(settings, target, player);
         } else {
             duelManager.startMatch(player, target, settings, null, null);

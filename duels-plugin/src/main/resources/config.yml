@@ -477,7 +477,7 @@ countdown:
       - '&7Starting in &f3 &7seconds!'
       - '&7Starting in &f2 &7seconds!'
       - '&7Starting in &f1 &7second!'
-      - '&7Now in a match against &f%opponents %&7with kit &3%kit% &7in arena &e%arena%&7.'
+      - '&7Now in a match against &f%opponents% &7with kit &3%kit% &7in arena &e%arena%&7.'
 
     # Titles to display along with the countdown. Must have the same size as the countdown list size.
     titles:

@@ -1,6 +1,8 @@
 package me.realized.duels.hook.hooks;
 
 import java.util.Arrays;
+import java.util.Collection;
+
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.util.Log;
@@ -31,7 +33,7 @@ public class VaultHook extends PluginHook<DuelsPlugin> {
         Log.info("Using Economy Provider: " + economy.getClass().getName());
     }
 
-    public boolean has(final int amount, final Player... players) {
+    public boolean has(final int amount, final Collection<Player> players) {
         if (economy == null) {
             return false;
         }
@@ -44,16 +46,30 @@ public class VaultHook extends PluginHook<DuelsPlugin> {
 
         return true;
     }
+    
+    public boolean has(final int amount, final Player... players) {
+        return has(amount, Arrays.asList(players));
+    }
 
+    public void add(final int amount, final Collection<Player> players) {
+        if (economy != null) {
+            players.forEach(player -> economy.depositPlayer(player, amount));
+        }
+    }
+    
     public void add(final int amount, final Player... players) {
-        if (economy != null) {
-            Arrays.stream(players).forEach(player -> economy.depositPlayer(player, amount));
-        }
+        add(amount, Arrays.asList(players));
     }
 
-    public void remove(final int amount, final Player... players) {
+
+    public void remove(final int amount, final Collection<Player> players) {
         if (economy != null) {
-            Arrays.stream(players).forEach(player -> economy.withdrawPlayer(player, amount));
+            players.forEach(player -> economy.withdrawPlayer(player, amount));
         }
     }
+    
+    public void remove(final int amount, final Player... players) {
+        remove(amount, Arrays.asList(players));
+    }
+
 }

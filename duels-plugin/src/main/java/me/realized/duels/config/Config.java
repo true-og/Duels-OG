@@ -1,9 +1,14 @@
 package me.realized.duels.config;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.config.converters.config.ConfigConverter12;
@@ -252,6 +257,7 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     private boolean soupCancelIfAlreadyFull;
 
     private final Map<String, MessageSound> sounds = new HashMap<>();
+    private final Multimap<String, MessageSound> messageToSounds = HashMultimap.create();
 
     public Config(final DuelsPlugin plugin) {
         super(plugin, "config");
@@ -402,15 +408,26 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
                     continue;
                 }
 
-                this.sounds.put(name, new MessageSound(type, sound.getDouble("pitch"), sound.getDouble("volume"), sound.getStringList("trigger-messages")));
+                final List<String> triggers = sound.getStringList("trigger-messages");
+                final MessageSound messageSound = new MessageSound(type, sound.getDouble("pitch"), sound.getDouble("volume"), triggers);
+                this.sounds.put(name, messageSound);
+                triggers.forEach(message -> messageToSounds.put(message, messageSound));
             }
         }
     }
 
+    @Override
+    public void handleUnload() {
+        sounds.clear();
+        messageToSounds.clear();
+    }
+
     public void playSound(final Player player, final String message) {
-        sounds.values().stream()
-            .filter(sound -> sound.getMessages().contains(message))
-            .forEach(sound -> player.playSound(player.getLocation(), sound.getType(), sound.getVolume(), sound.getPitch()));
+        final Collection<MessageSound> sounds = this.messageToSounds.asMap().get(message);
+
+        if (sounds != null) {
+            sounds.forEach(sound -> player.playSound(player.getLocation(), sound.getType(), sound.getVolume(), sound.getPitch()));
+        }
     }
 
     public MessageSound getSound(final String name) {

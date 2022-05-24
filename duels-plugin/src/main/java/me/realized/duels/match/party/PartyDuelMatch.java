@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.kit.KitImpl;
@@ -18,6 +19,7 @@ import me.realized.duels.queue.Queue;
 public class PartyDuelMatch extends DuelMatch {
 
     // Track Party instances as player's party status could change during the match.
+    @Getter
     private final Map<Player, Party> partyMap = new HashMap<>();
     private final Map<Party, Integer> alivePlayers = new HashMap<>();
 
