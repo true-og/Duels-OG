@@ -1,5 +1,7 @@
 package me.realized.duels.countdown.party;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
@@ -17,13 +19,12 @@ public class PartyDuelCountdown extends DuelCountdown {
 
     private final PartyDuelMatch match;
 
+    private final Map<Party, String> info = new HashMap<>();
+
     public PartyDuelCountdown(final DuelsPlugin plugin, final ArenaImpl arena, final PartyDuelMatch match) {
         super(plugin, arena, match, plugin.getConfiguration().getCdPartyDuelMessages(), plugin.getConfiguration().getCdPartyDuelTitles());
         this.match = match;
-    }
-
-    private Party getOpponent(final Party party) {
-        return match.getPartyMap().values().stream().filter(other -> !party.equals(other)).findFirst().orElse(null);
+        match.getAllParties().forEach(party -> info.put(party, StringUtil.join(party.getMembers().stream().map(PartyMember::getName).collect(Collectors.toList()), ",")));
     }
     
     @Override
@@ -33,7 +34,7 @@ public class PartyDuelCountdown extends DuelCountdown {
             final Player player = entry.getKey();
             config.playSound(player, rawMessage);
             player.sendMessage(message
-                .replace("%opponents%", StringUtil.join(getOpponent(entry.getValue()).getMembers().stream().map(PartyMember::getName).collect(Collectors.toList()), ","))
+                .replace("%opponents%", info.get(arena.getOpponent(entry.getValue())))
                 .replace("%kit%", kitName)
                 .replace("%arena%", arena.getName())
             );

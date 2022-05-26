@@ -3,6 +3,7 @@ package me.realized.duels.match.party;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -21,14 +22,18 @@ public class PartyDuelMatch extends DuelMatch {
     // Track Party instances as player's party status could change during the match.
     @Getter
     private final Map<Player, Party> partyMap = new HashMap<>();
-    private final Map<Party, Integer> alivePlayers = new HashMap<>();
+    private final Map<Party, Integer> players = new HashMap<>();
 
     public PartyDuelMatch(final DuelsPlugin plugin, final ArenaImpl arena, final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
         super(plugin,arena, kit, items, bet, source);
     }
     
-    private int getAlivePlayers(final Party party) {
-        return alivePlayers.getOrDefault(party, 0);
+    private boolean hasAlivePlayers(final Party party) {
+        return players.getOrDefault(party, 0) > 0;
+    }
+
+    public Set<Party> getAllParties() {
+        return players.keySet();
     }
     
     @Override
@@ -38,14 +43,14 @@ public class PartyDuelMatch extends DuelMatch {
         final Party party = partyManager.get(player);
         partyMap.put(player, party);
 
-        final Integer count = alivePlayers.get(party);
+        final Integer count = players.get(party);
 
         if (count == null) {
-            alivePlayers.put(party, 1);
+            players.put(party, 1);
             return;
         }
 
-        alivePlayers.put(party, count + 1);
+        players.put(party, count + 1);
     }
 
     @Override
@@ -58,17 +63,17 @@ public class PartyDuelMatch extends DuelMatch {
             return;
         }
 
-        final Integer count = alivePlayers.get(party);
+        final Integer count = players.get(party);
 
         if (count == null) {
             return;
         }
 
-        alivePlayers.put(party, count - 1);
+        players.put(party, count - 1);
     }
 
     @Override
     public int size() {
-        return (int) alivePlayers.keySet().stream().filter(party -> getAlivePlayers(party) > 0).count();
+        return (int) players.keySet().stream().filter(this::hasAlivePlayers).count();
     }
 }

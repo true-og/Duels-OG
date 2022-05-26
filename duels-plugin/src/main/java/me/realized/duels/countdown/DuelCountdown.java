@@ -44,17 +44,16 @@ public class DuelCountdown extends BukkitRunnable {
 
     public DuelCountdown(final DuelsPlugin plugin, final ArenaImpl arena, final DuelMatch match) {
         this(plugin, arena, match, plugin.getConfiguration().getCdDuelMessages(), plugin.getConfiguration().getCdDuelTitles());
-        
-        for (final Player player : match.getAllPlayers()) {
+        match.getAllPlayers().forEach(player -> {
             final Player opponent = arena.getOpponent(player);
             final UserData user = userManager.get(opponent);
 
             if (user == null) {
-                continue;
+                return;
             }
 
             info.put(player.getUniqueId(), new Pair<>(opponent.getName(), user.getRating(match.getKit())));
-        }
+        });
     }
 
     protected void sendMessage(final String rawMessage, final String message, final String title) {

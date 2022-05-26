@@ -10,6 +10,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
@@ -22,6 +23,7 @@ import me.realized.duels.util.json.JsonUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class UserData implements User {
 
@@ -113,6 +115,7 @@ public class UserData implements User {
 
     @Override
     public int getRating(@NotNull final Kit kit) {
+        Objects.requireNonNull(kit, "kit");
         return getRatingUnsafe(kit);
     }
 
@@ -123,6 +126,7 @@ public class UserData implements User {
 
     @Override
     public void resetRating(@NotNull final Kit kit) {
+        Objects.requireNonNull(kit, "kit");
         setRating(kit, defaultRating);
     }
 
@@ -138,7 +142,7 @@ public class UserData implements User {
         }
     }
 
-    private int getRatingUnsafe(final Kit kit) {
+    public int getRatingUnsafe(@Nullable final Kit kit) {
         return this.rating != null ? this.rating.getOrDefault(kit == null ? "-" : kit.getName(), defaultRating) : defaultRating;
     }
 

@@ -27,7 +27,6 @@ import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.inventories.InventoryManager;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.match.DuelMatch;
-import me.realized.duels.party.Party;
 import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.queue.Queue;
@@ -378,28 +377,6 @@ public class DuelManager implements Loadable {
         }
     }
 
-    private void handleInventories(final DuelMatch match) {
-        if (!config.isDisplayInventories()) {
-            return;
-        }
-
-        String color = lang.getMessage("DUEL.inventories.name-color");
-        final TextBuilder builder = TextBuilder.of(lang.getMessage("DUEL.inventories.message"));
-        final Set<Player> players = match.getAllPlayers();
-        final Iterator<Player> iterator = players.iterator();
-
-        while (iterator.hasNext()) {
-            final Player player = iterator.next();
-            builder.add(StringUtil.color(color + player.getName()), Action.RUN_COMMAND, "/duel _ " + player.getUniqueId());
-
-            if (iterator.hasNext()) {
-                builder.add(StringUtil.color(color + ", "));
-            }
-        }
-
-        builder.send(players);
-    }
-
     private void handleStats(final DuelMatch match, final UserData winner, final UserData loser, final MatchData matchData) {
         if (winner != null && loser != null) {
             winner.addWin();
@@ -408,8 +385,8 @@ public class DuelManager implements Loadable {
             loser.addMatch(matchData);
 
             final KitImpl kit = match.getKit();
-            int winnerRating = kit == null ? winner.getRating() : winner.getRating(kit);
-            int loserRating = kit == null ? loser.getRating() : loser.getRating(kit);
+            int winnerRating = winner.getRatingUnsafe(kit);
+            int loserRating = loser.getRatingUnsafe(kit);
             int change = 0;
 
             if (config.isRatingEnabled() && !(!match.isFromQueue() && config.isRatingQueueOnly())) {
@@ -486,14 +463,11 @@ public class DuelManager implements Loadable {
                         handleTie(matchPlayer, arena, match, false);
                         lang.sendMessage(matchPlayer, "DUEL.on-end.tie");
                     });
-                    plugin.doSyncAfter(() -> handleInventories(match), 1L);
+                    plugin.doSyncAfter(() -> inventoryManager.handleMatchEnd(match), 1L);
                     arena.endMatch(null, null, Reason.TIE);
                     return;
                 }
-
-                final Player winner = arena.first(); // TODO handle multiple winners for party matches
-                inventoryManager.create(winner, false);
-
+                
                 if (config.isSpawnFirework()) {
                     final Firework firework = (Firework) deadLocation.getWorld().spawnEntity(deadLocation, EntityType.FIREWORK);
                     final FireworkMeta meta = firework.getFireworkMeta();
@@ -501,27 +475,35 @@ public class DuelManager implements Loadable {
                     firework.setFireworkMeta(meta);
                 }
 
+                final Set<Player> winners = match.getAlivePlayers();
+                winners.forEach(winner -> inventoryManager.create(winner, false));
+
+                // final Player winner = arena.first();
+                // inventoryManager.create(winner, false);
+
                 final double health = Math.ceil(winner.getHealth()) * 0.5;
                 final String kitName = match.getKit() != null ? match.getKit().getName() : lang.getMessage("GENERAL.none");
                 final long duration = System.currentTimeMillis() - match.getStart();
                 final long time = GREGORIAN_CALENDAR.getTimeInMillis();
                 final MatchData matchData = new MatchData(winner.getName(), player.getName(), kitName, time, duration, health);
                 handleStats(match, userDataManager.get(winner), userDataManager.get(player), matchData);
-                plugin.doSyncAfter(() -> handleInventories(match), 1L);
+                plugin.doSyncAfter(() -> inventoryManager.handleMatchEnd(match), 1L);
                 plugin.doSyncAfter(() -> {
-                    handleWin(winner, player, arena, match);
+                    for (final Player winner: winners) {
+                        handleWin(winner, player, arena, match);
 
-                    if (config.isEndCommandsEnabled() && !(!match.isFromQueue() && config.isEndCommandsQueueOnly())) {
-                        try {
-                            for (final String command : config.getEndCommands()) {
-                                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command
-                                    .replace("%winner%", winner.getName()).replace("%loser%", player.getName())
-                                    .replace("%kit%", kitName).replace("%arena%", arena.getName())
-                                    .replace("%bet_amount%", String.valueOf(match.getBet()))
-                                );
+                        if (config.isEndCommandsEnabled() && !(!match.isFromQueue() && config.isEndCommandsQueueOnly())) {
+                            try {
+                                for (final String command : config.getEndCommands()) {
+                                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command
+                                        .replace("%winner%", winner.getName()).replace("%loser%", player.getName())
+                                        .replace("%kit%", kitName).replace("%arena%", arena.getName())
+                                        .replace("%bet_amount%", String.valueOf(match.getBet()))
+                                    );
+                                }
+                            } catch (Exception ex) {
+                                Log.warn(DuelManager.this, "Error while running match end commands: " + ex.getMessage());
                             }
-                        } catch (Exception ex) {
-                            Log.warn(DuelManager.this, "Error while running match end commands: " + ex.getMessage());
                         }
                     }
 

@@ -24,6 +24,7 @@ import me.realized.duels.gui.BaseButton;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.match.DuelMatch;
 import me.realized.duels.match.party.PartyDuelMatch;
+import me.realized.duels.party.Party;
 import me.realized.duels.queue.Queue;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.compat.Items;
@@ -217,6 +218,10 @@ public class ArenaImpl extends BaseButton implements Arena {
 
     public Player getOpponent(final Player player) {
         return isUsed() ? match.getAllPlayers().stream().filter(other -> !player.equals(other)).findFirst().orElse(null) : null;
+    }
+    
+    public Party getOpponent(final Party party) {
+        return isUsed() ? ((PartyDuelMatch) match).getAllParties().stream().filter(other -> !party.equals(other)).findFirst().orElse(null) : null;
     }
 
     public Set<Player> getPlayers() {

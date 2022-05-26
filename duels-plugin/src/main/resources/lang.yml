@@ -448,7 +448,8 @@ DUEL:
     is-tagged: '{FAIL_PREFIX} One or more player is in combat!'
     player-moved: '{FAIL_PREFIX} One or more player moved after sending/accepting the request!'
     not-in-duelzone: '{FAIL_PREFIX} One or more player moved out of the duelzone after sending/accepting the request!'
-    in-creative-mode: '{FAIL_PREFIX} One or more player is is in creative mode!'
+    in-creative-mode: '{FAIL_PREFIX} One or more player is in creative mode!'
+    is-not-all-online: '{FAIL_PREFIX} Members of all parties must be online!'
   prevent:
     item-drop: '&cYou cannot drop items while in a duel.'
     command: '&cYou cannot use ''%command%'' while in a duel.'

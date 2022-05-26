@@ -22,6 +22,7 @@ import me.realized.duels.validator.validators.match.CheckAliveValidator;
 import me.realized.duels.validator.validators.match.CombatTagValidator;
 import me.realized.duels.validator.validators.match.DuelZoneValidator;
 import me.realized.duels.validator.validators.match.ModeValidator;
+import me.realized.duels.validator.validators.match.PartyValidator;
 import me.realized.duels.validator.validators.match.PreventCreativeValidator;
 import me.realized.duels.validator.validators.request.self.SelfBlacklistedWorldValidator;
 import me.realized.duels.validator.validators.request.self.SelfCheckMatchValidator;
@@ -83,7 +84,6 @@ public class ValidatorManager implements Loadable {
         targetValidators.put(TargetNoRequestValidator.class, new TargetNoRequestValidator(plugin));
         targetValidators.put(TargetHasRequestValidator.class, new TargetHasRequestValidator(plugin));
 
-        // TODO IDEA: Move the validators to corresponding command class?
         duelSelfValidators = ValidatorUtil.buildList(
             self(SelfEmptyInventoryValidator.class),
             self(SelfPreventCreativeValidator.class),
@@ -122,7 +122,8 @@ public class ValidatorManager implements Loadable {
             new CheckAliveValidator(plugin),
             new BlacklistedWorldValidator(plugin),
             new CombatTagValidator(plugin),
-            new DuelZoneValidator(plugin)
+            new DuelZoneValidator(plugin),
+            new PartyValidator(plugin)
         );
     }
 
