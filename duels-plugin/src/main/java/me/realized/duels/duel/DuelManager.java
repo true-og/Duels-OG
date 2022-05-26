@@ -435,7 +435,7 @@ public class DuelManager implements Loadable {
                 userDataManager.handleMatchEnd(match, winners);
                 plugin.doSyncAfter(() -> inventoryManager.handleMatchEnd(match), 1L);
                 plugin.doSyncAfter(() -> {
-                    for (final Player winner: winners) {
+                    for (final Player winner : winners) {
                         handleWin(winner, player, arena, match);
 
                         if (config.isEndCommandsEnabled() && !(!match.isFromQueue() && config.isEndCommandsQueueOnly())) {
@@ -453,7 +453,7 @@ public class DuelManager implements Loadable {
                         }
                     }
 
-                    arena.endMatch(winner.getUniqueId(), player.getUniqueId(), Reason.OPPONENT_DEFEAT);
+                    arena.endMatch(winners.iterator().next().getUniqueId(), player.getUniqueId(), Reason.OPPONENT_DEFEAT);
                 }, config.getTeleportDelay() * 20L);
             }, 1L);
         }
