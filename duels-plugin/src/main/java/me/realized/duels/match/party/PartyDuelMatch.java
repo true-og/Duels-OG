@@ -1,10 +1,16 @@
 package me.realized.duels.match.party;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,21 +25,28 @@ import me.realized.duels.queue.Queue;
 
 public class PartyDuelMatch extends DuelMatch {
 
-    // Track Party instances as player's party status could change during the match.
     @Getter
-    private final Map<Player, Party> partyMap = new HashMap<>();
-    private final Map<Party, Integer> players = new HashMap<>();
+    private final Map<Player, Party> playerToParty = new HashMap<>();
+    @Getter
+    private final Multimap<Party, Player> partyToPlayers = HashMultimap.create();
+    private final Map<Party, Integer> alivePlayers = new HashMap<>();
 
     public PartyDuelMatch(final DuelsPlugin plugin, final ArenaImpl arena, final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
         super(plugin,arena, kit, items, bet, source);
     }
-    
-    private boolean hasAlivePlayers(final Party party) {
-        return players.getOrDefault(party, 0) > 0;
-    }
 
     public Set<Party> getAllParties() {
-        return players.keySet();
+        return partyToPlayers.keySet();
+    }
+
+    public List<String> getNames(final Party party) {
+        final Collection<Player> members = partyToPlayers.asMap().get(party);
+
+        if (members == null) {
+            return Collections.emptyList();
+        }
+
+        return members.stream().map(Player::getName).collect(Collectors.toList());
     }
     
     @Override
@@ -41,39 +54,40 @@ public class PartyDuelMatch extends DuelMatch {
         super.addPlayer(player);
 
         final Party party = partyManager.get(player);
-        partyMap.put(player, party);
+        playerToParty.put(player, party);
+        partyToPlayers.put(party, player);
 
-        final Integer count = players.get(party);
+        final Integer count = alivePlayers.get(party);
 
         if (count == null) {
-            players.put(party, 1);
+            alivePlayers.put(party, 1);
             return;
         }
 
-        players.put(party, count + 1);
+        alivePlayers.put(party, count + 1);
     }
 
     @Override
     public void markAsDead(Player player) {
         super.markAsDead(player);
 
-        final Party party = partyMap.get(player);
+        final Party party = playerToParty.get(player);
 
         if (party == null) {
             return;
         }
 
-        final Integer count = players.get(party);
+        final Integer count = alivePlayers.get(party);
 
         if (count == null) {
             return;
         }
 
-        players.put(party, count - 1);
+        alivePlayers.put(party, count - 1);
     }
 
     @Override
     public int size() {
-        return (int) players.keySet().stream().filter(this::hasAlivePlayers).count();
+        return (int) alivePlayers.entrySet().stream().filter(entry -> entry.getValue() > 0).count();
     }
 }

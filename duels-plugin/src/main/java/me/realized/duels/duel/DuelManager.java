@@ -1,10 +1,8 @@
 package me.realized.duels.duel;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -69,8 +67,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 public class DuelManager implements Loadable {
-
-    private static final Calendar GREGORIAN_CALENDAR = new GregorianCalendar();
 
     private final DuelsPlugin plugin;
     private final Config config;
@@ -377,47 +373,6 @@ public class DuelManager implements Loadable {
         }
     }
 
-    private void handleStats(final DuelMatch match, final UserData winner, final UserData loser, final MatchData matchData) {
-        if (winner != null && loser != null) {
-            winner.addWin();
-            loser.addLoss();
-            winner.addMatch(matchData);
-            loser.addMatch(matchData);
-
-            final KitImpl kit = match.getKit();
-            int winnerRating = winner.getRatingUnsafe(kit);
-            int loserRating = loser.getRatingUnsafe(kit);
-            int change = 0;
-
-            if (config.isRatingEnabled() && !(!match.isFromQueue() && config.isRatingQueueOnly())) {
-                change = NumberUtil.getChange(config.getKFactor(), winnerRating, loserRating);
-                winner.setRating(kit, winnerRating = winnerRating + change);
-                loser.setRating(kit, loserRating = loserRating - change);
-            }
-
-            final String message = lang.getMessage("DUEL.on-end.opponent-defeat",
-                "winner", winner.getName(),
-                "loser", loser.getName(),
-                "health", matchData.getHealth(),
-                "kit", matchData.getKit(),
-                "arena", match.getArena().getName(),
-                "winner_rating", winnerRating,
-                "loser_rating", loserRating,
-                "change", change
-            );
-
-            if (message == null) {
-                return;
-            }
-
-            if (config.isArenaOnlyEndMessage()) {
-                match.getArena().broadcast(message);
-            } else {
-                Bukkit.getOnlinePlayers().forEach(player -> player.sendMessage(message));
-            }
-        }
-    }
-
     private class DuelListener implements Listener {
 
         @EventHandler(priority = EventPriority.HIGHEST)
@@ -477,16 +432,7 @@ public class DuelManager implements Loadable {
 
                 final Set<Player> winners = match.getAlivePlayers();
                 winners.forEach(winner -> inventoryManager.create(winner, false));
-
-                // final Player winner = arena.first();
-                // inventoryManager.create(winner, false);
-
-                final double health = Math.ceil(winner.getHealth()) * 0.5;
-                final String kitName = match.getKit() != null ? match.getKit().getName() : lang.getMessage("GENERAL.none");
-                final long duration = System.currentTimeMillis() - match.getStart();
-                final long time = GREGORIAN_CALENDAR.getTimeInMillis();
-                final MatchData matchData = new MatchData(winner.getName(), player.getName(), kitName, time, duration, health);
-                handleStats(match, userDataManager.get(winner), userDataManager.get(player), matchData);
+                userDataManager.handleMatchEnd(match, winners);
                 plugin.doSyncAfter(() -> inventoryManager.handleMatchEnd(match), 1L);
                 plugin.doSyncAfter(() -> {
                     for (final Player winner: winners) {
@@ -497,7 +443,7 @@ public class DuelManager implements Loadable {
                                 for (final String command : config.getEndCommands()) {
                                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command
                                         .replace("%winner%", winner.getName()).replace("%loser%", player.getName())
-                                        .replace("%kit%", kitName).replace("%arena%", arena.getName())
+                                        .replace("%kit%", match.getKit() != null ? match.getKit().getName() : "").replace("%arena%", arena.getName())
                                         .replace("%bet_amount%", String.valueOf(match.getBet()))
                                     );
                                 }
