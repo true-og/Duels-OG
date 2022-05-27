@@ -364,10 +364,11 @@ COMMAND:
   party:
     usage:
       - '{LINE}'
-      - '&f/%command% [player] &e- &7Sends a party request to a player.'
+      - '&f/%command% [player] &e- &7Sends a party invite to a player.'
       - '&f/%command% list &e- &7Lists the current party''s members.'
-      - '&f/%command% join [player] &e- &7Joins a player''s party.'
+      - '&f/%command% accept [player] &e- &7Accepts a party invite.'
       - '&f/%command% leave &e- &7Leaves the current party.'
+      - '&f/%command% kick [player] &e- &7Kicks a player from your party.'
       - '&f/%command% disband &e- &7Disbands the current party.'
       - '&f/%command% toggle &e- &7Toggles party requests.'
       - '{LINE}'
