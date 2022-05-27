@@ -59,7 +59,6 @@ import me.realized.duels.util.compat.CompatUtil;
 import me.realized.duels.util.compat.Titles;
 import me.realized.duels.util.inventory.InventoryUtil;
 import me.realized.duels.util.validator.ValidatorUtil;
-import me.realized.duels.validator.ValidatorManager;
 
 public class DuelManager implements Loadable {
 

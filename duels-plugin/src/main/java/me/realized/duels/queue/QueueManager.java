@@ -103,13 +103,13 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
     }
 
     private boolean canFight(final Kit kit, final UserData first, final UserData second) {
-        if (kit == null || !config.isRatingEnabled()) {
+        if (!config.isRatingEnabled()) {
             return true;
         }
 
         if (first != null && second != null) {
-            final int firstRating = first.getRating(kit);
-            final int secondRating = second.getRating(kit);
+            final int firstRating = first.getRatingUnsafe(kit);
+            final int secondRating = second.getRatingUnsafe(kit);
             final int kFactor = config.getKFactor();
             return NumberUtil.getChange(kFactor, firstRating, secondRating) != 0 && NumberUtil.getChange(kFactor, secondRating, firstRating) != 0;
         }

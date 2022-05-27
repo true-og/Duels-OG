@@ -52,7 +52,7 @@ public class DuelCountdown extends BukkitRunnable {
                 return;
             }
 
-            info.put(player.getUniqueId(), new Pair<>(opponent.getName(), user.getRating(match.getKit())));
+            info.put(player.getUniqueId(), new Pair<>(opponent.getName(), user.getRatingUnsafe(match.getKit())));
         });
     }
 
