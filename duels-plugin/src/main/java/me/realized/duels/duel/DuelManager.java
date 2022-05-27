@@ -261,7 +261,7 @@ public class DuelManager implements Loadable {
         players.addAll(first);
         players.addAll(second);
 
-        if (ValidatorUtil.validate(plugin.getValidatorManager().getMatchValidators(), players, settings)) {
+        if (!ValidatorUtil.validate(plugin.getValidatorManager().getMatchValidators(), players, settings)) {
             refundItems(players, items);
             return false;
         }

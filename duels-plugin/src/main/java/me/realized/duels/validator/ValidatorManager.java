@@ -19,6 +19,7 @@ import me.realized.duels.util.validator.TriValidator;
 import me.realized.duels.util.validator.ValidatorUtil;
 import me.realized.duels.validator.validators.match.BlacklistedWorldValidator;
 import me.realized.duels.validator.validators.match.CheckAliveValidator;
+import me.realized.duels.validator.validators.match.CheckMoveValidator;
 import me.realized.duels.validator.validators.match.CombatTagValidator;
 import me.realized.duels.validator.validators.match.DuelZoneValidator;
 import me.realized.duels.validator.validators.match.ModeValidator;
@@ -119,8 +120,8 @@ public class ValidatorManager implements Loadable {
             new ModeValidator(plugin),
             new CheckAliveValidator(plugin),
             new PreventCreativeValidator(plugin),
-            new CheckAliveValidator(plugin),
             new BlacklistedWorldValidator(plugin),
+            new CheckMoveValidator(plugin),
             new CombatTagValidator(plugin),
             new DuelZoneValidator(plugin),
             new PartyValidator(plugin)
