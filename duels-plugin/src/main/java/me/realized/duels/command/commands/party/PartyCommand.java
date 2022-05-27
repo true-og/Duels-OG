@@ -90,7 +90,7 @@ public class PartyCommand extends BaseCommand {
         }
 
         partyManager.sendInvite(player, target, party);
-        lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.invite.send.members", "name", target.getName());
+        lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.invite.send.members", "owner", player.getName(), "name", target.getName());
         lang.sendMessage(target, "COMMAND.party.invite.send.receiver", "name", sender.getName());
         return true;
     }

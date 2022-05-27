@@ -388,7 +388,7 @@ COMMAND:
         - '{LINE}'
         members: 
         - '{LINE}'
-        - '{PREFIX} &f%owner% &7has invited &f%name% to the party!'
+        - '{PREFIX} &f%owner% &7has invited &f%name% &7to the party!'
         - '{LINE}'
       accept:
         receiver: 
