@@ -70,7 +70,6 @@ public class DuelManager implements Loadable {
     private final ArenaManagerImpl arenaManager;
     private final PlayerInfoManager playerManager;
     private final InventoryManager inventoryManager;
-    private final ValidatorManager validatorManager;
 
     private QueueManager queueManager;
     private Teleport teleport;
@@ -89,8 +88,6 @@ public class DuelManager implements Loadable {
         this.arenaManager = plugin.getArenaManager();
         this.playerManager = plugin.getPlayerManager();
         this.inventoryManager = plugin.getInventoryManager();
-        this.validatorManager = plugin.getValidatorManager();
-
         plugin.doSyncAfter(() -> Bukkit.getPluginManager().registerEvents(new DuelListener(), plugin), 1L);
     }
 
@@ -128,12 +125,6 @@ public class DuelManager implements Loadable {
     public void handleUnload() {
         plugin.cancelTask(durationCheckTask);
 
-        /*
-        3 Cases:
-        1. size = 2: Match outcome is yet to be decided (INGAME phase)
-        2. size = 1: Match ended with a winner and is in ENDGAME phase
-        3. size = 0: Match ended in a tie (or winner killed themselves during ENDGAME phase) and is in ENDGAME phase
-        */
         for (final ArenaImpl arena : arenaManager.getArenasImpl()) {
             final DuelMatch match = arena.getMatch();
 
@@ -145,9 +136,10 @@ public class DuelManager implements Loadable {
             final boolean winnerDecided = size == 1;
 
             if (winnerDecided) {
-                final Player winner = arena.first();
-                lang.sendMessage(winner, "DUEL.on-end.plugin-disable");
-                handleWin(winner, arena.getOpponent(winner), arena, match);
+                for (final Player winner : match.getAlivePlayers()) {
+                    lang.sendMessage(winner, "DUEL.on-end.plugin-disable");
+                    handleWin(winner, arena.getOpponent(winner), arena, match);
+                }
             } else {
                 final boolean ongoing = size > 1;
 
@@ -209,51 +201,51 @@ public class DuelManager implements Loadable {
     /**
      * Rewards the duel winner with money and items bet on the match.
      *
-     * @param player Player determined to be the winner
+     * @param winner Player determined to be the winner
      * @param opponent Player that opposed the winner
      * @param arena Arena the match is taking place
      * @param match Match the player is in
      */
-    private void handleWin(final Player player, final Player opponent, final ArenaImpl arena, final DuelMatch match) {
-        arena.remove(player);
+    private void handleWin(final Player winner, final Player opponent, final ArenaImpl arena, final DuelMatch match) {
+        arena.remove(winner);
 
         final String opponentName = opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none");
 
         if (vault != null && match.getBet() > 0) {
             final int amount = match.getBet() * 2;
-            vault.add(amount, player);
-            lang.sendMessage(player, "DUEL.reward.money.message", "name", opponentName, "money", amount);
+            vault.add(amount, winner);
+            lang.sendMessage(winner, "DUEL.reward.money.message", "name", opponentName, "money", amount);
 
             final String title = lang.getMessage("DUEL.reward.money.title", "name", opponentName, "money", amount);
 
             if (title != null) {
-                Titles.send(player, title, null, 0, 20, 50);
+                Titles.send(winner, title, null, 0, 20, 50);
             }
         }
 
         if (mcMMO != null) {
-            mcMMO.enableSkills(player);
+            mcMMO.enableSkills(winner);
         }
 
-        final PlayerInfo info = playerManager.get(player);
+        final PlayerInfo info = playerManager.get(winner);
         final List<ItemStack> items = match.getItems();
 
-        if (!player.isDead()) {
-            playerManager.remove(player);
+        if (!winner.isDead()) {
+            playerManager.remove(winner);
 
             if (!(match.isOwnInventory() && config.isOwnInventoryDropInventoryItems())) {
-                PlayerUtil.reset(player);
+                PlayerUtil.reset(winner);
             }
 
             if (info != null) {
-                teleport.tryTeleport(player, info.getLocation());
-                info.restore(player);
+                teleport.tryTeleport(winner, info.getLocation());
+                info.restore(winner);
             }
 
-            if (InventoryUtil.addOrDrop(player, items)) {
-                lang.sendMessage(player, "DUEL.reward.items.message", "name", opponentName);
+            if (InventoryUtil.addOrDrop(winner, items)) {
+                lang.sendMessage(winner, "DUEL.reward.items.message", "name", opponentName);
             }
-        } else {
+        } else if (info != null) {
             info.getExtra().addAll(items);
         }
     }
@@ -269,7 +261,7 @@ public class DuelManager implements Loadable {
         players.addAll(first);
         players.addAll(second);
 
-        if (ValidatorUtil.validate(validatorManager.getMatchValidators(), players, settings)) {
+        if (ValidatorUtil.validate(plugin.getValidatorManager().getMatchValidators(), players, settings)) {
             refundItems(players, items);
             return false;
         }
