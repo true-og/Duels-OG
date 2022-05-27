@@ -48,7 +48,11 @@ public final class ValidatorUtil {
     }
 
     public static <T1, T2> boolean validate(final ImmutableList<BiValidator<T1, T2>> chain, final T1 first, final T2 second) {
-        return chain.stream().allMatch(validator -> validator.validate(first, second));
+        return chain.stream().allMatch(validator -> {
+            boolean res = validator.validate(first, second);
+            System.out.println(validator.getClass() + ": " + res);
+            return res;
+        });
     }
 
     public static <T1, T2, T3> boolean validate(final ImmutableList<TriValidator<T1, T2, T3>> chain, final T1 first, final T2 second, final T3 third) {

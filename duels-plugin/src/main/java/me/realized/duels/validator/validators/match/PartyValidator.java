@@ -21,7 +21,7 @@ public class PartyValidator extends BaseBiValidator<Collection<Player>, Settings
         }
 
         if (players.size() != settings.getSenderParty().size() + settings.getTargetParty().size()) {
-            lang.sendMessage(players, "ERROR.party.is-not-all-online");
+            lang.sendMessage(players, "DUEL.party-start-failure.is-not-all-online");
             return false;
         }
 

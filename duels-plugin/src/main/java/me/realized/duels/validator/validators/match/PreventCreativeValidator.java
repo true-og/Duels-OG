@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 
 public class PreventCreativeValidator extends BaseBiValidator<Collection<Player>, Settings> {
 
-    private static final String MESSAGE_KEY = "DUEL.start-failure.player-moved";
-    private static final String PARTY_MESSAGE_KEY = "DUEL.party-start-failure.player-moved";
+    private static final String MESSAGE_KEY = "DUEL.start-failure.in-creative-mode";
+    private static final String PARTY_MESSAGE_KEY = "DUEL.party-start-failure.in-creative-mode";
     
     public PreventCreativeValidator(final DuelsPlugin plugin) {
         super(plugin);
