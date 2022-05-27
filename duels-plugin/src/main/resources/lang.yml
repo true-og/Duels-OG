@@ -96,6 +96,7 @@ ERROR:
     not-a-member: '{PREFIX} &c%name% is not a member of your party.'
     in-same-party: '{PREFIX} &c%name% is in your party.'
     is-not-same-size: '{PREFIX} &cParty sizes must match to do this.'
+    kick-self: '{PREFIX} &cYou cannot kick yourself from the party.'
     is-not-online:
       sender: '{PREFIX} &cAll members of your party must be online!'
       target: '{PREFIX} &cAll members of %name%''s party must be online!'
