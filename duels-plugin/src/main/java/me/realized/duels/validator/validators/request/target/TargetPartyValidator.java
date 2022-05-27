@@ -27,6 +27,11 @@ public class TargetPartyValidator extends BaseTriValidator<Pair<Player, Player>,
             return true;
         }
 
+        if (!partyManager.isInParty(pair.getKey())) {
+            lang.sendMessage(pair.getKey(), "ERROR.party.not-in-party.sender", "name", pair.getKey().getName());
+            return false;
+        }
+
         // If sender is in the same party as target
         if (party.isMember(pair.getKey())) {
             lang.sendMessage(pair.getKey(), "ERROR.party.in-same-party", "name", pair.getValue().getName());
