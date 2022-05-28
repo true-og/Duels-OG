@@ -17,7 +17,7 @@ import me.realized.duels.util.StringUtil;
 public class ListCommand extends BaseCommand {
     
     public ListCommand(final DuelsPlugin plugin) {
-        super(plugin, "list", null, null, Permissions.PARTY, 1, true);
+        super(plugin, "list", null, null, Permissions.PARTY, 1, true, "ls");
     }
 
     @Override

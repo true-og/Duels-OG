@@ -191,7 +191,7 @@ COMMAND:
         - '{LINE}'
         - '&7Duel request received from &f%name%''s Party&7.'
         - '&6- &7Kit: &3%kit%'
-        - '&6- Own Inventory: &r%own_inventory%'
+        - '&6- &7Own Inventory: &r%own_inventory%'
         - '&6- &7Arena: &e%arena%'
         clickable-text:
           info:
@@ -461,8 +461,8 @@ DUEL:
   on-end:
     tie: '{PREFIX} &7Tie Game!'
     plugin-disable: '{PREFIX} &cPlugin is disabling! Ending match automatically.'
-    opponent-defeat: '{PREFIX} &f%winner% &a(%winner_rating%) (+%change%) &7has defeated &f%loser% &c(%loser_rating%) (-%change%) &7on kit &3%kit% &7with &d%health%❤&7.'
-    party-opponent-defeat: '{PREFIX} &f%winners% &7has defeated &f%losers% &7on kit &3%kit%&7.'
+    opponent-defeat: '{PREFIX} &f%winner% &a(%winner_rating%) (+%change%) &7defeated &f%loser% &c(%loser_rating%) (-%change%) &7on kit &3%kit% &7with &d%health%❤&7.'
+    party-opponent-defeat: '{PREFIX} &f%winners% &7defeated &f%losers% &7on kit &3%kit%&7.'
   inventories:
     message: '&7Inventories (click on the name to view): '
     name-color: '&b'
