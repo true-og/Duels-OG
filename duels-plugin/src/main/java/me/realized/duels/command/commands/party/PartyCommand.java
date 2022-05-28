@@ -47,7 +47,7 @@ public class PartyCommand extends BaseCommand {
         if (isChild(args[0])) {
             return false;
         }
-
+        final Party party = partyManager.getOrCreate(player); // TODO remove later
         final Player target = Bukkit.getPlayerExact(args[0]);
 
         if (target == null || !player.canSee(target)) {
@@ -82,7 +82,7 @@ public class PartyCommand extends BaseCommand {
             return true;
         }
         
-        final Party party = partyManager.getOrCreate(player);
+        // final Party party = partyManager.getOrCreate(player);
 
         if (!party.isOwner(player)) {
             lang.sendMessage(sender, "ERROR.party.is-not-owner");

@@ -49,7 +49,7 @@ public class KickCommand extends BaseCommand {
         }
         
         partyManager.remove(target, party);
-        lang.sendMessage(player, "COMMAND.party.kick.receiver", "owner", player.getName());
+        lang.sendMessage(target, "COMMAND.party.kick.receiver", "owner", player.getName());
         lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.kick.members", "owner", player.getName(), "name", target.getName());
     }
 }

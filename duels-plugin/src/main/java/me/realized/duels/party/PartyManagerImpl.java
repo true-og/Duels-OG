@@ -29,7 +29,9 @@ public class PartyManagerImpl implements Loadable, Listener {
     }
 
     @Override
-    public void handleLoad() {}
+    public void handleLoad() {
+        // TODO invite expiration & party auto disband
+    }
 
     @Override
     public void handleUnload() {
