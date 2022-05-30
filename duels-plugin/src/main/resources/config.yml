@@ -367,6 +367,20 @@ duel:
   - 'playervaults:playervaults'
 
 
+party:
+  # Party invite expiration, in seconds.
+  # default: 30
+  invite-expiration: 30
+
+  # The max size a party can have.
+  # default: 10
+  max-size: 10
+
+  # If set to 'true', only parties that are equally sized may duel each other.
+  # default: true
+  same-size-only: true
+
+
 queue:
   # List of commands to block while in a queue.
   blacklisted-commands: []

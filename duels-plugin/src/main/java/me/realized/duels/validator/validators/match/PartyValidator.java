@@ -20,7 +20,15 @@ public class PartyValidator extends BaseBiValidator<Collection<Player>, Settings
             return true;
         }
 
-        if (players.size() != settings.getSenderParty().size() + settings.getTargetParty().size()) {
+        int senderPartySize = settings.getSenderParty().size();
+        int targetPartySize = settings.getTargetParty().size();
+
+        if (config.isPartySameSizeOnly() && senderPartySize != targetPartySize) {
+            lang.sendMessage(players, "DUEL.party-start-failure.is-not-same-size");
+            return false;
+        }
+
+        if (players.size() != senderPartySize + targetPartySize) {
             lang.sendMessage(players, "DUEL.party-start-failure.is-not-all-online");
             return false;
         }

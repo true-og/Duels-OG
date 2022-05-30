@@ -45,6 +45,11 @@ public class AcceptCommand extends BaseCommand {
             lang.sendMessage(sender, "ERROR.party.not-found");
             return;
         }
+
+        if (party.size() >= config.getPartyMaxSize()) {
+            lang.sendMessage(sender, "ERROR.party.max-size-reached.target", "name", target.getName());
+            return;
+        }
         
         lang.sendMessage(player, "COMMAND.party.invite.accept.receiver", "name", target.getName());
         lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.invite.accept.members", "name", player.getName());

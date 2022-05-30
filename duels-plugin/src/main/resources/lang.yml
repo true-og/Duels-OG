@@ -78,7 +78,7 @@ ERROR:
     already-spectating:
       sender: '{PREFIX} &cYou cannot do this while you or your party member is in spectator mode.'
       target: '{PREFIX} &cA member of %name%''s party is in spectator mode.'
-    option-unavailable: '{PREFIX} &CThis option is currently not available for party duels.'
+    option-unavailable: '{PREFIX} &cItem/Money Betting is currently not available for party duels.'
   party:
     is-self: '{PREFIX} &cYou cannot create a party with yourself.'
     is-not-owner: '{PREFIX} &cYou must be the owner of this party to do this.'
@@ -95,11 +95,14 @@ ERROR:
       target: '{PREFIX} &c%name% is not in a party.'
     not-a-member: '{PREFIX} &c%name% is not a member of your party.'
     in-same-party: '{PREFIX} &c%name% is in your party.'
-    is-not-same-size: '{PREFIX} &cParty sizes must match to do this.'
     kick-self: '{PREFIX} &cYou cannot kick yourself from the party.'
+    is-not-same-size: '{PREFIX} &cParty sizes must match to do this.'
     is-not-online:
       sender: '{PREFIX} &cAll members of your party must be online!'
       target: '{PREFIX} &cAll members of %name%''s party must be online!'
+    max-size-reached:
+      sender: '{PREFIX} &cYour party has reached the maximum number of members!'
+      target: '{PREFIX} &c%name%''s Party has reached the maximum number of members!'
   setting:
     disabled-option: '{PREFIX} &c%option% is currently disabled.'
     arena-not-applicable: '{PREFIX} &cYou cannot use kit %kit% on arena %arena%.'
@@ -445,12 +448,15 @@ DUEL:
     arena-not-applicable: '{FAIL_PREFIX} Kit %kit% cannot be used on the selected arena.'
     not-enough-money: '{FAIL_PREFIX} You or your opponent does not have $%bet_amount%.'
   party-start-failure:
+    option-unavailable: '{FAIL_PREFIX} &cItem/Money Betting is currently not available for party duels.'
+    party-changed: '{FAIL_PREFIX} Either the request sender or the request accepter has changed their party.'
     player-is-dead: '{FAIL_PREFIX} One or more player is currently dead!'
     in-blacklisted-world: '{FAIL_PREFIX} One or more player is in a blacklisted world!'
     is-tagged: '{FAIL_PREFIX} One or more player is in combat!'
     player-moved: '{FAIL_PREFIX} One or more player moved after sending/accepting the request!'
     not-in-duelzone: '{FAIL_PREFIX} One or more player moved out of the duelzone after sending/accepting the request!'
     in-creative-mode: '{FAIL_PREFIX} One or more player is in creative mode!'
+    is-not-same-size: '{PREFIX} &cParty sizes must match to do this.'
     is-not-all-online: '{FAIL_PREFIX} Members of all parties must be online!'
   prevent:
     item-drop: '&cYou cannot drop items while in a duel.'

@@ -13,11 +13,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.realized.duels.DuelsPlugin;
+import me.realized.duels.config.Config;
 import me.realized.duels.util.Loadable;
 
 public class PartyManagerImpl implements Loadable, Listener {
-    
-    private static final int INVITE_EXPIRATION = 30;
+
+    private final Config config;
 
     private final Map<UUID, Map<UUID, PartyInvite>> invites = new HashMap<>();
 
@@ -25,6 +26,7 @@ public class PartyManagerImpl implements Loadable, Listener {
     private final List<Party> parties = new ArrayList<>();
     
     public PartyManagerImpl(final DuelsPlugin plugin) {
+        this.config = plugin.getConfiguration();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
@@ -64,7 +66,7 @@ public class PartyManagerImpl implements Loadable, Listener {
             return null;
         }
 
-        if (System.currentTimeMillis() - invite.getCreation() >= INVITE_EXPIRATION * 1000L) {
+        if (System.currentTimeMillis() - invite.getCreation() >= config.getPartyInviteExpiration() * 1000L) {
             cached.remove(target.getUniqueId());
             return null;
         }
@@ -89,7 +91,7 @@ public class PartyManagerImpl implements Loadable, Listener {
             return null;
         }
 
-        if (System.currentTimeMillis() - invite.getCreation() >= INVITE_EXPIRATION * 1000L) {
+        if (System.currentTimeMillis() - invite.getCreation() >= config.getPartyInviteExpiration() * 1000L) {
             cached.remove(target.getUniqueId());
             return null;
         }
@@ -97,9 +99,14 @@ public class PartyManagerImpl implements Loadable, Listener {
         return invite;
     }
 
-    public void sendInvite(final Player sender, final Player target, final Party party) {
+    public boolean sendInvite(final Player sender, final Player target, final Party party) {
+        if (party.size() >= config.getPartyMaxSize()) {
+            return false;
+        }
+
         final PartyInvite invite = new PartyInvite(sender, target, party);
         getInvites(sender, true).put(target.getUniqueId(), invite);
+        return true;
     }
 
     public Party get(final Player player) {
@@ -123,9 +130,14 @@ public class PartyManagerImpl implements Loadable, Listener {
         return get(player) != null;
     }
 
-    public void join(final Player player, final Party party) {
+    public boolean join(final Player player, final Party party) {
+        if (party.size() >= config.getPartyMaxSize()) {
+            return false;
+        }
+        
         party.add(player);
         partyMap.put(player.getUniqueId(), party);
+        return true;
     }
 
     public void remove(final Player player, final Party party) {

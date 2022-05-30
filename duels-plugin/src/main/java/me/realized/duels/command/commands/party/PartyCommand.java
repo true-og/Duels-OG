@@ -47,7 +47,7 @@ public class PartyCommand extends BaseCommand {
         if (isChild(args[0])) {
             return false;
         }
-        final Party party = partyManager.getOrCreate(player); // TODO remove later
+
         final Player target = Bukkit.getPlayerExact(args[0]);
 
         if (target == null || !player.canSee(target)) {
@@ -82,14 +82,18 @@ public class PartyCommand extends BaseCommand {
             return true;
         }
         
-        // final Party party = partyManager.getOrCreate(player);
+        final Party party = partyManager.getOrCreate(player);
 
         if (!party.isOwner(player)) {
             lang.sendMessage(sender, "ERROR.party.is-not-owner");
             return true;
         }
 
-        partyManager.sendInvite(player, target, party);
+        if (!partyManager.sendInvite(player, target, party)) {
+            lang.sendMessage(sender, "ERROR.party.max-size-reached.sender");
+            return true;
+        }
+
         lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.invite.send.members", "owner", player.getName(), "name", target.getName());
         lang.sendMessage(target, "COMMAND.party.invite.send.receiver", "name", sender.getName());
         return true;

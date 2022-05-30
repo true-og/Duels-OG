@@ -16,10 +16,11 @@ public class TargetPartyValidator extends BaseTriValidator<Pair<Player, Player>,
     }
 
     @Override
-    public boolean validate(final Pair<Player, Player> pair, final Party party, final Collection<Player> players) {
+    public boolean validate(final Pair<Player, Player> pair, final Party party, final Collection<Player> players)  {
+        final Party senderParty = partyManager.get(pair.getKey());
         // Skip for 1v1s
         if (party == null) {
-            if (partyManager.isInParty(pair.getKey())) {
+            if (senderParty != null) {
                 lang.sendMessage(pair.getKey(), "ERROR.party.not-in-party.target", "name", pair.getValue().getName());
                 return false;
             }
@@ -27,17 +28,22 @@ public class TargetPartyValidator extends BaseTriValidator<Pair<Player, Player>,
             return true;
         }
 
-        if (!partyManager.isInParty(pair.getKey())) {
+        if (senderParty == null) {
             lang.sendMessage(pair.getKey(), "ERROR.party.not-in-party.sender", "name", pair.getKey().getName());
             return false;
         }
 
         // If sender is in the same party as target
-        if (party.isMember(pair.getKey())) {
+        if (senderParty.equals(party)) {
             lang.sendMessage(pair.getKey(), "ERROR.party.in-same-party", "name", pair.getValue().getName());
             return false;
         }
         
+        if (senderParty.size() != party.size()) {
+            lang.sendMessage(pair.getKey(), "ERROR.party.is-not-same-size");
+            return false;
+        }
+
         if (players.size() != party.size()) {
             lang.sendMessage(pair.getKey(), "ERROR.party.is-not-online.target", "name", pair.getValue().getName());
             return false;

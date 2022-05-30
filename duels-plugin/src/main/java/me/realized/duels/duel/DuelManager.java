@@ -1,6 +1,7 @@
 package me.realized.duels.duel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +47,8 @@ import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.inventories.InventoryManager;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.match.DuelMatch;
+import me.realized.duels.party.Party;
+import me.realized.duels.party.PartyManagerImpl;
 import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.queue.Queue;
@@ -66,6 +69,7 @@ public class DuelManager implements Loadable {
     private final Config config;
     private final Lang lang;
     private final UserManagerImpl userDataManager;
+    private final PartyManagerImpl partyManager;
     private final ArenaManagerImpl arenaManager;
     private final PlayerInfoManager playerManager;
     private final InventoryManager inventoryManager;
@@ -84,6 +88,7 @@ public class DuelManager implements Loadable {
         this.config = plugin.getConfiguration();
         this.lang = plugin.getLang();
         this.userDataManager = plugin.getUserManager();
+        this.partyManager = plugin.getPartyManager();
         this.arenaManager = plugin.getArenaManager();
         this.playerManager = plugin.getPlayerManager();
         this.inventoryManager = plugin.getInventoryManager();
@@ -305,11 +310,23 @@ public class DuelManager implements Loadable {
         return true;
     }
 
-    public boolean startMatch(final Player first, final Player second, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
-        if (settings.isPartyDuel()) {
+    // TODO Check if all calls of startMatch is with actual request sender and request target.
+    public boolean startMatch(final Player sender, final Player target, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
+        final Party senderParty = partyManager.get(sender);
+        final Party targetParty = partyManager.get(target);
+
+        if (senderParty != null && targetParty != null) {
+            if (!settings.getSenderParty().equals(senderParty) || !settings.getTargetParty().equals(targetParty)) {
+                lang.sendMessage(Arrays.asList(sender, target), "DUEL.party-start-failure.party-changed");
+                return false;
+            }
+
             return startMatch(settings.getSenderParty().getOnlineMembers(), settings.getTargetParty().getOnlineMembers(), settings, items, source);
+        } else if (senderParty != null || targetParty != null) {
+            lang.sendMessage(Arrays.asList(sender, target), "DUEL.party-start-failure.party-changed");
+            return false;
         } else {
-            return startMatch(Collections.singleton(first), Collections.singleton(second), settings, items, source);
+            return startMatch(Collections.singleton(sender), Collections.singleton(target), settings, items, source);
         }
     }
     

@@ -21,6 +21,11 @@ public class ModeValidator extends BaseBiValidator<Collection<Player>, Settings>
             return false;
         }
 
+        if (settings.isPartyDuel() && (settings.isItemBetting() || settings.getBet() > 0)) {
+            lang.sendMessage(players, "DUEL.party-start-failure.option-unavailable");
+            return false;
+        }
+
         return true;
     }
 

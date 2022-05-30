@@ -50,7 +50,6 @@ public class RequestSendButton extends BaseButton {
         }
 
         player.closeInventory();
-        // TODO make sure to check that player & target are each in the same party as the ones validated through match validators
         requestManager.send(player, target, settings);
     }
 }

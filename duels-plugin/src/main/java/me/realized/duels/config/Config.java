@@ -157,6 +157,13 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     private List<String> blacklistedCommands;
 
     @Getter
+    private int partyInviteExpiration;
+    @Getter
+    private int partyMaxSize;
+    @Getter
+    private boolean partySameSizeOnly;
+
+    @Getter
     private List<String> queueBlacklistedCommands;
 
     @Getter
@@ -342,6 +349,10 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         blockAllCommands = configuration.getBoolean("duel.block-all-commands", false);
         whitelistedCommands = configuration.getStringList("duel.whitelisted-commands");
         blacklistedCommands = configuration.getStringList("duel.blacklisted-commands");
+
+        partyInviteExpiration = configuration.getInt("party.invite-expiration", 30);
+        partyMaxSize = configuration.getInt("party.max-size", 10);
+        partySameSizeOnly = configuration.getBoolean("party.same-size-only", true);
 
         queueBlacklistedCommands = configuration.getStringList("queue.blacklisted-commands");
 
