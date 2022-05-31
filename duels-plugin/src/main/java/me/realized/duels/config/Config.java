@@ -159,6 +159,8 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private int partyInviteExpiration;
     @Getter
+    private int partyAutoDisbandAfter;
+    @Getter
     private int partyMaxSize;
     @Getter
     private boolean partySameSizeOnly;
@@ -351,6 +353,7 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         blacklistedCommands = configuration.getStringList("duel.blacklisted-commands");
 
         partyInviteExpiration = configuration.getInt("party.invite-expiration", 30);
+        partyAutoDisbandAfter = configuration.getInt("party.auto-disband-after", 10);
         partyMaxSize = configuration.getInt("party.max-size", 10);
         partySameSizeOnly = configuration.getBoolean("party.same-size-only", true);
 

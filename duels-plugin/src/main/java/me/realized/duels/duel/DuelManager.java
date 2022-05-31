@@ -310,7 +310,6 @@ public class DuelManager implements Loadable {
         return true;
     }
 
-    // TODO Check if all calls of startMatch is with actual request sender and request target.
     public boolean startMatch(final Player sender, final Player target, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
         final Party senderParty = partyManager.get(sender);
         final Party targetParty = partyManager.get(target);

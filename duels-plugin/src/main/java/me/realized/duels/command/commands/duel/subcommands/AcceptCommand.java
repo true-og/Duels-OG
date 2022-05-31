@@ -86,7 +86,7 @@ public class AcceptCommand extends BaseCommand {
             });
             bettingManager.open(settings, target, player);
         } else {
-            duelManager.startMatch(player, target, settings, null, null);
+            duelManager.startMatch(target, player, settings, null, null);
         }
     }
 }

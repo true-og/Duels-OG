@@ -20,6 +20,9 @@ public class PartyMember {
     @Getter
     private final Party party;
 
+    @Getter
+    private long lastLogout;
+
     public PartyMember(final Player player, final Party party) {
         this.creation = System.currentTimeMillis();
         this.uuid = player.getUniqueId();
@@ -35,6 +38,10 @@ public class PartyMember {
         return getPlayer() != null;
     }
     
+    public void setLastLogout() {
+        lastLogout = System.currentTimeMillis();
+    }
+
     @Override
     public boolean equals(final Object other) {
         if (this == other) {

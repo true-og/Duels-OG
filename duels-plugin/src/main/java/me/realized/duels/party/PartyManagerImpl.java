@@ -2,6 +2,7 @@ package me.realized.duels.party;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,29 +15,54 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.config.Config;
+import me.realized.duels.config.Lang;
 import me.realized.duels.util.Loadable;
 
 public class PartyManagerImpl implements Loadable, Listener {
 
+    private final DuelsPlugin plugin;
     private final Config config;
+    private final Lang lang;
 
     private final Map<UUID, Map<UUID, PartyInvite>> invites = new HashMap<>();
 
     private final Map<UUID, Party> partyMap = new HashMap<>();
     private final List<Party> parties = new ArrayList<>();
     
+    private int autoDisbandTask;
+
     public PartyManagerImpl(final DuelsPlugin plugin) {
+        this.plugin = plugin;
         this.config = plugin.getConfiguration();
+        this.lang = plugin.getLang();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
     public void handleLoad() {
-        // TODO invite expiration & party auto disband
+        if (config.getPartyAutoDisbandAfter() > 0) {
+            this.autoDisbandTask = plugin.doSyncRepeat(() -> { 
+                Iterator<Party> iterator = parties.iterator();
+
+                while (iterator.hasNext()) {
+                    final Party party = iterator.next();
+
+                    if (party.getOwner().isOnline() || System.currentTimeMillis() - party.getOwner().getLastLogout() < (config.getPartyAutoDisbandAfter() * 60 * 1000L)) {
+                        continue;
+                    }
+
+                    lang.sendMessage(party.getOnlineMembers(), "PARTY.auto-disband");
+                    party.setRemoved(true);
+                    party.getMembers().forEach(member -> partyMap.remove(member.getUuid()));
+                    iterator.remove();
+                }
+            }, 0L, 20L * 60).getTaskId();
+        }
     }
 
     @Override
     public void handleUnload() {
+        plugin.cancelTask(autoDisbandTask);
         invites.clear();
         parties.clear();
         partyMap.clear();
@@ -153,6 +179,15 @@ public class PartyManagerImpl implements Loadable, Listener {
     
     @EventHandler
     public void on(final PlayerQuitEvent event) {
-        invites.remove(event.getPlayer().getUniqueId());
+        final Player player = event.getPlayer();
+        invites.remove(player.getUniqueId());
+
+        final Party party = get(player);
+
+        if (party == null) {
+            return;
+        }
+
+        party.get(player).setLastLogout();
     }
 }
