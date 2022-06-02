@@ -373,6 +373,7 @@ COMMAND:
       - '&f/%command% accept [player] &e- &7Accepts a party invite.'
       - '&f/%command% leave &e- &7Leaves the current party.'
       - '&f/%command% kick [player] &e- &7Kicks a player from the current party.'
+      - '&f/%command% transfer [player] &e- &7Transfers the ownership of current party to player.'
       - '&f/%command% disband &e- &7Disbands the current party.'
       - '&f/%command% toggle &e- &7Enable or disable receiving party invites.'
       - '{LINE}'
