@@ -372,9 +372,9 @@ COMMAND:
       - '&f/%command% list &e- &7Lists the current party''s members.'
       - '&f/%command% accept [player] &e- &7Accepts a party invite.'
       - '&f/%command% leave &e- &7Leaves the current party.'
-      - '&f/%command% kick [player] &e- &7Kicks a player from your party.'
+      - '&f/%command% kick [player] &e- &7Kicks a player from the current party.'
       - '&f/%command% disband &e- &7Disbands the current party.'
-      - '&f/%command% toggle &e- &7Toggles party requests.'
+      - '&f/%command% toggle &e- &7Enable or disable receiving party invites.'
       - '{LINE}'
     toggle:
       enabled: '{PREFIX} &aYou are now receiving party requests.'
