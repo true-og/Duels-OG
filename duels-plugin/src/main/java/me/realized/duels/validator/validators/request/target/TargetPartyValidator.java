@@ -39,7 +39,7 @@ public class TargetPartyValidator extends BaseTriValidator<Pair<Player, Player>,
             return false;
         }
         
-        if (senderParty.size() != party.size()) {
+        if (config.isPartySameSizeOnly() && senderParty.size() != party.size()) {
             lang.sendMessage(pair.getKey(), "ERROR.party.is-not-same-size");
             return false;
         }
