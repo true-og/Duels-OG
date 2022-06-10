@@ -171,6 +171,11 @@ public class PartyManagerImpl implements Loadable, Listener {
         partyMap.remove(player.getUniqueId());
     }
 
+    public void remove(final PartyMember member, final Party party) {
+        party.remove(member);
+        partyMap.remove(member.getUuid());
+    }
+
     public void remove(final Party party) {
         party.setRemoved(true);
         party.getMembers().forEach(member -> partyMap.remove(member.getUuid()));

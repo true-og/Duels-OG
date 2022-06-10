@@ -34,6 +34,10 @@ public class Party {
         this.owner = get(owner);
     }
 
+    public PartyMember get(final String name) {
+        return members.values().stream().filter(member -> member.getName().equalsIgnoreCase(name)).findFirst().orElse(null);
+    }
+
     public PartyMember get(final Player player) {
         return members.get(player.getUniqueId());
     }
@@ -51,6 +55,10 @@ public class Party {
 
         members.put(player.getUniqueId(), new PartyMember(player, this));
         return true;
+    }
+
+    public boolean remove(final PartyMember member) {
+        return members.remove(member.getUuid()) != null;
     }
 
     public boolean remove(final Player player) {

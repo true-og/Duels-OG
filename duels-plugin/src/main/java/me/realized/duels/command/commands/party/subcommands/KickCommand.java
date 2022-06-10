@@ -1,6 +1,5 @@
 package me.realized.duels.command.commands.party.subcommands;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -8,6 +7,7 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.command.BaseCommand;
 import me.realized.duels.party.Party;
+import me.realized.duels.party.PartyMember;
 
 public class KickCommand extends BaseCommand {
     
@@ -30,26 +30,26 @@ public class KickCommand extends BaseCommand {
             return;
         }
         
+        final PartyMember member = party.get(args[1]);
 
-        final Player target = Bukkit.getPlayerExact(args[1]);
-
-        if (target == null || !player.canSee(target)) {
-            lang.sendMessage(sender, "ERROR.player.not-found", "name", args[1]);
+        if (member == null) {
+            lang.sendMessage(sender, "ERROR.party.not-a-member", "name", args[1]);
             return;
         }
-
-        if (player.equals(target)) {
+        
+        if (member.getUuid().equals(player.getUniqueId())) {
             lang.sendMessage(sender, "ERROR.party.kick-self");
             return;
         }
 
-        if (!party.isMember(target)) {
-            lang.sendMessage(sender, "ERROR.party.not-a-member", "name", target.getName());
-            return;
+        partyManager.remove(member, party);
+
+        final Player target = member.getPlayer();
+
+        if (target != null) {
+            lang.sendMessage(target, "COMMAND.party.kick.receiver", "owner", player.getName());
         }
-        
-        partyManager.remove(target, party);
-        lang.sendMessage(target, "COMMAND.party.kick.receiver", "owner", player.getName());
-        lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.kick.members", "owner", player.getName(), "name", target.getName());
+
+        lang.sendMessage(party.getOnlineMembers(), "COMMAND.party.kick.members", "owner", player.getName(), "name", member.getName());
     }
 }
