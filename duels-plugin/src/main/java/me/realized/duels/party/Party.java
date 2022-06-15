@@ -7,18 +7,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.bukkit.entity.Player;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.bukkit.entity.Player;
 
 public class Party {
     
     @Getter
     private final long creation;
-
+    @Getter
+    @Setter
+    private boolean friendlyFire;
     @Getter
     @Setter(value = AccessLevel.PACKAGE)
     private boolean removed;
@@ -81,10 +81,6 @@ public class Party {
 
     public int size() {
         return members.size();
-    }
-
-    public boolean isAllOnline() {
-        return members.values().stream().allMatch(PartyMember::isOnline);
     }
 
     public Collection<PartyMember> getMembers() {

@@ -1,37 +1,37 @@
 package me.realized.duels.command.commands.party;
 
 import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.command.BaseCommand;
-import me.realized.duels.command.commands.party.subcommands.DisbandCommand;
-import me.realized.duels.command.commands.party.subcommands.KickCommand;
 import me.realized.duels.command.commands.party.subcommands.AcceptCommand;
+import me.realized.duels.command.commands.party.subcommands.DisbandCommand;
+import me.realized.duels.command.commands.party.subcommands.FriendlyfireCommand;
+import me.realized.duels.command.commands.party.subcommands.KickCommand;
 import me.realized.duels.command.commands.party.subcommands.LeaveCommand;
 import me.realized.duels.command.commands.party.subcommands.ListCommand;
 import me.realized.duels.command.commands.party.subcommands.ToggleCommand;
 import me.realized.duels.command.commands.party.subcommands.TransferCommand;
 import me.realized.duels.data.UserData;
 import me.realized.duels.party.Party;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class PartyCommand extends BaseCommand {
     
     public PartyCommand(final DuelsPlugin plugin) {
         super(plugin, "party", Permissions.PARTY, true);
         child(
+            new ToggleCommand(plugin),
             new AcceptCommand(plugin),
             new ListCommand(plugin),
             new LeaveCommand(plugin),
             new KickCommand(plugin),
-            new DisbandCommand(plugin),
-            new ToggleCommand(plugin),
-            new TransferCommand(plugin)
+            new FriendlyfireCommand(plugin),
+            new TransferCommand(plugin),
+            new DisbandCommand(plugin)
         );
     }
 

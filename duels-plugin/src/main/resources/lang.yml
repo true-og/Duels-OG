@@ -79,6 +79,7 @@ ERROR:
       sender: '{PREFIX} &cYou cannot do this while you or your party member is in spectator mode.'
       target: '{PREFIX} &cA member of %name%''s party is in spectator mode.'
     option-unavailable: '{PREFIX} &cItem/Money Betting is currently not available for party duels.'
+    cannot-friendly-fire: '{PREFIX} &cFriendly fire is not allowed.'
   party:
     is-self: '{PREFIX} &cYou cannot create a party with yourself.'
     is-not-owner: '{PREFIX} &cYou must be the owner of this party to do this.'
@@ -368,14 +369,15 @@ COMMAND:
   party:
     usage:
       - '{LINE}'
+      - '&f/%command% toggle &e- &7Enable or disable receiving party invites.'
       - '&f/%command% [player] &e- &7Sends a party invite to a player.'
       - '&f/%command% list &e- &7Lists the current party''s members.'
       - '&f/%command% accept [player] &e- &7Accepts a party invite.'
       - '&f/%command% leave &e- &7Leaves the current party.'
-      - '&f/%command% kick [player] &e- &7Kicks a player from the current party.'
-      - '&f/%command% transfer [player] &e- &7Transfers the ownership of current party to player.'
+      - '&f/%command% kick [player] &e- &7Kicks a player from your party.'
+      - '&f/%command% friendlyfire &e- &7Enable or disable friendly fire for your party.'
+      - '&f/%command% transfer [player] &e- &7Transfers the ownership of your party to player.'
       - '&f/%command% disband &e- &7Disbands the current party.'
-      - '&f/%command% toggle &e- &7Enable or disable receiving party invites.'
       - '{LINE}'
     toggle:
       enabled: '{PREFIX} &aYou are now receiving party requests.'
@@ -423,6 +425,15 @@ COMMAND:
       - '{LINE}'
       - '{PREFIX} &f%owner% &7has kicked &f%name% &7from the party!'
       - '{LINE}'
+    friendly-fire:
+      enabled:
+       - '{LINE}'
+       - '{PREFIX} &cFriendly fire is now enabled!'
+       - '{LINE}'
+      enabled:
+       - '{LINE}'
+       - '{PREFIX} &cYFriendly fire is now disabled!'
+       - '{LINE}'
     transfer:
     - '{LINE}'
     - '{PREFIX} &f%owner% &7has transferred the party to &f%name%&7.'

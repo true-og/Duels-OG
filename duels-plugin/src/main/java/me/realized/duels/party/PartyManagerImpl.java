@@ -6,17 +6,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
+import me.realized.duels.DuelsPlugin;
+import me.realized.duels.config.Config;
+import me.realized.duels.config.Lang;
+import me.realized.duels.util.EventUtil;
+import me.realized.duels.util.Loadable;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-
-import me.realized.duels.DuelsPlugin;
-import me.realized.duels.config.Config;
-import me.realized.duels.config.Lang;
-import me.realized.duels.util.Loadable;
 
 public class PartyManagerImpl implements Loadable, Listener {
 
@@ -156,6 +156,16 @@ public class PartyManagerImpl implements Loadable, Listener {
         return get(player) != null;
     }
 
+    public boolean canDamage(final Player damager, final Player damaged) {
+        final Party party = get(damager);
+
+        if (party == null || !party.equals(get(damaged))) {
+            return true;
+        }
+
+        return party.isFriendlyFire();
+    }
+
     public boolean join(final Player player, final Party party) {
         if (party.size() >= config.getPartyMaxSize()) {
             return false;
@@ -180,6 +190,23 @@ public class PartyManagerImpl implements Loadable, Listener {
         party.setRemoved(true);
         party.getMembers().forEach(member -> partyMap.remove(member.getUuid()));
         parties.remove(party);
+    }
+
+    @EventHandler
+    public void on(final EntityDamageByEntityEvent event) {
+        if (!event.isCancelled() || !(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        final Player damaged = (Player) event.getEntity();
+        final Player damager = EventUtil.getDamager(event);
+
+        if (damager == null || canDamage(damager, damaged)) {
+            return;
+        }
+
+        event.setCancelled(true);
+        lang.sendMessage(damager, "ERROR.party.cannot-friendly-fire", "name", damaged.getName());
     }
     
     @EventHandler

@@ -28,13 +28,13 @@ import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.teleport.Teleport;
 import me.realized.duels.util.BlockUtil;
+import me.realized.duels.util.EventUtil;
 import me.realized.duels.util.Loadable;
 import me.realized.duels.util.PlayerUtil;
 import me.realized.duels.util.compat.CompatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockCanBuildEvent;
@@ -357,17 +357,9 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
 
         @EventHandler(ignoreCancelled = true)
         public void on(final EntityDamageByEntityEvent event) {
-            final Player player;
+            final Player damager = EventUtil.getDamager(event);
 
-            if (event.getDamager() instanceof Player) {
-                player = (Player) event.getDamager();
-            } else if (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
-                player = (Player) ((Projectile) event.getDamager()).getShooter();
-            } else {
-                return;
-            }
-
-            if (!isSpectating(player)) {
+            if (damager == null || !isSpectating(damager)) {
                 return;
             }
 

@@ -3,6 +3,7 @@ package me.realized.duels.listeners;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.arena.ArenaManagerImpl;
+import me.realized.duels.party.PartyManagerImpl;
 import me.realized.duels.util.EventUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -17,9 +18,11 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 public class DamageListener implements Listener {
 
     private final ArenaManagerImpl arenaManager;
+    private final PartyManagerImpl partyManager;
 
     public DamageListener(final DuelsPlugin plugin) {
         this.arenaManager = plugin.getArenaManager();
+        this.partyManager = plugin.getPartyManager();
 
         if (plugin.getConfiguration().isForceAllowCombat()) {
             plugin.doSyncAfter(() -> Bukkit.getPluginManager().registerEvents(this, plugin), 1L);
@@ -32,17 +35,16 @@ public class DamageListener implements Listener {
             return;
         }
 
-        final Player player = (Player) event.getEntity();
+        final Player damaged = (Player) event.getEntity();
         final Player damager = EventUtil.getDamager(event);
 
         if (damager == null) {
             return;
         }
 
-        final ArenaImpl arena = arenaManager.get(player);
+        final ArenaImpl arena = arenaManager.get(damaged);
 
-        // Only activate when winner is undeclared
-        if (arena == null || !arenaManager.isInMatch(damager) || arena.isEndGame()) {
+        if (arena == null || !arenaManager.isInMatch(damager) || arena.isEndGame() || !partyManager.canDamage(damager, damaged)) {
             return;
         }
 
