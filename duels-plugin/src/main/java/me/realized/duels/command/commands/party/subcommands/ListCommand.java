@@ -2,17 +2,15 @@ package me.realized.duels.command.commands.party.subcommands;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.command.BaseCommand;
 import me.realized.duels.party.Party;
 import me.realized.duels.party.PartyMember;
 import me.realized.duels.util.StringUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class ListCommand extends BaseCommand {
     
@@ -80,7 +78,7 @@ public class ListCommand extends BaseCommand {
             "members_count", memberNames.size(),
             "members", !memberNames.isEmpty() ? StringUtil.join(memberNames, ", ") : lang.getMessage("GENERAL.none"),
             "online_count", onlineNames.size(),
-            "online_members", !memberNames.isEmpty() ? StringUtil.join(memberNames, ", ") : lang.getMessage("GENERAL.none"),
+            "online_members", !onlineNames.isEmpty() ? StringUtil.join(onlineNames, ", ") : lang.getMessage("GENERAL.none"),
             "owner", party.getOwner().getName()
         );
     }
