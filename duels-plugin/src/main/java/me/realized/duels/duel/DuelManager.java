@@ -8,30 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Firework;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.FireworkMeta;
-
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.match.MatchEndEvent.Reason;
 import me.realized.duels.api.event.match.MatchStartEvent;
@@ -62,6 +38,28 @@ import me.realized.duels.util.compat.CompatUtil;
 import me.realized.duels.util.compat.Titles;
 import me.realized.duels.util.inventory.InventoryUtil;
 import me.realized.duels.util.validator.ValidatorUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 
 public class DuelManager implements Loadable {
 
@@ -404,6 +402,15 @@ public class DuelManager implements Loadable {
             }
             
             inventoryManager.create(player, true);
+
+            final Player killer = player.getKiller();
+
+            if (killer != null) {
+                final double health = Math.ceil(killer.getHealth()) * 0.5;
+                arena.broadcast(lang.getMessage("DUEL.on-death.with-killer", "name", player.getName(), "killer", killer.getName(), "health", health));
+            } else {
+                arena.broadcast(lang.getMessage("DUEL.on-death.no-killer", "name", player.getName()));
+            }
 
             final int prevSize = match.size();
             arena.remove(player);

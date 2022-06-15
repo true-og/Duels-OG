@@ -1,6 +1,5 @@
 package me.realized.duels.arena;
 
-import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,6 +26,7 @@ import me.realized.duels.match.party.PartyDuelMatch;
 import me.realized.duels.party.Party;
 import me.realized.duels.queue.Queue;
 import me.realized.duels.setting.Settings;
+import me.realized.duels.spectate.SpectatorImpl;
 import me.realized.duels.util.compat.Items;
 import me.realized.duels.util.inventory.ItemBuilder;
 import org.bukkit.Bukkit;
@@ -229,12 +229,8 @@ public class ArenaImpl extends BaseButton implements Arena {
     }
 
     public void broadcast(final String message) {
-        final List<Player> receivers = Lists.newArrayList(getPlayers());
-        spectateManager.getSpectatorsImpl(this)
-            .stream()
-            .map(spectator -> Bukkit.getPlayer(spectator.getUuid()))
-            .forEach(receivers::add);
-        receivers.forEach(player -> player.sendMessage(message));
+        getPlayers().forEach(player -> player.sendMessage(message));
+        spectateManager.getSpectatorsImpl(this).stream().map(SpectatorImpl::getPlayer).filter(Objects::nonNull).forEach(player -> player.sendMessage(message));
     }
 
     @Override

@@ -476,11 +476,14 @@ DUEL:
     teleportation: '&cYou cannot teleport while in a duel.'
     inventory-open: '&cYou cannot open inventories while in a duel.'
   projectile-hit-message: '{PREFIX} &f%name% &7is now at &d%health%❤&7!'
+  on-death:
+    with-killer: '{PREFIX} &a%killer% &7has slain &c%name% &7with &d%health%❤&7.'
+    no-killer: '{PREFIX} &c%name% &7died.'
   on-end:
     tie: '{PREFIX} &7Tie Game!'
     plugin-disable: '{PREFIX} &cPlugin is disabling! Ending match automatically.'
-    opponent-defeat: '{PREFIX} &f%winner% &a(%winner_rating%) (+%change%) &7defeated &f%loser% &c(%loser_rating%) (-%change%) &7on kit &3%kit% &7with &d%health%❤&7.'
-    party-opponent-defeat: '{PREFIX} &f%winners% &7defeated &f%losers% &7on kit &3%kit%&7.'
+    opponent-defeat: '{PREFIX} &f%winner% &a(%winner_rating%) (+%change%) &7defeated &f%loser% &c(%loser_rating%) (-%change%) &7with kit &3%kit% &7on arena &e%arena%&7.'
+    party-opponent-defeat: '{PREFIX} &f%winners% &7defeated &f%losers% &7with kit &3%kit% &7on arena &e%arena%&7.'
   inventories:
     message: '&7Inventories (click on the name to view): '
     name-color: '&b'
