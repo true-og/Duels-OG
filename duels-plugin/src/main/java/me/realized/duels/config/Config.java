@@ -1,22 +1,19 @@
 package me.realized.duels.config;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
-import me.realized.duels.config.converters.config.ConfigConverter12;
 import me.realized.duels.config.converters.config.ConfigConverter10;
+import me.realized.duels.config.converters.config.ConfigConverter12;
 import me.realized.duels.util.EnumUtil;
 import me.realized.duels.util.config.AbstractConfiguration;
 import me.realized.duels.util.config.convert.ConverterUtil;
-
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -131,6 +128,8 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     private boolean cancelIfMoved;
     @Getter
     private List<String> blacklistedWorlds;
+    @Getter
+    private boolean sendDeathMessages;
     @Getter
     private boolean teleportToLastLocation;
     @Getter
@@ -339,6 +338,7 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         forceAllowCombat = configuration.getBoolean("duel.force-allow-combat", true);
         cancelIfMoved = configuration.getBoolean("duel.cancel-if-moved", false);
         blacklistedWorlds = configuration.getStringList("duel.blacklisted-worlds");
+        sendDeathMessages = configuration.getBoolean("duel.send-death-messages", true);
         teleportToLastLocation = configuration.getBoolean("duel.teleport-to-last-location", false);
         teleportDelay = configuration.getInt("duel.teleport-delay", 5);
         spawnFirework = configuration.getBoolean("duel.spawn-firework", true);

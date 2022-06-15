@@ -403,13 +403,15 @@ public class DuelManager implements Loadable {
             
             inventoryManager.create(player, true);
 
-            final Player killer = player.getKiller();
+            if (config.isSendDeathMessages()) {
+                final Player killer = player.getKiller();
 
-            if (killer != null) {
-                final double health = Math.ceil(killer.getHealth()) * 0.5;
-                arena.broadcast(lang.getMessage("DUEL.on-death.with-killer", "name", player.getName(), "killer", killer.getName(), "health", health));
-            } else {
-                arena.broadcast(lang.getMessage("DUEL.on-death.no-killer", "name", player.getName()));
+                if (killer != null) {
+                    final double health = Math.ceil(killer.getHealth()) * 0.5;
+                    arena.broadcast(lang.getMessage("DUEL.on-death.with-killer", "name", player.getName(), "killer", killer.getName(), "health", health));
+                } else {
+                    arena.broadcast(lang.getMessage("DUEL.on-death.no-killer", "name", player.getName()));
+                }
             }
 
             final int prevSize = match.size();

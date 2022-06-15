@@ -235,6 +235,10 @@ duel:
   blacklisted-worlds:
     - 'world_name_here'
 
+  # If set to 'true', death messages will be sent to players in match & spectators of the arena.
+  # default: true
+  send-death-messages: true
+
   # If set to 'true', players will be teleported to the location where they were before the duel instead of duel lobby.
   # default: false
   teleport-to-last-location: false
