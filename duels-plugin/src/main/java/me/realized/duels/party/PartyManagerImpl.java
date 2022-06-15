@@ -194,7 +194,7 @@ public class PartyManagerImpl implements Loadable, Listener {
 
     @EventHandler
     public void on(final EntityDamageByEntityEvent event) {
-        if (!event.isCancelled() || !(event.getEntity() instanceof Player)) {
+        if (!(event.getEntity() instanceof Player)) {
             return;
         }
 

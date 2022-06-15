@@ -79,7 +79,6 @@ ERROR:
       sender: '{PREFIX} &cYou cannot do this while you or your party member is in spectator mode.'
       target: '{PREFIX} &cA member of %name%''s party is in spectator mode.'
     option-unavailable: '{PREFIX} &cItem/Money Betting is currently not available for party duels.'
-    cannot-friendly-fire: '{PREFIX} &cFriendly fire is not allowed.'
   party:
     is-self: '{PREFIX} &cYou cannot create a party with yourself.'
     is-not-owner: '{PREFIX} &cYou must be the owner of this party to do this.'
@@ -104,6 +103,7 @@ ERROR:
     max-size-reached:
       sender: '{PREFIX} &cYour party has reached the maximum number of members!'
       target: '{PREFIX} &c%name%''s Party has reached the maximum number of members!'
+    cannot-friendly-fire: '{PREFIX} &cFriendly fire is not allowed.'
   setting:
     disabled-option: '{PREFIX} &c%option% is currently disabled.'
     arena-not-applicable: '{PREFIX} &cYou cannot use kit %kit% on arena %arena%.'
@@ -428,11 +428,11 @@ COMMAND:
     friendly-fire:
       enabled:
        - '{LINE}'
-       - '{PREFIX} &cFriendly fire is now enabled!'
+       - '{PREFIX} &cFriendly fire &7is now &aenabled&7!'
        - '{LINE}'
-      enabled:
+      disabled:
        - '{LINE}'
-       - '{PREFIX} &cYFriendly fire is now disabled!'
+       - '{PREFIX} &cFriendly fire &7is now &cdisabled&7!'
        - '{LINE}'
     transfer:
     - '{LINE}'
