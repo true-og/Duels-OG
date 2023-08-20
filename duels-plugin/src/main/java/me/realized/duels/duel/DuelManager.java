@@ -247,7 +247,7 @@ public class DuelManager implements Loadable {
 
             final String title = lang.getMessage("DUEL.reward.money.title", "name", opponentName, "money", amount);
 
-            if (title != null) {
+            if (title != null && config.isVictoryTitleEnabled()) {
                 Titles.send(player, title, null, 0, 20, 50);
             }
         }

@@ -147,6 +147,9 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     private List<String> whitelistedCommands;
     @Getter
     private List<String> blacklistedCommands;
+    
+    @Getter
+    private boolean isVictoryTitleEnabled;
 
     @Getter
     private List<String> queueBlacklistedCommands;
@@ -327,6 +330,7 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         blockAllCommands = configuration.getBoolean("duel.block-all-commands", false);
         whitelistedCommands = configuration.getStringList("duel.whitelisted-commands");
         blacklistedCommands = configuration.getStringList("duel.blacklisted-commands");
+        isVictoryTitleEnabled = configuration.getBoolean("duel.enable-victory-title");
 
         queueBlacklistedCommands = configuration.getStringList("queue.blacklisted-commands");
 
