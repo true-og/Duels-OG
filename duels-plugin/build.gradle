@@ -45,7 +45,7 @@ dependencies {
 }
 
 shadowJar {
-    getDestinationDirectory().set(file("$rootDir/out/"))
+    getDestinationDirectory().set(file("$rootDir/build/libs/"))
 
     final String archiveName = parent.name + '-' + project.version + '.jar'
     getArchiveFileName().set(archiveName)
