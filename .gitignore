@@ -1,9 +1,13 @@
 .DS_Store
 .gradle/
 .idea/
-.project
-.settings
-.classpath
+
+# Intellij
 bin/
 build/
 out/
+
+# Eclipse
+.classpath
+.project
+.settings/
