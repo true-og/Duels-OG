@@ -18,7 +18,6 @@ public interface QueueSign {
     @NotNull
     Location getLocation();
 
-
     /**
      * The {@link DQueue} that is linked with this {@link QueueSign}.
      *
@@ -26,7 +25,6 @@ public interface QueueSign {
      */
     @NotNull
     DQueue getQueue();
-
 
     /**
      * Whether or not this {@link QueueSign} has been removed.

@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Match {
 
-
     /**
      * The {@link Arena} this {@link Match} is taking place in.
      *
@@ -22,7 +21,6 @@ public interface Match {
      */
     @NotNull
     Arena getArena();
-
 
     /**
      * The start of this match {@link Match} milliseconds.
@@ -32,7 +30,6 @@ public interface Match {
      */
     long getStart();
 
-
     /**
      * The {@link Kit} used in this {@link Match}.
      *
@@ -40,7 +37,6 @@ public interface Match {
      */
     @Nullable
     Kit getKit();
-
 
     /**
      * UnmodifiableList of ItemStacks the player has bet for this {@link Match}.
@@ -51,14 +47,12 @@ public interface Match {
     @NotNull
     List<ItemStack> getItems(@NotNull final Player player);
 
-
     /**
      * The bet amount for this {@link Match}.
      *
      * @return bet Bet amount for this {@link Match} or 0 if no bet was specified.
      */
     int getBet();
-
 
     /**
      * Whether or not this {@link Match} is finished.
@@ -68,7 +62,6 @@ public interface Match {
      */
     boolean isFinished();
 
-
     /**
      * UnmodifiableSet of alive players in this {@link Match}.
      *
@@ -77,7 +70,6 @@ public interface Match {
      */
     @NotNull
     Set<Player> getPlayers();
-
 
     /**
      * UnmodifiableSet of players who started this {@link Match}.

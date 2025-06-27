@@ -15,7 +15,8 @@ public class SavekitCommand extends BaseCommand {
 
     @Override
     protected void execute(final CommandSender sender, final String label, final String[] args) {
-        final String[] argsNoOptions = Arrays.stream(args).filter(s -> !s.startsWith("-")).toArray(String[]::new);
+        final String[] argsNoOptions =
+                Arrays.stream(args).filter(s -> !s.startsWith("-")).toArray(String[]::new);
         final String name = StringUtil.join(argsNoOptions, " ", 1, argsNoOptions.length);
 
         if (!StringUtil.isAlphanumeric(name)) {

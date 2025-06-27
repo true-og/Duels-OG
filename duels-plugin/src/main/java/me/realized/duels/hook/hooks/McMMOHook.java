@@ -26,7 +26,8 @@ public class McMMOHook extends PluginHook<DuelsPlugin> {
             return;
         }
 
-        final PermissionAttachment attachment = attachments.computeIfAbsent(player.getUniqueId(), result -> player.addAttachment(plugin));
+        final PermissionAttachment attachment =
+                attachments.computeIfAbsent(player.getUniqueId(), result -> player.addAttachment(plugin));
         attachment.setPermission("mcmmo.skills.*", false);
         player.recalculatePermissions();
     }

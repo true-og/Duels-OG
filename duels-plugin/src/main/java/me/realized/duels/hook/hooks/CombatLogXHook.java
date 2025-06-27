@@ -26,14 +26,16 @@ public class CombatLogXHook extends PluginHook<DuelsPlugin> {
         try {
             Class.forName("com.SirBlobman.combatlogx.api.event.PlayerPreTagEvent");
         } catch (ClassNotFoundException ex) {
-            throw new RuntimeException("This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
+            throw new RuntimeException(
+                    "This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
         }
 
         Bukkit.getPluginManager().registerEvents(new CombatLogXListener(), plugin);
     }
 
     public boolean isTagged(final Player player) {
-        return config.isClxPreventDuel() && ((ICombatLogX) getPlugin()).getCombatManager().isInCombat(player);
+        return config.isClxPreventDuel()
+                && ((ICombatLogX) getPlugin()).getCombatManager().isInCombat(player);
     }
 
     public class CombatLogXListener implements Listener {

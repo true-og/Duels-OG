@@ -17,7 +17,6 @@ public interface MatchInfo {
     @NotNull
     String getWinner();
 
-
     /**
      * The name of the loser of this match.
      *
@@ -25,7 +24,6 @@ public interface MatchInfo {
      */
     @NotNull
     String getLoser();
-
 
     /**
      * The name of the kit used in this match or null if no kit was used.
@@ -35,7 +33,6 @@ public interface MatchInfo {
     @Nullable
     String getKit();
 
-
     /**
      * The created timestamp of this match info in milliseconds.
      * Note: Uses {@link GregorianCalendar#getTimeInMillis()}.
@@ -44,14 +41,12 @@ public interface MatchInfo {
      */
     long getCreation();
 
-
     /**
      * The duration of this match in milliseconds.
      *
      * @return Duration of this match in milliseconds.
      */
     long getDuration();
-
 
     /**
      * The winner's finishing health.

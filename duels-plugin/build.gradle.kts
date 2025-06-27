@@ -34,8 +34,9 @@ tasks.named<ShadowJar>("shadowJar") {
     relocate("com.fasterxml.jackson.core", "${relocateBase}jackson-core")
 }
 
-tasks.named("build") {
-    dependsOn("shadowJar")
+tasks.build {
+    dependsOn(tasks.spotlessApply)
+    dependsOn(tasks.shadowJar)
 }
 
 dependencies {

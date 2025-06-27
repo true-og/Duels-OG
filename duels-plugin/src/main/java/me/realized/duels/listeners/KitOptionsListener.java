@@ -45,7 +45,9 @@ public class KitOptionsListener implements Listener {
         this.arenaManager = plugin.getArenaManager();
 
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        Bukkit.getPluginManager().registerEvents(CompatUtil.isPre1_14() ? new ComboPre1_14Listener() : new ComboPost1_14Listener(), plugin);
+        Bukkit.getPluginManager()
+                .registerEvents(
+                        CompatUtil.isPre1_14() ? new ComboPre1_14Listener() : new ComboPost1_14Listener(), plugin);
     }
 
     private boolean isEnabled(final ArenaImpl arena, final Characteristic characteristic) {
@@ -132,7 +134,9 @@ public class KitOptionsListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void on(final EntityRegainHealthEvent event) {
-        if (!(event.getEntity() instanceof Player) || !(event.getRegainReason() == RegainReason.SATIATED || event.getRegainReason() == RegainReason.REGEN)) {
+        if (!(event.getEntity() instanceof Player)
+                || !(event.getRegainReason() == RegainReason.SATIATED
+                        || event.getRegainReason() == RegainReason.REGEN)) {
             return;
         }
 

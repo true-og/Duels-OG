@@ -45,7 +45,8 @@ public class SetratingCommand extends BaseCommand {
     }
 
     @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
+    public List<String> onTabComplete(
+            final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 3) {
             return handleTabCompletion(args[2], kitManager.getNames(true));
         }

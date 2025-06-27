@@ -15,7 +15,8 @@ public class RequestSendEvent extends RequestEvent implements Cancellable {
 
     private boolean cancelled;
 
-    public RequestSendEvent(@NotNull final Player source, @NotNull final Player target, @NotNull final Request request) {
+    public RequestSendEvent(
+            @NotNull final Player source, @NotNull final Player target, @NotNull final Request request) {
         super(source, target, request);
     }
 

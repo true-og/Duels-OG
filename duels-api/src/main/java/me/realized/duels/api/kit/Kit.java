@@ -19,7 +19,6 @@ public interface Kit {
     @NotNull
     String getName();
 
-
     /**
      * The item displayed in the kit selector gui.
      *
@@ -27,7 +26,6 @@ public interface Kit {
      */
     @NotNull
     ItemStack getDisplayed();
-
 
     /**
      * Whether or not this kit requires a permission.
@@ -37,14 +35,12 @@ public interface Kit {
      */
     boolean isUsePermission();
 
-
     /**
      * Enables or disables usePermission for this kit.
      *
      * @param usePermission True to enable usePermission. False otherwise.
      */
     void setUsePermission(final boolean usePermission);
-
 
     /**
      * Whether or not this kit has arenaSpecific enabled.
@@ -54,14 +50,12 @@ public interface Kit {
      */
     boolean isArenaSpecific();
 
-
     /**
      * Enables or disables arenaSpecific for this kit.
      *
      * @param arenaSpecific True to enable arenaSpecific. False otherwise.
      */
     void setArenaSpecific(final boolean arenaSpecific);
-
 
     /**
      * Equips the {@link Player} with the contents of this kit.
@@ -71,7 +65,6 @@ public interface Kit {
      * @return True if {@link Player} has successfully equipped this kit. False otherwise.
      */
     boolean equip(@NotNull final Player player);
-
 
     /**
      * Whether or not this {@link Kit} has been removed.

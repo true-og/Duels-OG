@@ -11,7 +11,11 @@ import org.bukkit.entity.Player;
 public class RequestDetailsButton extends BaseButton {
 
     public RequestDetailsButton(final DuelsPlugin plugin) {
-        super(plugin, ItemBuilder.of(Items.SIGN).name(plugin.getLang().getMessage("GUI.settings.buttons.details.name")).build());
+        super(
+                plugin,
+                ItemBuilder.of(Items.SIGN)
+                        .name(plugin.getLang().getMessage("GUI.settings.buttons.details.name"))
+                        .build());
     }
 
     @Override
@@ -26,14 +30,20 @@ public class RequestDetailsButton extends BaseButton {
             return;
         }
 
-        final String lore = lang.getMessage("GUI.settings.buttons.details.lore",
-            "opponent", target.getName(),
-            "kit", settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected"),
-            "own_inventory", settings.isOwnInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),
-            "arena", settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random"),
-            "item_betting", settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),
-            "bet_amount", settings.getBet()
-        );
+        final String lore = lang.getMessage(
+                "GUI.settings.buttons.details.lore",
+                "opponent",
+                target.getName(),
+                "kit",
+                settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected"),
+                "own_inventory",
+                settings.isOwnInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),
+                "arena",
+                settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random"),
+                "item_betting",
+                settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),
+                "bet_amount",
+                settings.getBet());
         setLore(lore.split("\n"));
     }
 }

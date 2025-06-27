@@ -26,7 +26,8 @@ public class CombatTagPlusHook extends PluginHook<DuelsPlugin> {
     }
 
     public boolean isTagged(final Player player) {
-        return config.isCtpPreventDuel() && ((CombatTagPlus) getPlugin()).getTagManager().isTagged(player.getUniqueId());
+        return config.isCtpPreventDuel()
+                && ((CombatTagPlus) getPlugin()).getTagManager().isTagged(player.getUniqueId());
     }
 
     public class CombatTagPlusListener implements Listener {

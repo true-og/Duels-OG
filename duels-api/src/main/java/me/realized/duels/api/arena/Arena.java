@@ -23,7 +23,6 @@ public interface Arena {
     @NotNull
     String getName();
 
-
     /**
      * Whether or not this arena is currently disabled.
      *
@@ -31,7 +30,6 @@ public interface Arena {
      * @see #setDisabled(CommandSender, boolean)
      */
     boolean isDisabled();
-
 
     /**
      * Disables this arena which prevents it from being used in duels.
@@ -43,7 +41,6 @@ public interface Arena {
      */
     boolean setDisabled(@Nullable final CommandSender source, final boolean disabled);
 
-
     /**
      * Calls {@link #setDisabled(CommandSender, boolean)} with the source being null.
      *
@@ -51,7 +48,6 @@ public interface Arena {
      * @see #setDisabled(CommandSender, boolean)
      */
     boolean setDisabled(final boolean disabled);
-
 
     /**
      * The spawnpoint set for the position number.
@@ -61,7 +57,6 @@ public interface Arena {
      */
     @Nullable
     Location getPosition(final int pos);
-
 
     /**
      * Sets a spawnpoint with the given position and location.
@@ -74,7 +69,6 @@ public interface Arena {
      */
     boolean setPosition(@Nullable final Player source, final int pos, @NotNull final Location location);
 
-
     /**
      * Calls {@link #setPosition(Player, int, Location)} with the source being null.
      *
@@ -83,14 +77,12 @@ public interface Arena {
      */
     boolean setPosition(final int pos, @NotNull final Location location);
 
-
     /**
      * Whether or not a duel is currently being played in this arena. If returned true, {@link #getMatch()} is guaranteed to return a {@link Match} instance.
      *
      * @return True if this arena is in use. False otherwise.
      */
     boolean isUsed();
-
 
     /**
      * The {@link Match} being played in this arena. May be null if no match is being played.
@@ -100,7 +92,6 @@ public interface Arena {
     @Nullable
     Match getMatch();
 
-
     /**
      * Whether or not the player is playing in this arena.
      *
@@ -108,7 +99,6 @@ public interface Arena {
      * @return True if the player is in this arena. False otherwise.
      */
     boolean has(@NotNull final Player player);
-
 
     /**
      * Whether or not this {@link Arena} has been removed.

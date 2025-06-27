@@ -9,7 +9,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 public final class Identifiers {
 
-    private static transient final String DUELS_ITEM_IDENTIFIER = "DuelsKitContent";
+    private static final transient String DUELS_ITEM_IDENTIFIER = "DuelsKitContent";
 
     public static ItemStack addIdentifier(final ItemStack item) {
         if (CompatUtil.isPre1_14()) {
@@ -18,7 +18,6 @@ public final class Identifiers {
 
         final NamespacedKey key = new NamespacedKey(DuelsPlugin.getInstance(), DUELS_ITEM_IDENTIFIER);
         final ItemMeta meta = item.getItemMeta();
-
 
         meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
         item.setItemMeta(meta);

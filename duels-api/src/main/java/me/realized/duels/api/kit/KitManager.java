@@ -22,7 +22,6 @@ public interface KitManager {
     @Nullable
     Kit get(@NotNull final String name);
 
-
     /**
      * Creates a kit with given name and {@link Player}'s inventory contents.
      * Note: Calls {@link KitCreateEvent} on successful creation.
@@ -33,7 +32,6 @@ public interface KitManager {
      */
     @Nullable
     Kit create(@NotNull final Player creator, @NotNull final String name);
-
 
     /**
      * Removes a kit with given name.
@@ -46,7 +44,6 @@ public interface KitManager {
     @Nullable
     Kit remove(@Nullable CommandSender source, @NotNull final String name);
 
-
     /**
      * Calls {@link #remove(CommandSender, String)} with source being null.
      *
@@ -54,7 +51,6 @@ public interface KitManager {
      */
     @Nullable
     Kit remove(@NotNull final String name);
-
 
     /**
      * An UnmodifiableList of {@link Kit}s that are currently loaded.

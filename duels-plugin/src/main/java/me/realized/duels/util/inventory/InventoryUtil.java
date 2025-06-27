@@ -66,7 +66,8 @@ public final class InventoryUtil {
     public static boolean hasItem(final Player player) {
         final PlayerInventory inventory = player.getInventory();
 
-        for (final ItemStack item : ObjectArrays.concat(inventory.getArmorContents(), inventory.getContents(), ItemStack.class)) {
+        for (final ItemStack item :
+                ObjectArrays.concat(inventory.getArmorContents(), inventory.getContents(), ItemStack.class)) {
             if (item != null && item.getType() != Material.AIR) {
                 return true;
             }
@@ -80,7 +81,8 @@ public final class InventoryUtil {
             return false;
         }
 
-        final Map<Integer, ItemStack> result = player.getInventory().addItem(items.stream().filter(Objects::nonNull).toArray(ItemStack[]::new));
+        final Map<Integer, ItemStack> result = player.getInventory()
+                .addItem(items.stream().filter(Objects::nonNull).toArray(ItemStack[]::new));
 
         if (!result.isEmpty()) {
             result.values().forEach(item -> player.getWorld().dropItemNaturally(player.getLocation(), item));
@@ -94,5 +96,4 @@ public final class InventoryUtil {
     }
 
     private InventoryUtil() {}
-
 }

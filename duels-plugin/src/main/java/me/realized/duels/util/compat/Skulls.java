@@ -23,17 +23,17 @@ public final class Skulls {
     private static final Method SET_PROFILE;
 
     private static final LoadingCache<Player, GameProfile> cache = CacheBuilder.newBuilder()
-        .maximumSize(1000)
-        .weakKeys()
-        .expireAfterAccess(1, TimeUnit.HOURS)
-        .build(new CacheLoader<Player, GameProfile>() {
+            .maximumSize(1000)
+            .weakKeys()
+            .expireAfterAccess(1, TimeUnit.HOURS)
+            .build(new CacheLoader<Player, GameProfile>() {
 
                 @Override
-                public GameProfile load(@NotNull final Player player) throws InvocationTargetException, IllegalAccessException {
+                public GameProfile load(@NotNull final Player player)
+                        throws InvocationTargetException, IllegalAccessException {
                     return getProfile(player);
                 }
-            }
-        );
+            });
 
     static {
         final Class<?> CB_PLAYER = ReflectionUtil.getCBClass("entity.CraftPlayer");
@@ -44,8 +44,9 @@ public final class Skulls {
         SET_PROFILE = ReflectionUtil.getDeclaredMethodUnsafe(CB_SKULL_META, "setProfile", GameProfile.class);
     }
 
-    private static GameProfile getProfile(final Player player) throws InvocationTargetException, IllegalAccessException {
-       return (GameProfile) GET_PROFILE.invoke(player);
+    private static GameProfile getProfile(final Player player)
+            throws InvocationTargetException, IllegalAccessException {
+        return (GameProfile) GET_PROFILE.invoke(player);
     }
 
     /**

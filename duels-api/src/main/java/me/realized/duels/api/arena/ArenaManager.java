@@ -19,7 +19,6 @@ public interface ArenaManager {
     @Nullable
     Arena get(@NotNull final String name);
 
-
     /**
      * Attempts to find an {@link Arena} instance that contains the player.
      *
@@ -29,7 +28,6 @@ public interface ArenaManager {
     @Nullable
     Arena get(@NotNull final Player player);
 
-
     /**
      * Whether or not the given player is in a match. If returned true, {@link #get(Player)} is guaranteed to return a {@link Arena} instance.
      *
@@ -37,7 +35,6 @@ public interface ArenaManager {
      * @return True if player was in a match. False otherwise.
      */
     boolean isInMatch(@NotNull final Player player);
-
 
     /**
      * An UnmodifiableList of {@link Arena}s that are currently loaded.

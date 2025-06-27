@@ -29,7 +29,8 @@ public class SettingsManager implements Loadable, Listener {
         cache.clear();
     }
 
-    // Only one Settings instance stays in memory while player is online; no need for manual removal of gui from GuiListener
+    // Only one Settings instance stays in memory while player is online; no need for manual removal of gui from
+    // GuiListener
     public Settings getSafely(final Player player) {
         return cache.computeIfAbsent(player.getUniqueId(), result -> new Settings(plugin, player));
     }

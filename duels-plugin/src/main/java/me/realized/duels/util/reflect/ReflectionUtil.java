@@ -40,7 +40,8 @@ public final class ReflectionUtil {
 
     public static Class<?> getNMSClass(final String name, final boolean logError) {
         try {
-            return Class.forName("net.minecraft" + (getMajorVersion() < 17 ? (".server." + PACKAGE_VERSION) : "") + "." + name);
+            return Class.forName(
+                    "net.minecraft" + (getMajorVersion() < 17 ? (".server." + PACKAGE_VERSION) : "") + "." + name);
         } catch (ClassNotFoundException ex) {
             if (logError) {
                 Log.error(ex.getMessage(), ex);
@@ -79,7 +80,8 @@ public final class ReflectionUtil {
         }
     }
 
-    private static Method findDeclaredMethod(final Class<?> clazz, final String name, final Class<?>... parameters) throws NoSuchMethodException {
+    private static Method findDeclaredMethod(final Class<?> clazz, final String name, final Class<?>... parameters)
+            throws NoSuchMethodException {
         final Method method = clazz.getDeclaredMethod(name, parameters);
         method.setAccessible(true);
         return method;
@@ -94,7 +96,8 @@ public final class ReflectionUtil {
         }
     }
 
-    public static Method getDeclaredMethodUnsafe(final Class<?> clazz, final String name, final Class<?>... parameters) {
+    public static Method getDeclaredMethodUnsafe(
+            final Class<?> clazz, final String name, final Class<?>... parameters) {
         try {
             return findDeclaredMethod(clazz, name, parameters);
         } catch (NoSuchMethodException ex) {

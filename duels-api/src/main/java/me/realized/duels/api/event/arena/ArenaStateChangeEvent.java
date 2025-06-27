@@ -19,7 +19,8 @@ public class ArenaStateChangeEvent extends ArenaEvent implements Cancellable {
     private boolean disabled;
     private boolean cancelled;
 
-    public ArenaStateChangeEvent(@Nullable final CommandSender source, @NotNull final Arena arena, final boolean disabled) {
+    public ArenaStateChangeEvent(
+            @Nullable final CommandSender source, @NotNull final Arena arena, final boolean disabled) {
         super(source, arena);
         this.disabled = disabled;
     }

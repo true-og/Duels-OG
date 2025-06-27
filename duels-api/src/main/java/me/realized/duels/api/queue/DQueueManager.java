@@ -28,7 +28,6 @@ public interface DQueueManager {
     @Nullable
     DQueue get(@Nullable final Kit kit, final int bet);
 
-
     /**
      * Gets a {@link DQueue} with the given {@link Player}.
      *
@@ -37,7 +36,6 @@ public interface DQueueManager {
      */
     @Nullable
     DQueue get(@NotNull final Player player);
-
 
     /**
      * Creates a new {@link DQueue}.
@@ -50,7 +48,6 @@ public interface DQueueManager {
     @Nullable
     DQueue create(@Nullable final CommandSender source, @Nullable final Kit kit, final int bet);
 
-
     /**
      * Calls {@link #create(CommandSender, Kit, int)} with source being null.
      *
@@ -58,7 +55,6 @@ public interface DQueueManager {
      */
     @Nullable
     DQueue create(@Nullable final Kit kit, final int bet);
-
 
     /**
      * Removes a new {@link DQueue}.
@@ -72,7 +68,6 @@ public interface DQueueManager {
     @Nullable
     DQueue remove(@Nullable final CommandSender source, @Nullable final Kit kit, final int bet);
 
-
     /**
      * Calls {@link #remove(CommandSender, Kit, int)} with source being null.
      *
@@ -81,7 +76,6 @@ public interface DQueueManager {
     @Nullable
     DQueue remove(@Nullable final Kit kit, final int bet);
 
-
     /**
      * Whether or not the {@link Player} is in a queue.
      *
@@ -89,7 +83,6 @@ public interface DQueueManager {
      * @return True if {@link Player} is in a queue. False otherwise.
      */
     boolean isInQueue(@NotNull final Player player);
-
 
     /**
      * Adds the {@link Player} to the given {@link DQueue}.
@@ -101,7 +94,6 @@ public interface DQueueManager {
      */
     boolean addToQueue(@NotNull final Player player, @NotNull final DQueue queue);
 
-
     /**
      * Removes the {@link Player} from the queue.
      * Note: Calls {@link QueueLeaveEvent} if {@link Player} was in a {@link DQueue}.
@@ -111,7 +103,6 @@ public interface DQueueManager {
      */
     @Nullable
     DQueue removeFromQueue(@NotNull final Player player);
-
 
     /**
      * An UnmodifiableList of {@link DQueue}s that are currently loaded.

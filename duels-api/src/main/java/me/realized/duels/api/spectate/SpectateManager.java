@@ -24,7 +24,6 @@ public interface SpectateManager {
     @Nullable
     Spectator get(@NotNull final Player player);
 
-
     /**
      * Checks if a player is spectating a match.
      *
@@ -32,7 +31,6 @@ public interface SpectateManager {
      * @return true if player is spectating or false otherwise.
      */
     boolean isSpectating(@NotNull final Player player);
-
 
     /**
      * Attempts to put the player in spectator mode and teleports player to target player in match.
@@ -53,7 +51,6 @@ public interface SpectateManager {
     @NotNull
     Result startSpectating(@NotNull final Player player, @NotNull final Player target);
 
-
     /**
      * Puts a player out of spectator mode.
      *
@@ -62,7 +59,6 @@ public interface SpectateManager {
      * @param player Player to stop spectating. Should not be null!
      */
     void stopSpectating(@NotNull final Player player);
-
 
     /**
      * An UnmodifiableList of {@link Spectator}s that are currently spectating the given {@link Arena}.
@@ -73,15 +69,12 @@ public interface SpectateManager {
     @NotNull
     List<Spectator> getSpectators(@NotNull final Arena arena);
 
-
     enum Result {
-
         ALREADY_SPECTATING,
         IN_QUEUE,
         IN_MATCH,
         TARGET_NOT_IN_MATCH,
         EVENT_CANCELLED,
         SUCCESS;
-
     }
 }

@@ -22,7 +22,9 @@ public class OptionButton extends BaseButton {
         this.gui = gui;
         this.kit = kit;
         this.option = option;
-        setDisplayName(plugin.getLang().getMessage("GUI.options.buttons.option.name", "name", option.name().toLowerCase()));
+        setDisplayName(plugin.getLang()
+                .getMessage(
+                        "GUI.options.buttons.option.name", "name", option.name().toLowerCase()));
         update();
     }
 
@@ -36,8 +38,13 @@ public class OptionButton extends BaseButton {
             lore.add("&f" + line.replace("%kit%", kit.getName()));
         }
 
-        Collections.addAll(lore,
-            lang.getMessage("GUI.options.buttons.option.lore", "state", state ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled")).split("\n"));
+        Collections.addAll(
+                lore,
+                lang.getMessage(
+                                "GUI.options.buttons.option.lore",
+                                "state",
+                                state ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"))
+                        .split("\n"));
         setLore(lore);
     }
 

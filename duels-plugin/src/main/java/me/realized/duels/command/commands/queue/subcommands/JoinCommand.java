@@ -25,7 +25,8 @@ public class JoinCommand extends BaseCommand {
         KitImpl kit = null;
 
         if (!args[1].startsWith("-")) {
-            String name = StringUtil.join(args, " ", 1, args.length - (args.length > 2 ? 1 : 0)).replace("-", " ");
+            String name = StringUtil.join(args, " ", 1, args.length - (args.length > 2 ? 1 : 0))
+                    .replace("-", " ");
             kit = kitManager.get(name);
 
             if (kit == null) {
@@ -35,7 +36,8 @@ public class JoinCommand extends BaseCommand {
         }
 
         final String kitName = kit != null ? kit.getName() : lang.getMessage("GENERAL.none");
-        final int bet = args.length > 2 ? NumberUtil.parseInt(args[args.length - 1]).orElse(0) : 0;
+        final int bet =
+                args.length > 2 ? NumberUtil.parseInt(args[args.length - 1]).orElse(0) : 0;
         final Queue queue = args[1].equals("-r") ? queueManager.randomQueue() : queueManager.get(kit, bet);
 
         if (queue == null) {
@@ -47,7 +49,8 @@ public class JoinCommand extends BaseCommand {
     }
 
     @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
+    public List<String> onTabComplete(
+            final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 2) {
             return handleTabCompletion(args[1], kitManager.getNames(true));
         }

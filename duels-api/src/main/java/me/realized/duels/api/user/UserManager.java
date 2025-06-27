@@ -13,14 +13,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface UserManager {
 
-
     /**
      * Whether or not had all users completed loading to the memory.
      *
      * @return True if all users have completed loading to the memory. False otherwise.
      */
     boolean isLoaded();
-
 
     /**
      * Gets a {@link User} with the given name.
@@ -32,7 +30,6 @@ public interface UserManager {
     @Nullable
     User get(@NotNull final String name);
 
-
     /**
      * Gets a {@link User} with the given {@link UUID}.
      * Note: If {@link #isLoaded()} returns false, this may return null even if userdata file exists.
@@ -43,7 +40,6 @@ public interface UserManager {
     @Nullable
     User get(@NotNull final UUID uuid);
 
-
     /**
      * Calls {@link #get(UUID)} with {@link Player#getUniqueId()}.
      *
@@ -51,7 +47,6 @@ public interface UserManager {
      */
     @Nullable
     User get(@NotNull final Player player);
-
 
     /**
      * Gets the top wins. thread-safe!
@@ -61,7 +56,6 @@ public interface UserManager {
     @Nullable
     TopEntry getTopWins();
 
-
     /**
      * Gets the top losses. thread-safe!
      *
@@ -69,7 +63,6 @@ public interface UserManager {
      */
     @Nullable
     TopEntry getTopLosses();
-
 
     /**
      * Gets the top rating for no kit. thread-safe!
@@ -80,7 +73,6 @@ public interface UserManager {
     @Nullable
     TopEntry getTopRatings();
 
-
     /**
      * Gets the top rating for the given {@link Kit}. thread-safe!
      *
@@ -90,14 +82,14 @@ public interface UserManager {
     @Nullable
     TopEntry getTopRatings(@NotNull final Kit kit);
 
-
     class TopEntry {
 
         private final long creation;
         private final String type, identifier;
         private final List<TopData> data;
 
-        public TopEntry(@NotNull final String type, @NotNull final String identifier, @NotNull final List<TopData> data) {
+        public TopEntry(
+                @NotNull final String type, @NotNull final String identifier, @NotNull final List<TopData> data) {
             Objects.requireNonNull(type, "type");
             Objects.requireNonNull(identifier, "identifier");
             Objects.requireNonNull(data, "data");
@@ -134,7 +126,9 @@ public interface UserManager {
             }
 
             final TopEntry topEntry = (TopEntry) other;
-            return Objects.equals(type, topEntry.type) && Objects.equals(identifier, topEntry.identifier) && Objects.equals(data, topEntry.data);
+            return Objects.equals(type, topEntry.type)
+                    && Objects.equals(identifier, topEntry.identifier)
+                    && Objects.equals(data, topEntry.data);
         }
 
         @Override

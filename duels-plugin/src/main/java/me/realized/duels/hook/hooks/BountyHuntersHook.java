@@ -27,7 +27,8 @@ public class BountyHuntersHook extends PluginHook<DuelsPlugin> implements Listen
             Class.forName("net.Indyuce.bountyhunters.api.event.BountyClaimEvent");
             Class.forName("net.Indyuce.bountyhunters.api.event.BountyCreateEvent");
         } catch (ClassNotFoundException ex) {
-            throw new RuntimeException("This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
+            throw new RuntimeException(
+                    "This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
         }
 
         Bukkit.getPluginManager().registerEvents(this, plugin);

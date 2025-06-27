@@ -58,11 +58,20 @@ public class AddsignCommand extends BaseCommand {
         }
 
         final Location location = sign.getLocation();
-        lang.sendMessage(sender, "COMMAND.duels.add-sign", "location", StringUtil.parse(location), "kit", kitName, "bet_amount", bet);
+        lang.sendMessage(
+                sender,
+                "COMMAND.duels.add-sign",
+                "location",
+                StringUtil.parse(location),
+                "kit",
+                kitName,
+                "bet_amount",
+                bet);
     }
 
     @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
+    public List<String> onTabComplete(
+            final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 2) {
             return Arrays.asList("0", "10", "50", "100", "500", "1000");
         }

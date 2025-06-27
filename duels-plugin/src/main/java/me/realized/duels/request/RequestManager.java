@@ -59,29 +59,75 @@ public class RequestManager implements Loadable, Listener {
         }
 
         get(sender, true).put(target.getUniqueId(), request);
-        final String kit = settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected");
-        final String ownInventory = settings.isOwnInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
-        final String arena = settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random");
+        final String kit =
+                settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected");
+        final String ownInventory =
+                settings.isOwnInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
+        final String arena =
+                settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random");
         final int betAmount = settings.getBet();
-        final String itemBetting = settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
+        final String itemBetting =
+                settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
 
-        lang.sendMessage(sender, "COMMAND.duel.request.send.sender",
-            "name", target.getName(), "kit", kit, "own_inventory", ownInventory, "arena", arena, "bet_amount", betAmount, "item_betting", itemBetting);
-        lang.sendMessage(target, "COMMAND.duel.request.send.receiver",
-            "name", sender.getName(), "kit", kit, "own_inventory", ownInventory, "arena", arena, "bet_amount", betAmount, "item_betting", itemBetting);
+        lang.sendMessage(
+                sender,
+                "COMMAND.duel.request.send.sender",
+                "name",
+                target.getName(),
+                "kit",
+                kit,
+                "own_inventory",
+                ownInventory,
+                "arena",
+                arena,
+                "bet_amount",
+                betAmount,
+                "item_betting",
+                itemBetting);
+        lang.sendMessage(
+                target,
+                "COMMAND.duel.request.send.receiver",
+                "name",
+                sender.getName(),
+                "kit",
+                kit,
+                "own_inventory",
+                ownInventory,
+                "arena",
+                arena,
+                "bet_amount",
+                betAmount,
+                "item_betting",
+                itemBetting);
 
         final String path = "COMMAND.duel.request.send.clickable-text.";
 
-        TextBuilder
-            .of(lang.getMessage(path + "info.text"), null, null, Action.SHOW_TEXT, lang.getMessage(path + "info.hover-text"))
-            .add(lang.getMessage(path + "accept.text"),
-                ClickEvent.Action.RUN_COMMAND, "/duel accept " + sender.getName(),
-                Action.SHOW_TEXT, lang.getMessage(path + "accept.hover-text"))
-            .add(lang.getMessage(path + "deny.text"),
-                ClickEvent.Action.RUN_COMMAND, "/duel deny " + sender.getName(),
-                Action.SHOW_TEXT, lang.getMessage(path + "deny.hover-text"))
-            .send(target);
-        TextBuilder.of(lang.getMessage(path + "extra.text"), null, null, Action.SHOW_TEXT, lang.getMessage(path + "extra.hover-text")).send(target);
+        TextBuilder.of(
+                        lang.getMessage(path + "info.text"),
+                        null,
+                        null,
+                        Action.SHOW_TEXT,
+                        lang.getMessage(path + "info.hover-text"))
+                .add(
+                        lang.getMessage(path + "accept.text"),
+                        ClickEvent.Action.RUN_COMMAND,
+                        "/duel accept " + sender.getName(),
+                        Action.SHOW_TEXT,
+                        lang.getMessage(path + "accept.hover-text"))
+                .add(
+                        lang.getMessage(path + "deny.text"),
+                        ClickEvent.Action.RUN_COMMAND,
+                        "/duel deny " + sender.getName(),
+                        Action.SHOW_TEXT,
+                        lang.getMessage(path + "deny.hover-text"))
+                .send(target);
+        TextBuilder.of(
+                        lang.getMessage(path + "extra.text"),
+                        null,
+                        null,
+                        Action.SHOW_TEXT,
+                        lang.getMessage(path + "extra.hover-text"))
+                .send(target);
     }
 
     public RequestImpl get(final Player sender, final Player target) {

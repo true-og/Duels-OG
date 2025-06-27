@@ -15,8 +15,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class KitData {
 
-    private static transient final String SLOT_LOAD_FAILURE = "Could not load slot %s for kit %s!";
-    private static transient final String ITEM_LOAD_FAILURE = "Could not load item %s for kit %s!";
+    private static final transient String SLOT_LOAD_FAILURE = "Could not load slot %s for kit %s!";
+    private static final transient String ITEM_LOAD_FAILURE = "Could not load item %s for kit %s!";
 
     public static KitData fromKit(final KitImpl kit) {
         return new KitData(kit);
@@ -39,12 +39,12 @@ public class KitData {
         this.arenaSpecific = kit.isArenaSpecific();
         this.characteristics.addAll(kit.getCharacteristics());
 
-        for (final Map.Entry<String, Map<Integer, ItemStack>> entry : kit.getItems().entrySet()) {
+        for (final Map.Entry<String, Map<Integer, ItemStack>> entry :
+                kit.getItems().entrySet()) {
             final Map<Integer, ItemData> data = new HashMap<>();
-            entry.getValue().entrySet()
-                .stream()
-                .filter(value -> Objects.nonNull(value.getValue()))
-                .forEach(value -> data.put(value.getKey(), ItemData.fromItemStack(value.getValue())));
+            entry.getValue().entrySet().stream()
+                    .filter(value -> Objects.nonNull(value.getValue()))
+                    .forEach(value -> data.put(value.getKey(), ItemData.fromItemStack(value.getValue())));
             items.put(entry.getKey(), data);
         }
     }
@@ -53,7 +53,9 @@ public class KitData {
         ItemStack displayed;
 
         if (this.displayed == null || (displayed = this.displayed.toItemStack()) == null) {
-            displayed = ItemBuilder.of(Material.BARRIER).name("&cCould not load displayed item for " + name + "!").build();
+            displayed = ItemBuilder.of(Material.BARRIER)
+                    .name("&cCould not load displayed item for " + name + "!")
+                    .build();
         }
 
         final KitImpl kit = new KitImpl(plugin, name, displayed, usePermission, arenaSpecific, characteristics);

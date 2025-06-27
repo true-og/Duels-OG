@@ -28,7 +28,8 @@ public class SetCommand extends BaseCommand {
             return;
         }
 
-        final int pos = NumberUtil.parseInt(args[args.length - 1]).orElse(arena.getPositions().size() + 1);
+        final int pos = NumberUtil.parseInt(args[args.length - 1])
+                .orElse(arena.getPositions().size() + 1);
 
         if (pos <= 0 || pos > 2) {
             lang.sendMessage(sender, "ERROR.arena.invalid-position");
@@ -38,11 +39,13 @@ public class SetCommand extends BaseCommand {
         final Player player = (Player) sender;
         final Location location = player.getLocation().clone();
         arena.setPosition(player, pos, location);
-        lang.sendMessage(sender, "COMMAND.duels.set", "position", pos, "name", name, "location", StringUtil.parse(location));
+        lang.sendMessage(
+                sender, "COMMAND.duels.set", "position", pos, "name", name, "location", StringUtil.parse(location));
     }
 
     @Override
-    public List<String> onTabComplete(final CommandSender sender, final Command command, final String alias, final String[] args) {
+    public List<String> onTabComplete(
+            final CommandSender sender, final Command command, final String alias, final String[] args) {
         if (args.length == 2) {
             return handleTabCompletion(args[1], arenaManager.getNames());
         }

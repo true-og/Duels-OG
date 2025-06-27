@@ -28,7 +28,8 @@ public class PvPManagerHook extends PluginHook<DuelsPlugin> {
         try {
             Class.forName("me.NoChance.PvPManager.Events.PlayerTagEvent");
         } catch (ClassNotFoundException ex) {
-            throw new RuntimeException("This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
+            throw new RuntimeException(
+                    "This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
         }
 
         Bukkit.getPluginManager().registerEvents(new PvPManagerListener(), plugin);

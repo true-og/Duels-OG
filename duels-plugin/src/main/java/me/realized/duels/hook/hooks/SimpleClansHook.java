@@ -25,7 +25,8 @@ public class SimpleClansHook extends PluginHook<DuelsPlugin> {
         try {
             Class.forName("net.sacredlabyrinth.phaed.simpleclans.events.AddKillEvent");
         } catch (ClassNotFoundException ex) {
-            throw new RuntimeException("This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
+            throw new RuntimeException(
+                    "This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
         }
 
         Bukkit.getPluginManager().registerEvents(new SimpleClansListener(), plugin);
@@ -47,6 +48,5 @@ public class SimpleClansHook extends PluginHook<DuelsPlugin> {
 
             event.setCancelled(true);
         }
-
     }
 }

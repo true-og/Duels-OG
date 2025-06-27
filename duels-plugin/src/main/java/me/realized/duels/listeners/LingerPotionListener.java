@@ -44,7 +44,8 @@ public class LingerPotionListener {
                 return;
             }
 
-            event.getAffectedEntities().removeIf(entity -> entity instanceof Player && spectateManager.isSpectating((Player) entity));
+            event.getAffectedEntities()
+                    .removeIf(entity -> entity instanceof Player && spectateManager.isSpectating((Player) entity));
         }
     }
 }

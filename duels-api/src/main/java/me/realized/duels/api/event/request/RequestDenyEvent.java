@@ -19,7 +19,8 @@ public class RequestDenyEvent extends RequestEvent {
      * @param target {@link Player} who sent this {@link Request}.
      * @param request {@link Request} that is being handled.
      */
-    public RequestDenyEvent(@NotNull final Player source, @NotNull final Player target, @NotNull final Request request) {
+    public RequestDenyEvent(
+            @NotNull final Player source, @NotNull final Player target, @NotNull final Request request) {
         super(source, target, request);
     }
 

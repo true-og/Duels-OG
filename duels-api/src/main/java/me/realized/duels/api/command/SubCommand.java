@@ -29,8 +29,14 @@ public abstract class SubCommand {
      * @param length Length of this subcommand. Must be greater than or equal to 1.
      * @param aliases Aliases of this subcommand.
      */
-    public SubCommand(@NotNull final String name, @Nullable final String usage, @Nullable final String description, @Nullable final String permission,
-        final boolean playerOnly, final int length, final String... aliases) {
+    public SubCommand(
+            @NotNull final String name,
+            @Nullable final String usage,
+            @Nullable final String description,
+            @Nullable final String permission,
+            final boolean playerOnly,
+            final int length,
+            final String... aliases) {
         Objects.requireNonNull(name, "name");
         this.name = name;
         this.usage = usage;

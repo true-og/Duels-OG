@@ -14,11 +14,11 @@ public class StateButton extends BaseButton {
     private final UUID owner;
 
     public StateButton(final DuelsPlugin plugin, final BettingGui gui, final Player owner) {
-        super(plugin, ItemBuilder
-            .of(Items.OFF.clone())
-            .name(plugin.getLang().getMessage("GUI.item-betting.buttons.state.name-not-ready"))
-            .build()
-        );
+        super(
+                plugin,
+                ItemBuilder.of(Items.OFF.clone())
+                        .name(plugin.getLang().getMessage("GUI.item-betting.buttons.state.name-not-ready"))
+                        .build());
         this.gui = gui;
         this.owner = owner.getUniqueId();
     }

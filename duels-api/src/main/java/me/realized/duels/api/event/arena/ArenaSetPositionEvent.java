@@ -23,7 +23,11 @@ public class ArenaSetPositionEvent extends ArenaEvent implements Cancellable {
     private Location location;
     private boolean cancelled;
 
-    public ArenaSetPositionEvent(@Nullable final CommandSender source, @NotNull final Arena arena, final int pos, @NotNull final Location location) {
+    public ArenaSetPositionEvent(
+            @Nullable final CommandSender source,
+            @NotNull final Arena arena,
+            final int pos,
+            @NotNull final Location location) {
         super(source, arena);
         Objects.requireNonNull(location, "location");
         this.pos = pos;

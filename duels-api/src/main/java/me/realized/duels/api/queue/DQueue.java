@@ -19,14 +19,12 @@ public interface DQueue {
     @Nullable
     Kit getKit();
 
-
     /**
      * The bet amount for this {@link DQueue}.
      *
      * @return Bet amount for this {@link DQueue} or 0 if no bet was specified.
      */
     int getBet();
-
 
     /**
      * Whether or not the given {@link Player} is in this {@link DQueue}.
@@ -36,7 +34,6 @@ public interface DQueue {
      */
     boolean isInQueue(@NotNull final Player player);
 
-
     /**
      * An UnmodifiableList of {@link Player}s in this queue.
      *
@@ -44,7 +41,6 @@ public interface DQueue {
      */
     @NotNull
     List<Player> getQueuedPlayers();
-
 
     /**
      * Whether or not this {@link DQueue} has been removed.

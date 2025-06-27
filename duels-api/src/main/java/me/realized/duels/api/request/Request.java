@@ -19,7 +19,6 @@ public interface Request {
     @NotNull
     UUID getSender();
 
-
     /**
      * The {@link UUID} of the receiver of this {@link Request}.
      *
@@ -27,7 +26,6 @@ public interface Request {
      */
     @NotNull
     UUID getTarget();
-
 
     /**
      * The {@link Kit} for this {@link Request} or null if no {@link Kit} was selected.
@@ -37,7 +35,6 @@ public interface Request {
     @Nullable
     Kit getKit();
 
-
     /**
      * The {@link Arena} for this {@link Request} or null if no {@link Arena} was selected.
      *
@@ -46,14 +43,12 @@ public interface Request {
     @Nullable
     Arena getArena();
 
-
     /**
      * Whether or not item betting is enabled for this {@link Request}.
      *
      * @return True if item betting is enabled for this {@link  Request}. False otherwise.
      */
     boolean canBetItems();
-
 
     /**
      * The bet for this {@link Request}.

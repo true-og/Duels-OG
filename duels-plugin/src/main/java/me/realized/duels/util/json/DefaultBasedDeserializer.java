@@ -8,24 +8,23 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 public abstract class DefaultBasedDeserializer<T> extends StdDeserializer<T> implements ResolvableDeserializer {
 
-	private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 2L;
 
-	private final Class<T> target;
-	protected final JsonDeserializer<?> defaultDeserializer;
+    private final Class<T> target;
+    protected final JsonDeserializer<?> defaultDeserializer;
 
-	public DefaultBasedDeserializer(final Class<T> target, final JsonDeserializer<?> defaultDeserializer) {
-		super(target);
-		this.target = target;
-		this.defaultDeserializer = defaultDeserializer;
-	}
+    public DefaultBasedDeserializer(final Class<T> target, final JsonDeserializer<?> defaultDeserializer) {
+        super(target);
+        this.target = target;
+        this.defaultDeserializer = defaultDeserializer;
+    }
 
-	public Class<T> getTarget() {
-		return target;
-	}
+    public Class<T> getTarget() {
+        return target;
+    }
 
-	@Override
-	public void resolve(final DeserializationContext context) throws JsonMappingException {
-		((ResolvableDeserializer) defaultDeserializer).resolve(context);
-	}
-
+    @Override
+    public void resolve(final DeserializationContext context) throws JsonMappingException {
+        ((ResolvableDeserializer) defaultDeserializer).resolve(context);
+    }
 }

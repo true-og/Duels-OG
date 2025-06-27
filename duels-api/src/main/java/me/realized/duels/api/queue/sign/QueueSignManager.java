@@ -21,7 +21,6 @@ public interface QueueSignManager {
     @Nullable
     QueueSign get(@NotNull final Sign sign);
 
-
     /**
      * An UnmodifiableList of {@link QueueSign}s that are currently loaded.
      *

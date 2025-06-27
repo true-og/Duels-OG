@@ -35,15 +35,23 @@ public class TeleportListener implements Listener {
     }
 
     private boolean isSimilar(final Location first, final Location second) {
-        return Math.abs(first.getX() - second.getX()) + Math.abs(first.getY() - second.getY()) + Math.abs(first.getZ() - second.getZ()) < 5;
+        return Math.abs(first.getX() - second.getX())
+                        + Math.abs(first.getY() - second.getY())
+                        + Math.abs(first.getZ() - second.getZ())
+                < 5;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void on(final PlayerTeleportEvent event) {
         final Player player = event.getPlayer();
 
-        if (player.isOp() || player.isDead() || player.hasPermission(Permissions.ADMIN) || player.hasPermission(Permissions.TP_BYPASS) ||
-            player.hasMetadata(Teleport.METADATA_KEY) || arenaManager.isInMatch(player) || spectateManager.isSpectating(player)) {
+        if (player.isOp()
+                || player.isDead()
+                || player.hasPermission(Permissions.ADMIN)
+                || player.hasPermission(Permissions.TP_BYPASS)
+                || player.hasMetadata(Teleport.METADATA_KEY)
+                || arenaManager.isInMatch(player)
+                || spectateManager.isSpectating(player)) {
             return;
         }
 

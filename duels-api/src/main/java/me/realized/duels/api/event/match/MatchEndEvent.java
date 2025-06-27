@@ -19,7 +19,11 @@ public class MatchEndEvent extends MatchEvent {
     private final UUID winner, loser;
     private final Reason reason;
 
-    public MatchEndEvent(@NotNull final Match match, @Nullable final UUID winner, @Nullable final UUID loser, @NotNull final Reason reason) {
+    public MatchEndEvent(
+            @NotNull final Match match,
+            @Nullable final UUID winner,
+            @Nullable final UUID loser,
+            @NotNull final Reason reason) {
         super(match);
         Objects.requireNonNull(reason, "reason");
         this.winner = winner;
@@ -67,7 +71,6 @@ public class MatchEndEvent extends MatchEvent {
     }
 
     public enum Reason {
-
         OPPONENT_DEFEAT,
         TIE,
         MAX_TIME_REACHED,

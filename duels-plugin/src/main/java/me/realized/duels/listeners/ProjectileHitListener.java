@@ -42,7 +42,9 @@ public class ProjectileHitListener implements Listener {
 
         final Entity damager = event.getDamager();
 
-        if (!(damager instanceof Projectile) || !config.getProjectileHitMessageTypes().contains(damager.getType().name())) {
+        if (!(damager instanceof Projectile)
+                || !config.getProjectileHitMessageTypes()
+                        .contains(damager.getType().name())) {
             return;
         }
 

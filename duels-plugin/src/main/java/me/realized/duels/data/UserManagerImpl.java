@@ -1,5 +1,6 @@
 package me.realized.duels.data;
 
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,18 +16,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import com.google.common.collect.Lists;
-
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.user.UserCreateEvent;
 import me.realized.duels.api.kit.Kit;
@@ -39,306 +28,346 @@ import me.realized.duels.util.Loadable;
 import me.realized.duels.util.Log;
 import me.realized.duels.util.UUIDUtil;
 import me.realized.duels.util.json.JsonUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class UserManagerImpl implements Loadable, Listener, UserManager {
 
-	private final DuelsPlugin plugin;
-	private final Config config;
-	private final Lang lang;
-	private final File folder;
-	private final Map<UUID, UserData> users = new ConcurrentHashMap<>();
-	private final Map<String, UUID> names = new ConcurrentHashMap<>();
+    private final DuelsPlugin plugin;
+    private final Config config;
+    private final Lang lang;
+    private final File folder;
+    private final Map<UUID, UserData> users = new ConcurrentHashMap<>();
+    private final Map<String, UUID> names = new ConcurrentHashMap<>();
 
-	private volatile int defaultRating;
-	private volatile int matchesToDisplay;
-	private volatile boolean loaded;
-	private volatile TopEntry wins;
-	private volatile TopEntry losses;
-	private volatile TopEntry noKit;
-	private final Map<Kit, TopEntry> topRatings = new ConcurrentHashMap<>();
+    private volatile int defaultRating;
+    private volatile int matchesToDisplay;
+    private volatile boolean loaded;
+    private volatile TopEntry wins;
+    private volatile TopEntry losses;
+    private volatile TopEntry noKit;
+    private final Map<Kit, TopEntry> topRatings = new ConcurrentHashMap<>();
 
-	private int topTask;
+    private int topTask;
 
-	public UserManagerImpl(final DuelsPlugin plugin) {
-		this.plugin = plugin;
-		this.config = plugin.getConfiguration();
-		this.lang = plugin.getLang();
-		this.folder = new File(plugin.getDataFolder(), "users");
+    public UserManagerImpl(final DuelsPlugin plugin) {
+        this.plugin = plugin;
+        this.config = plugin.getConfiguration();
+        this.lang = plugin.getLang();
+        this.folder = new File(plugin.getDataFolder(), "users");
 
-		if (!folder.exists()) {
-			folder.mkdir();
-		}
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
 
-		Bukkit.getPluginManager().registerEvents(this, plugin);
-	}
+        Bukkit.getPluginManager().registerEvents(this, plugin);
+    }
 
-	@Override
-	public void handleLoad() {
-		this.defaultRating = config.getDefaultRating();
-		this.matchesToDisplay = config.getMatchesToDisplay();
+    @Override
+    public void handleLoad() {
+        this.defaultRating = config.getDefaultRating();
+        this.matchesToDisplay = config.getMatchesToDisplay();
 
-		if (matchesToDisplay < 0) {
-			matchesToDisplay = 0;
-		}
+        if (matchesToDisplay < 0) {
+            matchesToDisplay = 0;
+        }
 
-		plugin.doAsync(() -> {
-			final File[] files = folder.listFiles();
+        plugin.doAsync(() -> {
+            final File[] files = folder.listFiles();
 
-			if (files != null && files.length > 0) {
-				for (final File file : files) {
-					final String fileName = file.getName();
+            if (files != null && files.length > 0) {
+                for (final File file : files) {
+                    final String fileName = file.getName();
 
-					if (!fileName.endsWith(".json")) {
-						continue;
-					}
+                    if (!fileName.endsWith(".json")) {
+                        continue;
+                    }
 
-					final String name = fileName.substring(0, fileName.length() - 5);
+                    final String name = fileName.substring(0, fileName.length() - 5);
 
-					final UUID uuid = UUIDUtil.parseUUID(name);
+                    final UUID uuid = UUIDUtil.parseUUID(name);
 
-					if (uuid == null || users.containsKey(uuid)) {
-						continue;
-					}
+                    if (uuid == null || users.containsKey(uuid)) {
+                        continue;
+                    }
 
-					try (Reader reader = new InputStreamReader(new FileInputStream(file))) {
-						final UserData user = JsonUtil.getObjectMapper().readValue(reader, UserData.class);
+                    try (Reader reader = new InputStreamReader(new FileInputStream(file))) {
+                        final UserData user = JsonUtil.getObjectMapper().readValue(reader, UserData.class);
 
-						if (user == null) {
-							Log.warn(this, "Could not load userdata from file: " + fileName);
-							continue;
-						}
+                        if (user == null) {
+                            Log.warn(this, "Could not load userdata from file: " + fileName);
+                            continue;
+                        }
 
-						user.folder = folder;
-						user.defaultRating = defaultRating;
-						user.matchesToDisplay = matchesToDisplay;
-						user.refreshMatches();
-						// Player might have logged in while reading the file
-						names.putIfAbsent(user.getName().toLowerCase(), uuid);
-						users.putIfAbsent(uuid, user);
-					} catch (IOException ex) {
-						Log.error(this, "Could not load userdata from file: " + fileName, ex);
-					}
-				}
-			}
+                        user.folder = folder;
+                        user.defaultRating = defaultRating;
+                        user.matchesToDisplay = matchesToDisplay;
+                        user.refreshMatches();
+                        // Player might have logged in while reading the file
+                        names.putIfAbsent(user.getName().toLowerCase(), uuid);
+                        users.putIfAbsent(uuid, user);
+                    } catch (IOException ex) {
+                        Log.error(this, "Could not load userdata from file: " + fileName, ex);
+                    }
+                }
+            }
 
-			loaded = true;
-		});
+            loaded = true;
+        });
 
-		this.topTask = plugin.doSyncRepeat(() -> {
-			final Collection<? extends Kit> kits = plugin.getKitManager().getKits();
+        this.topTask = plugin.doSyncRepeat(
+                        () -> {
+                            final Collection<? extends Kit> kits =
+                                    plugin.getKitManager().getKits();
 
-			plugin.doAsync(() -> {
-				if (!loaded) {
-					return;
-				}
+                            plugin.doAsync(() -> {
+                                if (!loaded) {
+                                    return;
+                                }
 
-				TopEntry top;
+                                TopEntry top;
 
-				if ((top = get(config.getTopUpdateInterval(), wins, User::getWins, config.getTopWinsType(), config.getTopWinsIdentifier())) != null) {
-					wins = top;
-				}
+                                if ((top = get(
+                                                config.getTopUpdateInterval(),
+                                                wins,
+                                                User::getWins,
+                                                config.getTopWinsType(),
+                                                config.getTopWinsIdentifier()))
+                                        != null) {
+                                    wins = top;
+                                }
 
-				if ((top = get(config.getTopUpdateInterval(), losses, User::getLosses, config.getTopLossesType(), config.getTopLossesIdentifier())) != null) {
-					losses = top;
-				}
+                                if ((top = get(
+                                                config.getTopUpdateInterval(),
+                                                losses,
+                                                User::getLosses,
+                                                config.getTopLossesType(),
+                                                config.getTopLossesIdentifier()))
+                                        != null) {
+                                    losses = top;
+                                }
 
-				if ((top = get(config.getTopUpdateInterval(), noKit, User::getRating, config.getTopNoKitType(), config.getTopNoKitIdentifier())) != null) {
-					noKit = top;
-				}
+                                if ((top = get(
+                                                config.getTopUpdateInterval(),
+                                                noKit,
+                                                User::getRating,
+                                                config.getTopNoKitType(),
+                                                config.getTopNoKitIdentifier()))
+                                        != null) {
+                                    noKit = top;
+                                }
 
-				topRatings.keySet().removeIf(kit -> !kits.contains(kit));
+                                topRatings.keySet().removeIf(kit -> !kits.contains(kit));
 
-				for (final Kit kit : kits) {
-					final TopEntry entry = topRatings.get(kit);
+                                for (final Kit kit : kits) {
+                                    final TopEntry entry = topRatings.get(kit);
 
-					if ((top = get(config.getTopUpdateInterval(), entry, user -> user.getRating(kit), config.getTopKitType().replace("%kit%", kit.getName()),
-							config.getTopKitIdentifier())) != null) {
-						topRatings.put(kit, top);
-					}
-				}
-			});
-		}, 20L * 5, 20L).getTaskId();
-	}
+                                    if ((top = get(
+                                                    config.getTopUpdateInterval(),
+                                                    entry,
+                                                    user -> user.getRating(kit),
+                                                    config.getTopKitType().replace("%kit%", kit.getName()),
+                                                    config.getTopKitIdentifier()))
+                                            != null) {
+                                        topRatings.put(kit, top);
+                                    }
+                                }
+                            });
+                        },
+                        20L * 5,
+                        20L)
+                .getTaskId();
+    }
 
-	@Override
-	public void handleUnload() {
-		plugin.cancelTask(topTask);
-		loaded = false;
-		saveUsers(Bukkit.getOnlinePlayers());
-		users.clear();
-		names.clear();
-		topRatings.clear();
-	}
+    @Override
+    public void handleUnload() {
+        plugin.cancelTask(topTask);
+        loaded = false;
+        saveUsers(Bukkit.getOnlinePlayers());
+        users.clear();
+        names.clear();
+        topRatings.clear();
+    }
 
-	public boolean isLoaded() {
-		return loaded;
-	}
+    public boolean isLoaded() {
+        return loaded;
+    }
 
-	public TopEntry getWins() {
-		return wins;
-	}
+    public TopEntry getWins() {
+        return wins;
+    }
 
-	public TopEntry getLosses() {
-		return losses;
-	}
+    public TopEntry getLosses() {
+        return losses;
+    }
 
-	public TopEntry getNoKit() {
-		return noKit;
-	}
+    public TopEntry getNoKit() {
+        return noKit;
+    }
 
-	@Nullable
-	@Override
-	public UserData get(@NotNull final String name) {
-		Objects.requireNonNull(name, "name");
-		final UUID uuid = names.get(name.toLowerCase());
-		return uuid != null ? get(uuid) : null;
-	}
+    @Nullable
+    @Override
+    public UserData get(@NotNull final String name) {
+        Objects.requireNonNull(name, "name");
+        final UUID uuid = names.get(name.toLowerCase());
+        return uuid != null ? get(uuid) : null;
+    }
 
-	@Nullable
-	@Override
-	public UserData get(@NotNull final UUID uuid) {
-		Objects.requireNonNull(uuid, "uuid");
-		return users.get(uuid);
-	}
+    @Nullable
+    @Override
+    public UserData get(@NotNull final UUID uuid) {
+        Objects.requireNonNull(uuid, "uuid");
+        return users.get(uuid);
+    }
 
-	@Nullable
-	@Override
-	public UserData get(@NotNull final Player player) {
-		Objects.requireNonNull(player, "player");
-		return get(player.getUniqueId());
-	}
+    @Nullable
+    @Override
+    public UserData get(@NotNull final Player player) {
+        Objects.requireNonNull(player, "player");
+        return get(player.getUniqueId());
+    }
 
-	@Nullable
-	@Override
-	public TopEntry getTopWins() {
-		return wins;
-	}
+    @Nullable
+    @Override
+    public TopEntry getTopWins() {
+        return wins;
+    }
 
-	@Nullable
-	@Override
-	public TopEntry getTopLosses() {
-		return losses;
-	}
+    @Nullable
+    @Override
+    public TopEntry getTopLosses() {
+        return losses;
+    }
 
-	@Nullable
-	@Override
-	public TopEntry getTopRatings() {
-		return noKit;
-	}
+    @Nullable
+    @Override
+    public TopEntry getTopRatings() {
+        return noKit;
+    }
 
-	@Nullable
-	@Override
-	public TopEntry getTopRatings(@NotNull final Kit kit) {
-		Objects.requireNonNull(kit, "kit");
-		return topRatings.get(kit);
-	}
+    @Nullable
+    @Override
+    public TopEntry getTopRatings(@NotNull final Kit kit) {
+        Objects.requireNonNull(kit, "kit");
+        return topRatings.get(kit);
+    }
 
-	public String getNextUpdate(final long creation) {
-		return DateUtil.format((creation + config.getTopUpdateInterval() - System.currentTimeMillis()) / 1000L);
-	}
+    public String getNextUpdate(final long creation) {
+        return DateUtil.format((creation + config.getTopUpdateInterval() - System.currentTimeMillis()) / 1000L);
+    }
 
-	private TopEntry get(final long interval, final TopEntry previous, final Function<User, Integer> function, final String type, final String identifier) {
-		if (previous == null || System.currentTimeMillis() - previous.getCreation() >= interval) {
-			return new TopEntry(type, identifier, subList(sorted(function)));
-		}
+    private TopEntry get(
+            final long interval,
+            final TopEntry previous,
+            final Function<User, Integer> function,
+            final String type,
+            final String identifier) {
+        if (previous == null || System.currentTimeMillis() - previous.getCreation() >= interval) {
+            return new TopEntry(type, identifier, subList(sorted(function)));
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	private List<TopData> subList(final List<TopData> list) {
-		return Collections.unmodifiableList(Lists.newArrayList(list.size() > 10 ? list.subList(0, 10) : list));
-	}
+    private List<TopData> subList(final List<TopData> list) {
+        return Collections.unmodifiableList(Lists.newArrayList(list.size() > 10 ? list.subList(0, 10) : list));
+    }
 
-	private List<TopData> sorted(final Function<User, Integer> function) {
-		return users.values().stream()
-				.map(data -> new TopData(data.getUuid(), data.getName(), function.apply(data)))
-				.sorted(Comparator.reverseOrder())
-				.collect(Collectors.toList());
-	}
+    private List<TopData> sorted(final Function<User, Integer> function) {
+        return users.values().stream()
+                .map(data -> new TopData(data.getUuid(), data.getName(), function.apply(data)))
+                .sorted(Comparator.reverseOrder())
+                .collect(Collectors.toList());
+    }
 
-	private UserData tryLoad(final Player player) {
-		final File file = new File(folder, player.getUniqueId() + ".json");
+    private UserData tryLoad(final Player player) {
+        final File file = new File(folder, player.getUniqueId() + ".json");
 
-		if (!file.exists()) {
-			final UserData user = new UserData(folder, defaultRating, matchesToDisplay, player);
-			plugin.doSync(() -> Bukkit.getPluginManager().callEvent(new UserCreateEvent(user)));
-			return user;
-		}
+        if (!file.exists()) {
+            final UserData user = new UserData(folder, defaultRating, matchesToDisplay, player);
+            plugin.doSync(() -> Bukkit.getPluginManager().callEvent(new UserCreateEvent(user)));
+            return user;
+        }
 
-		try (Reader reader = new InputStreamReader(new FileInputStream(file))) {
-			final UserData user = JsonUtil.getObjectMapper().readValue(reader, UserData.class);
+        try (Reader reader = new InputStreamReader(new FileInputStream(file))) {
+            final UserData user = JsonUtil.getObjectMapper().readValue(reader, UserData.class);
 
-			if (user == null) {
-				return null;
-			}
+            if (user == null) {
+                return null;
+            }
 
-			user.folder = folder;
-			user.defaultRating = defaultRating;
-			user.matchesToDisplay = matchesToDisplay;
-			user.refreshMatches();
+            user.folder = folder;
+            user.defaultRating = defaultRating;
+            user.matchesToDisplay = matchesToDisplay;
+            user.refreshMatches();
 
-			if (!player.getName().equals(user.getName())) {
-				user.setName(player.getName());
-			}
+            if (!player.getName().equals(user.getName())) {
+                user.setName(player.getName());
+            }
 
-			return user;
-		} catch (IOException ex) {
-			Log.error(this, "An error occured while loading userdata of " + player.getName() + "!", ex);
-			return null;
-		}
-	}
+            return user;
+        } catch (IOException ex) {
+            Log.error(this, "An error occured while loading userdata of " + player.getName() + "!", ex);
+            return null;
+        }
+    }
 
-	private void saveUsers(final Collection<? extends Player> players) {
-		for (final Player player : players) {
-			final UserData user = users.remove(player.getUniqueId());
+    private void saveUsers(final Collection<? extends Player> players) {
+        for (final Player player : players) {
+            final UserData user = users.remove(player.getUniqueId());
 
-			if (user != null) {
-				user.trySave();
-			}
-		}
-	}
+            if (user != null) {
+                user.trySave();
+            }
+        }
+    }
 
-	@EventHandler
-	public void on(final PlayerJoinEvent event) {
-		final Player player = event.getPlayer();
+    @EventHandler
+    public void on(final PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
 
-		final UserData user = users.get(player.getUniqueId());
+        final UserData user = users.get(player.getUniqueId());
 
-		if (user != null) {
-			if (!player.getName().equals(user.getName())) {
-				user.setName(player.getName());
-				names.put(player.getName().toLowerCase(), player.getUniqueId());
-			}
+        if (user != null) {
+            if (!player.getName().equals(user.getName())) {
+                user.setName(player.getName());
+                names.put(player.getName().toLowerCase(), player.getUniqueId());
+            }
 
-			return;
-		}
+            return;
+        }
 
-		plugin.doAsync(() -> {
-			final UserData data = tryLoad(player);
+        plugin.doAsync(() -> {
+            final UserData data = tryLoad(player);
 
-			if (data == null) {
-				lang.sendMessage(player, "ERROR.data.load-failure");
-				return;
-			}
+            if (data == null) {
+                lang.sendMessage(player, "ERROR.data.load-failure");
+                return;
+            }
 
-			names.put(player.getName().toLowerCase(), player.getUniqueId());
-			users.put(player.getUniqueId(), data);
-		});
-	}
+            names.put(player.getName().toLowerCase(), player.getUniqueId());
+            users.put(player.getUniqueId(), data);
+        });
+    }
 
-	@EventHandler
-	public void on(final PlayerQuitEvent event) {
-		final UUID uuid = event.getPlayer().getUniqueId();
-		final UserData user = users.remove(uuid);
+    @EventHandler
+    public void on(final PlayerQuitEvent event) {
+        final UUID uuid = event.getPlayer().getUniqueId();
+        final UserData user = users.remove(uuid);
 
-		if (user != null) {
-			plugin.doAsync(() -> {
-				user.trySave();
+        if (user != null) {
+            plugin.doAsync(() -> {
+                user.trySave();
 
-				// Put data back after saving to prevent concurrency issues
-				users.put(uuid, user);
-			});
-		}
-	}
-
+                // Put data back after saving to prevent concurrency issues
+                users.put(uuid, user);
+            });
+        }
+    }
 }

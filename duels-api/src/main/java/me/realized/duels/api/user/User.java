@@ -18,7 +18,6 @@ public interface User {
     @NotNull
     UUID getUuid();
 
-
     /**
      * The Name of this user. thread-safe!
      *
@@ -27,14 +26,12 @@ public interface User {
     @NotNull
     String getName();
 
-
     /**
      * Total wins of this user. thread-safe!
      *
      * @return total wins of this user.
      */
     int getWins();
-
 
     /**
      * Sets new total wins for this user
@@ -43,14 +40,12 @@ public interface User {
      */
     void setWins(final int wins);
 
-
     /**
      * Total losses of this user. thread-safe!
      *
      * @return total losses of this user.
      */
     int getLosses();
-
 
     /**
      * Sets new total wins for this user.
@@ -59,7 +54,6 @@ public interface User {
      */
     void setLosses(final int losses);
 
-
     /**
      * Whether or not this user is receiving duel requests.
      *
@@ -67,14 +61,12 @@ public interface User {
      */
     boolean canRequest();
 
-
     /**
      * Enables or disables duel requests for this user.
      *
      * @param requests True to allow sending duel requests to this user. False otherwise.
      */
     void setRequests(final boolean requests);
-
 
     /**
      * UnmodifiableList of recent matches for this user.
@@ -84,7 +76,6 @@ public interface User {
     @NotNull
     List<MatchInfo> getMatches();
 
-
     /**
      * Gets the no kit rating. thread-safe!
      *
@@ -92,7 +83,6 @@ public interface User {
      * @since 3.3.0
      */
     int getRating();
-
 
     /**
      * Gets the rating of the given {@link Kit}. thread-safe!
@@ -102,7 +92,6 @@ public interface User {
      */
     int getRating(@NotNull final Kit kit);
 
-
     /**
      * Resets the rating to default for the no kit rating. thread-safe!
      *
@@ -110,14 +99,12 @@ public interface User {
      */
     void resetRating();
 
-
     /**
      * Resets the rating to default for the given {@link Kit}. thread-safe!
      *
      * @param kit {@link Kit} to reset the rating to default.
      */
     void resetRating(@NotNull final Kit kit);
-
 
     /**
      * Resets user's wins, losses, recent matches, and all rating.

@@ -25,7 +25,6 @@ public abstract class SourcedEvent extends Event {
         return source;
     }
 
-
     /**
      * Whether or not this event has a source specified.
      *

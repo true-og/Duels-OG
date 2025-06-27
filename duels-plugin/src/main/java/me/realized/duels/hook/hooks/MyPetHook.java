@@ -23,7 +23,8 @@ public class MyPetHook extends PluginHook<DuelsPlugin> {
             final Class<?> managerClass = Class.forName("de.Keyle.MyPet.api.repository.MyPetManager");
             managerClass.getMethod("getMyPet", Player.class);
         } catch (ClassNotFoundException | NoSuchMethodException ex) {
-            throw new RuntimeException("This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
+            throw new RuntimeException(
+                    "This version of " + getName() + " is not supported. Please try upgrading to the latest version.");
         }
     }
 

@@ -19,12 +19,7 @@ import org.bukkit.inventory.ItemStack;
 
 public class SettingsGui extends SinglePageGui<DuelsPlugin> {
 
-    private static final int[][] PATTERNS = {
-        {13},
-        {12, 14},
-        {12, 13, 14},
-        {12, 13, 14, 22}
-    };
+    private static final int[][] PATTERNS = {{13}, {12, 14}, {12, 13, 14}, {12, 13, 14, 22}};
 
     public SettingsGui(final DuelsPlugin plugin) {
         super(plugin, plugin.getLang().getMessage("GUI.settings.title"), 3);
