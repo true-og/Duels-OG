@@ -41,9 +41,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
@@ -65,7 +65,9 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
     private final Multimap<Arena, SpectatorImpl> arenas = HashMultimap.create();
 
     private Teleport teleport;
+    @Nullable
     private MyPetHook myPet;
+    @Nullable
     private EssentialsHook essentials;
 
     public SpectateManagerImpl(final DuelsPlugin plugin) {
@@ -104,7 +106,6 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
         return get(player) != null;
     }
 
-    @SuppressWarnings({"deprecation"})
     @NotNull
     @Override
     public Result startSpectating(@NotNull final Player player, @NotNull final Player target) {
@@ -140,16 +141,17 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
         final MatchImpl match = arena.getMatch();
 
         // Hide from players in match
-        if (match != null && !essentials.isVanished(player)) {
-            match.getAllPlayers().stream()
-                    .filter(arenaPlayer -> arenaPlayer.isOnline() && arenaPlayer.canSee(player))
-                    .forEach(arenaPlayer -> {
-                        if (CompatUtil.hasHidePlayer()) {
-                            arenaPlayer.hidePlayer(plugin, player);
-                        } else {
-                            arenaPlayer.hidePlayer(player);
-                        }
-                    });
+        if (match != null && !(essentials != null && essentials.isVanished(player))) {
+            match.getAllPlayers()
+                .stream()
+                .filter(arenaPlayer -> arenaPlayer.isOnline() && arenaPlayer.canSee(player))
+                .forEach(arenaPlayer -> {
+                    if (CompatUtil.hasHidePlayer()) {
+                        arenaPlayer.hidePlayer(plugin, player);
+                    } else {
+                        arenaPlayer.hidePlayer(player);
+                    }
+                });
         }
 
         // Remove pet before teleport
@@ -186,10 +188,7 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
 
         // Broadcast to the arena that player has begun spectating if player does not have the SPEC_ANON permission.
         if (!player.hasPermission(Permissions.SPEC_ANON)) {
-            arena.getMatch()
-                    .getAllPlayers()
-                    .forEach(matchPlayer ->
-                            lang.sendMessage(matchPlayer, "SPECTATE.arena-broadcast", "name", player.getName()));
+            arena.getMatch().getAllPlayers().forEach(matchPlayer -> lang.sendMessage(matchPlayer, "SPECTATE.arena-broadcast", "name", player.getName()));
         }
 
         return Result.SUCCESS;
@@ -201,7 +200,6 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
      * @param player Player to put out of spectator mode
      * @param spectator {@link SpectatorImpl} instance associated to this player
      */
-    @SuppressWarnings("deprecation")
     public void stopSpectating(final Player player, final SpectatorImpl spectator) {
         spectators.remove(player.getUniqueId());
         arenas.remove(spectator.getArena(), spectator);
@@ -228,14 +226,17 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
         final MatchImpl match = spectator.getArena().getMatch();
 
         // Show to players in match
-        if (match != null && !essentials.isVanished(player)) {
-            match.getAllPlayers().stream().filter(Player::isOnline).forEach(arenaPlayer -> {
-                if (CompatUtil.hasHidePlayer()) {
-                    arenaPlayer.showPlayer(plugin, player);
-                } else {
-                    arenaPlayer.showPlayer(player);
-                }
-            });
+        if (match != null && !(essentials != null && essentials.isVanished(player))) {
+            match.getAllPlayers()
+                .stream()
+                .filter(Player::isOnline)
+                .forEach(arenaPlayer -> {
+                    if (CompatUtil.hasHidePlayer()) {
+                        arenaPlayer.showPlayer(plugin, player);
+                    } else {
+                        arenaPlayer.showPlayer(player);
+                    }
+                });
         }
 
         final SpectateEndEvent event = new SpectateEndEvent(player, spectator);
@@ -289,9 +290,10 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
     }
 
     public Collection<Player> getAllSpectators() {
-        return spectators.values().stream()
-                .map(spectator -> Bukkit.getPlayer(spectator.getUuid()))
-                .collect(Collectors.toList());
+        return spectators.values()
+            .stream()
+            .map(spectator -> Bukkit.getPlayer(spectator.getUuid()))
+            .collect(Collectors.toList());
     }
 
     private class SpectateListener implements Listener {
@@ -318,9 +320,7 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
 
             final String command = event.getMessage().substring(1).split(" ")[0].toLowerCase();
 
-            if (command.equalsIgnoreCase("spectate")
-                    || command.equalsIgnoreCase("spec")
-                    || config.getSpecWhitelistedCommands().contains(command)) {
+            if (command.equalsIgnoreCase("spectate") || command.equalsIgnoreCase("spec") || config.getSpecWhitelistedCommands().contains(command)) {
                 return;
             }
 
@@ -341,6 +341,7 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
             lang.sendMessage(player, "SPECTATE.prevent.teleportation");
         }
 
+
         @EventHandler(ignoreCancelled = true)
         public void on(final PlayerInteractEvent event) {
             if (!isSpectating(event.getPlayer())) {
@@ -351,17 +352,12 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
         }
 
         @EventHandler(ignoreCancelled = true)
-        public void on(final EntityPickupItemEvent event) {
-
-            if (event.getEntity() instanceof Player) {
-
-                Player player = (Player) event.getEntity();
-                if (!isSpectating(player)) {
-                    return;
-                }
-
-                event.setCancelled(true);
+        public void on(final PlayerPickupItemEvent event) {
+            if (!isSpectating(event.getPlayer())) {
+                return;
             }
+
+            event.setCancelled(true);
         }
 
         @EventHandler(ignoreCancelled = true)
@@ -370,8 +366,7 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
 
             if (event.getDamager() instanceof Player) {
                 player = (Player) event.getDamager();
-            } else if (event.getDamager() instanceof Projectile
-                    && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
+            } else if (event.getDamager() instanceof Projectile && ((Projectile) event.getDamager()).getShooter() instanceof Player) {
                 player = (Player) ((Projectile) event.getDamager()).getShooter();
             } else {
                 return;
