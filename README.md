@@ -1,8 +1,8 @@
-<h1>Duels</h1> 
+<h1>Duels-OG</h1> 
 
-The [TrueOG Network](https://trueog.net) branch of [Duels](https://github.com/Realizedd/Duels) - a duel plugin for Spigot. <a href="https://www.spigotmc.org/resources/duels.20171/">Spigot Project Page</a>
+The [TrueOG Network](https://trueog.net) fork of [Duels](https://github.com/Realizedd/Duels) - a duel plugin for Spigot. <a href="https://www.spigotmc.org/resources/duels.20171/">Spigot Project Page</a>
 
-This branch includes the following proposed changes that have yet to be merged into Duels upstream:
+Includes the following proposed changes that have yet to be merged into Duels upstream:
 
 - Inventory loss bug fixes by @szumielxd
 - Essentials API NPE fix by @skbeh

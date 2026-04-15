@@ -1,4 +1,4 @@
-name: Duels
+name: Duels-OG
 main: me.realized.duels.DuelsPlugin
 version: @VERSION@
 softdepend: [CombatLogX, CombatTagPlus, Essentials, Factions, LeaderHeads, mcMMO, MVdWPlaceholderAPI, MyPet, PlaceholderAPI, PvPManager, SimpleClans, Vault, WorldGuard, Multiverse-Core]

@@ -151,7 +151,7 @@ project(":duels-plugin") {
         archiveFileName.set("${rootProject.name}-${project.version}.jar")
         configurations = listOf(shade)
 
-        val shadedPrefix = "${project.group}.${rootProject.name.lowercase(Locale.ROOT)}.shaded."
+        val shadedPrefix = "${project.group}.${rootProject.name.lowercase(Locale.ROOT).replace("-", "_")}.shaded."
         relocate("com.fasterxml.jackson.core", shadedPrefix + "jackson-core")
     }
 

@@ -5,7 +5,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Duels"
+rootProject.name = "Duels-OG"
 
 include(
     "duels-worldguard",
