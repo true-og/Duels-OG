@@ -229,7 +229,7 @@ duel:
 
   # List of worlds to disable dueling.
   blacklisted-worlds:
-    - 'world_name_here'
+    - 'Ancient_Plateau'
 
   # If set to 'true', players will be teleported to the location where they were before the duel instead of duel lobby.
   # default: false
