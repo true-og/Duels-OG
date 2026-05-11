@@ -122,6 +122,8 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private boolean cancelIfMoved;
     @Getter
+    private String enabledWorld;
+    @Getter
     private List<String> blacklistedWorlds;
     @Getter
     private boolean teleportToLastLocation;
@@ -317,6 +319,10 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         preventTpToMatchPlayers = configuration.getBoolean("duel.prevent-teleport-to-match-players", true);
         forceAllowCombat = configuration.getBoolean("duel.force-allow-combat", true);
         cancelIfMoved = configuration.getBoolean("duel.cancel-if-moved", false);
+        final String configuredEnabledWorld = configuration.getString("duel.enabled-world", "world");
+        enabledWorld = configuredEnabledWorld != null && !configuredEnabledWorld.trim().isEmpty()
+            ? configuredEnabledWorld.trim()
+            : "world";
         blacklistedWorlds = configuration.getStringList("duel.blacklisted-worlds");
         teleportToLastLocation = configuration.getBoolean("duel.teleport-to-last-location", false);
         teleportDelay = configuration.getInt("duel.teleport-delay", 5);
@@ -412,6 +418,11 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
 
     public Set<String> getSounds() {
         return sounds.keySet();
+    }
+
+    public boolean isDuelingWorld(final Player player) {
+        return player != null && player.getWorld() != null
+            && enabledWorld.equalsIgnoreCase(player.getWorld().getName());
     }
 
     public class MessageSound {

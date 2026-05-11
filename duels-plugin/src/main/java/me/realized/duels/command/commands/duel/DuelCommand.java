@@ -82,7 +82,7 @@ public class DuelCommand extends BaseCommand {
             return true;
         }
 
-        if (config.getBlacklistedWorlds().contains(player.getWorld().getName())) {
+        if (!config.isDuelingWorld(player) || config.getBlacklistedWorlds().contains(player.getWorld().getName())) {
             lang.sendMessage(sender, "ERROR.duel.in-blacklisted-world");
             return true;
         }

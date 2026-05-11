@@ -97,11 +97,13 @@ public class PlayerInfoManager implements Loadable {
             }
         }
 
-        // If lobby is not found or invalid, use the default world's spawn location for lobby.
-        if (lobby == null || lobby.getWorld() == null) {
-            final World world = Bukkit.getWorlds().get(0);
-            this.lobby = world.getSpawnLocation();
-            Log.warn(this, String.format(ERROR_LOBBY_DEFAULT, world.getName()));
+        // If lobby is not found or points at a disabled/unloaded world, use the
+        // configured dueling world's spawn location for lobby.
+        if (!isEnabledWorld(lobby)) {
+            this.lobby = getFallbackLocation();
+            final World world = this.lobby != null ? this.lobby.getWorld() : null;
+            Log.warn(this,
+                String.format(ERROR_LOBBY_DEFAULT, world != null ? world.getName() : config.getEnabledWorld()));
         }
     }
 
@@ -112,7 +114,7 @@ public class PlayerInfoManager implements Loadable {
 
             if (info != null) {
                 player.spigot().respawn();
-                teleport.tryTeleport(player, info.getLocation());
+                teleport.tryTeleport(player, safeReturnLocation(info.getLocation()));
                 PlayerUtil.reset(player);
                 info.restore(player);
             }
@@ -143,6 +145,10 @@ public class PlayerInfoManager implements Loadable {
      * @return true if setting lobby was successful, false otherwise
      */
     public boolean setLobby(final Player player) {
+        if (!config.isDuelingWorld(player)) {
+            return false;
+        }
+
         final Location lobby = player.getLocation().clone();
 
         try (final Writer writer = new OutputStreamWriter(new FileOutputStream(lobbyFile), Charsets.UTF_8)) {
@@ -176,7 +182,9 @@ public class PlayerInfoManager implements Loadable {
         final PlayerInfo info = new PlayerInfo(player, excludeInventory);
 
         if (!config.isTeleportToLastLocation()) {
-            info.setLocation(lobby.clone());
+            info.setLocation(safeReturnLocation(lobby));
+        } else if (!isEnabledWorld(info.getLocation())) {
+            info.setLocation(safeReturnLocation(info.getLocation()));
         }
 
         cache.put(player.getUniqueId(), info);
@@ -201,6 +209,30 @@ public class PlayerInfoManager implements Loadable {
         return cache.remove(player.getUniqueId());
     }
 
+    private boolean isEnabledWorld(final Location location) {
+        return location != null && location.getWorld() != null
+            && config.getEnabledWorld().equalsIgnoreCase(location.getWorld().getName());
+    }
+
+    private Location getFallbackLocation() {
+        World world = Bukkit.getWorld(config.getEnabledWorld());
+
+        if (world == null && !Bukkit.getWorlds().isEmpty()) {
+            world = Bukkit.getWorlds().get(0);
+        }
+
+        return world != null ? world.getSpawnLocation() : null;
+    }
+
+    private Location safeReturnLocation(final Location location) {
+        if (isEnabledWorld(location)) {
+            return location.clone();
+        }
+
+        final Location fallback = getFallbackLocation();
+        return fallback != null ? fallback.clone() : null;
+    }
+
     private class PlayerInfoListener implements Listener {
 
         // Handles case of some players causing respawn to skip somehow.
@@ -218,7 +250,7 @@ public class PlayerInfoManager implements Loadable {
                 return;
             }
 
-            teleport.tryTeleport(player, info.getLocation());
+            teleport.tryTeleport(player, safeReturnLocation(info.getLocation()));
             info.restore(player);
         }
 
@@ -231,7 +263,7 @@ public class PlayerInfoManager implements Loadable {
                 return;
             }
 
-            event.setRespawnLocation(info.getLocation());
+            event.setRespawnLocation(safeReturnLocation(info.getLocation()));
 
             if (essentials != null) {
                 essentials.setBackLocation(player, event.getRespawnLocation());

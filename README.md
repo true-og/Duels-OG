@@ -2,8 +2,9 @@
 
 The [TrueOG Network](https://trueog.net) fork of [Duels](https://github.com/Realizedd/Duels) - a duel plugin for Spigot. <a href="https://www.spigotmc.org/resources/duels.20171/">Spigot Project Page</a>
 
-Includes the following proposed changes that have yet to be merged into Duels upstream:
+Changes from Duels:
 
+- Only start Duels from one world, configurable in config.yml by @NotAlexNoyle
 - Inventory loss bug fixes by @szumielxd
 - Essentials API NPE fix by @skbeh
 - Update deprecated pickup API by @NotAlexNoyle

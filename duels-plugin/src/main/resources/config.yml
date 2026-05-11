@@ -231,6 +231,10 @@ duel:
   # default: false
   cancel-if-moved: false
 
+  # Only allow duels to be started from this world.
+  # default: world
+  enabled-world: 'world'
+
   # List of worlds to disable dueling.
   blacklisted-worlds:
     - 'world_name_here'

@@ -361,6 +361,11 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
             return false;
         }
 
+        if (!config.isDuelingWorld(player) || config.getBlacklistedWorlds().contains(player.getWorld().getName())) {
+            lang.sendMessage(player, "ERROR.duel.in-blacklisted-world");
+            return false;
+        }
+
         if ((combatTagPlus != null && combatTagPlus.isTagged(player)) || (pvpManager != null && pvpManager.isTagged(player))) {
             lang.sendMessage(player, "ERROR.duel.is-tagged");
             return false;
