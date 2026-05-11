@@ -1,10 +1,6 @@
 # DO NOT EDIT THIS VALUE!
 config-version: 12
 
-# If set to 'true', a notification and a download link will be printed on both console and in-game when a new update is available.
-# default: true
-check-for-updates: true
-
 
 # NOTE: The following options will only activate if the message '[Duels] Hooked into <plugin name>!' is displayed on console.
 # If the plugin in the following list is enabled on your server but Duels fails to hook into them,
@@ -230,10 +226,6 @@ duel:
   # If set to 'true', players will be required to stay in the position where they have sent or accepted the request in order for the duel to start.
   # default: false
   cancel-if-moved: false
-
-  # Only allow duels to be started from this world.
-  # default: world
-  enabled-world: 'world'
 
   # List of worlds to disable dueling.
   blacklisted-worlds:

@@ -50,7 +50,6 @@ import me.realized.duels.util.Loadable;
 import me.realized.duels.util.Log;
 import me.realized.duels.util.Log.LogSource;
 import me.realized.duels.util.Reloadable;
-import me.realized.duels.util.UpdateChecker;
 import me.realized.duels.util.command.AbstractCommand;
 import me.realized.duels.util.gui.GuiListener;
 import me.realized.duels.util.json.JsonUtil;
@@ -65,7 +64,6 @@ import org.jetbrains.annotations.NotNull;
 public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
 
     private static final int BSTATS_ID = 2696;
-    private static final int RESOURCE_ID = 20171;
     private static final String SPIGOT_INSTALLATION_URL = "https://www.spigotmc.org/wiki/spigot-installation/";
 
     @Getter
@@ -115,11 +113,6 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
 
     private final Map<String, AbstractCommand<DuelsPlugin>> commands = new HashMap<>();
     private final List<Listener> registeredListeners = new ArrayList<>();
-
-    @Getter
-    private volatile boolean updateAvailable;
-    @Getter
-    private volatile String newVersion;
 
     @Override
     public void onEnable() {
@@ -187,25 +180,6 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
         new LingerPotionListener(this);
 
         new Metrics(this, BSTATS_ID);
-
-        if (!configuration.isCheckForUpdates()) {
-            return;
-        }
-
-        final UpdateChecker updateChecker = new UpdateChecker(this, RESOURCE_ID);
-        updateChecker.check((hasUpdate, newVersion) -> {
-            if (hasUpdate) {
-                DuelsPlugin.this.updateAvailable = true;
-                DuelsPlugin.this.newVersion = newVersion;
-                Log.info("===============================================");
-                Log.info("An update for " + getName() + " is available!");
-                Log.info("Download " + getName() + " v" + newVersion + " here:");
-                Log.info(getDescription().getWebsite());
-                Log.info("===============================================");
-            } else {
-                Log.info("No updates were available. You are on the latest version!");
-            }
-        });
     }
 
     @Override

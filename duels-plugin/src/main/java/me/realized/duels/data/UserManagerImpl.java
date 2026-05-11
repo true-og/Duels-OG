@@ -18,7 +18,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
-import me.realized.duels.Permissions;
 import me.realized.duels.api.event.user.UserCreateEvent;
 import me.realized.duels.api.kit.Kit;
 import me.realized.duels.api.user.User;
@@ -28,7 +27,6 @@ import me.realized.duels.config.Lang;
 import me.realized.duels.util.DateUtil;
 import me.realized.duels.util.Loadable;
 import me.realized.duels.util.Log;
-import me.realized.duels.util.StringUtil;
 import me.realized.duels.util.UUIDUtil;
 import me.realized.duels.util.json.JsonUtil;
 import org.bukkit.Bukkit;
@@ -41,8 +39,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class UserManagerImpl implements Loadable, Listener, UserManager {
-
-    private static final String ADMIN_UPDATE_MESSAGE = "&9[Duels] &bDuels &fv%s &7is now available for download! Download at: &c%s";
 
     private final DuelsPlugin plugin;
     private final Config config;
@@ -291,12 +287,6 @@ public class UserManagerImpl implements Loadable, Listener, UserManager {
     @EventHandler
     public void on(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-
-        plugin.doSyncAfter(() -> {
-            if (plugin.isUpdateAvailable() && (player.isOp() || player.hasPermission(Permissions.ADMIN))) {
-                player.sendMessage(StringUtil.color(String.format(ADMIN_UPDATE_MESSAGE, plugin.getNewVersion(), plugin.getDescription().getWebsite())));
-            }
-        }, 5L);
 
         final UserData user = users.get(player.getUniqueId());
 

@@ -4,6 +4,7 @@ The [TrueOG Network](https://trueog.net) fork of [Duels](https://github.com/Real
 
 Changes from Duels:
 
+- Remove update checker by @NotAlexNoyle
 - Only start Duels from one world, configurable in config.yml by @NotAlexNoyle
 - Inventory loss bug fixes by @szumielxd
 - Essentials API NPE fix by @skbeh

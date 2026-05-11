@@ -18,8 +18,6 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
 
     @Getter
     private int version;
-    @Getter
-    private boolean checkForUpdates;
 
     @Getter
     private boolean ctpPreventDuel;
@@ -121,8 +119,6 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     private boolean forceAllowCombat;
     @Getter
     private boolean cancelIfMoved;
-    @Getter
-    private String enabledWorld;
     @Getter
     private List<String> blacklistedWorlds;
     @Getter
@@ -266,7 +262,6 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         }
 
         version = configuration.getInt("config-version");
-        checkForUpdates = configuration.getBoolean("check-for-updates", true);
 
         ctpPreventDuel = configuration.getBoolean("supported-plugins.CombatTagPlus.prevent-duel-if-tagged", true);
         ctpPreventTag = configuration.getBoolean("supported-plugins.CombatTagPlus.prevent-tag-in-duel", true);
@@ -319,10 +314,6 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         preventTpToMatchPlayers = configuration.getBoolean("duel.prevent-teleport-to-match-players", true);
         forceAllowCombat = configuration.getBoolean("duel.force-allow-combat", true);
         cancelIfMoved = configuration.getBoolean("duel.cancel-if-moved", false);
-        final String configuredEnabledWorld = configuration.getString("duel.enabled-world", "world");
-        enabledWorld = configuredEnabledWorld != null && !configuredEnabledWorld.trim().isEmpty()
-            ? configuredEnabledWorld.trim()
-            : "world";
         blacklistedWorlds = configuration.getStringList("duel.blacklisted-worlds");
         teleportToLastLocation = configuration.getBoolean("duel.teleport-to-last-location", false);
         teleportDelay = configuration.getInt("duel.teleport-delay", 5);
@@ -422,7 +413,7 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
 
     public boolean isDuelingWorld(final Player player) {
         return player != null && player.getWorld() != null
-            && enabledWorld.equalsIgnoreCase(player.getWorld().getName());
+            && "world".equals(player.getWorld().getName());
     }
 
     public class MessageSound {

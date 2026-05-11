@@ -103,7 +103,7 @@ public class PlayerInfoManager implements Loadable {
             this.lobby = getFallbackLocation();
             final World world = this.lobby != null ? this.lobby.getWorld() : null;
             Log.warn(this,
-                String.format(ERROR_LOBBY_DEFAULT, world != null ? world.getName() : config.getEnabledWorld()));
+                String.format(ERROR_LOBBY_DEFAULT, world != null ? world.getName() : "world"));
         }
     }
 
@@ -211,11 +211,11 @@ public class PlayerInfoManager implements Loadable {
 
     private boolean isEnabledWorld(final Location location) {
         return location != null && location.getWorld() != null
-            && config.getEnabledWorld().equalsIgnoreCase(location.getWorld().getName());
+            && "world".equals(location.getWorld().getName());
     }
 
     private Location getFallbackLocation() {
-        World world = Bukkit.getWorld(config.getEnabledWorld());
+        World world = Bukkit.getWorld("world");
 
         if (world == null && !Bukkit.getWorlds().isEmpty()) {
             world = Bukkit.getWorlds().get(0);
