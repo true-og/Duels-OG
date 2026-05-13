@@ -33,7 +33,9 @@ import me.realized.duels.data.QueueData;
 import me.realized.duels.data.UserData;
 import me.realized.duels.data.UserManagerImpl;
 import me.realized.duels.duel.DuelManager;
+import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
+import me.realized.duels.hook.hooks.EternalCombatHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
@@ -81,6 +83,8 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
 
     private CombatTagPlusHook combatTagPlus;
     private PvPManagerHook pvpManager;
+    private CombatLogXHook combatLogX;
+    private EternalCombatHook eternalCombat;
     private WorldGuardHook worldGuard;
     private VaultHook vault;
     private int queueTask;
@@ -147,6 +151,8 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
 
         this.combatTagPlus = plugin.getHookManager().getHook(CombatTagPlusHook.class);
         this.pvpManager = plugin.getHookManager().getHook(PvPManagerHook.class);
+        this.combatLogX = plugin.getHookManager().getHook(CombatLogXHook.class);
+        this.eternalCombat = plugin.getHookManager().getHook(EternalCombatHook.class);
         this.worldGuard = plugin.getHookManager().getHook(WorldGuardHook.class);
         this.vault = plugin.getHookManager().getHook(VaultHook.class);
         this.queueTask = plugin.doSyncRepeat(() -> {
@@ -366,7 +372,10 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
             return false;
         }
 
-        if ((combatTagPlus != null && combatTagPlus.isTagged(player)) || (pvpManager != null && pvpManager.isTagged(player))) {
+        if ((combatTagPlus != null && combatTagPlus.isTagged(player))
+            || (pvpManager != null && pvpManager.isTagged(player))
+            || (combatLogX != null && combatLogX.isTagged(player))
+            || (eternalCombat != null && eternalCombat.isTagged(player))) {
             lang.sendMessage(player, "ERROR.duel.is-tagged");
             return false;
         }

@@ -5,6 +5,7 @@ import me.realized.duels.hook.hooks.BountyHuntersHook;
 import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.EssentialsHook;
+import me.realized.duels.hook.hooks.EternalCombatHook;
 import me.realized.duels.hook.hooks.FactionsHook;
 import me.realized.duels.hook.hooks.LeaderHeadsHook;
 import me.realized.duels.hook.hooks.MVdWPlaceholderHook;
@@ -25,6 +26,7 @@ public class HookManager extends AbstractHookManager<DuelsPlugin> {
         register(CombatLogXHook.NAME, CombatLogXHook.class);
         register(CombatTagPlusHook.NAME, CombatTagPlusHook.class);
         register(EssentialsHook.NAME, EssentialsHook.class);
+        register(EternalCombatHook.NAME, EternalCombatHook.class);
         register(FactionsHook.NAME, FactionsHook.class);
         register(LeaderHeadsHook.NAME, LeaderHeadsHook.class);
         register(McMMOHook.NAME, McMMOHook.class);

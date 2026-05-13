@@ -32,6 +32,10 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private boolean clxPreventTag;
     @Getter
+    private boolean ecPreventDuel;
+    @Getter
+    private boolean ecPreventTag;
+    @Getter
     private boolean autoUnvanish;
     @Getter
     private boolean setBackLocation;
@@ -269,6 +273,8 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         pmPreventTag = configuration.getBoolean("supported-plugins.PvPManager.prevent-tag-in-duel", true);
         clxPreventDuel = configuration.getBoolean("supported-plugins.CombatLogX.prevent-duel-if-tagged", true);
         clxPreventTag = configuration.getBoolean("supported-plugins.CombatLogX.prevent-tag-in-duel", true);
+        ecPreventDuel = configuration.getBoolean("supported-plugins.EternalCombat.prevent-duel-if-tagged", true);
+        ecPreventTag = configuration.getBoolean("supported-plugins.EternalCombat.prevent-tag-in-duel", true);
         autoUnvanish = configuration.getBoolean("supported-plugins.Essentials.auto-unvanish", true);
         setBackLocation = configuration.getBoolean("supported-plugins.Essentials.set-back-location", true);
         disableSkills = configuration.getBoolean("supported-plugins.mcMMO.disable-skills-in-duel", true);

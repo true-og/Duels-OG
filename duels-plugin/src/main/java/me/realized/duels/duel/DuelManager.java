@@ -51,6 +51,7 @@ import me.realized.duels.data.UserManagerImpl;
 import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.EssentialsHook;
+import me.realized.duels.hook.hooks.EternalCombatHook;
 import me.realized.duels.hook.hooks.McMMOHook;
 import me.realized.duels.hook.hooks.MyPetHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
@@ -93,6 +94,7 @@ public class DuelManager implements Loadable {
     private CombatTagPlusHook combatTagPlus;
     private PvPManagerHook pvpManager;
     private CombatLogXHook combatLogX;
+    private EternalCombatHook eternalCombat;
     private VaultHook vault;
     private EssentialsHook essentials;
     private McMMOHook mcMMO;
@@ -120,6 +122,7 @@ public class DuelManager implements Loadable {
         this.combatTagPlus = plugin.getHookManager().getHook(CombatTagPlusHook.class);
         this.pvpManager = plugin.getHookManager().getHook(PvPManagerHook.class);
         this.combatLogX = plugin.getHookManager().getHook(CombatLogXHook.class);
+        this.eternalCombat = plugin.getHookManager().getHook(EternalCombatHook.class);
         this.vault = plugin.getHookManager().getHook(VaultHook.class);
         this.essentials = plugin.getHookManager().getHook(EssentialsHook.class);
         this.mcMMO = plugin.getHookManager().getHook(McMMOHook.class);
@@ -382,7 +385,8 @@ public class DuelManager implements Loadable {
     private boolean isTagged(final Player player) {
         return (combatTagPlus != null && combatTagPlus.isTagged(player))
             || (pvpManager != null && pvpManager.isTagged(player))
-            || (combatLogX != null && combatLogX.isTagged(player));
+            || (combatLogX != null && combatLogX.isTagged(player))
+            || (eternalCombat != null && eternalCombat.isTagged(player));
     }
 
     private boolean notInLoc(final Player player, final Location location) {
