@@ -13,6 +13,9 @@ Changes from Duels:
 - Added an option to hide the bet winning title message by @NotAlexNoyle
 - Prevent players from stealing Duels items from the inventory by @dwaslashe
 - Prevent players from stealing Duels items from the ground by @SrBedrock
+- Whitelist arenas/worlds and fix duel transportation, with [PetTeleport-OG](https://github.com/true-og/PetTeleport-OG) and [HorseTp-OG](https://github.com/true-og/HorseTp-OG) support by @NotAlexNoyle
+- Add [EternalCombat](https://github.com/EternalCodeTeam/EternalCombat) support by @NotAlexNoyle
+- Replace BountyHunters hook with [PlayerBounties-OG](https://github.com/true-og/PlayerBounties-OG) support by @NotAlexNoyle
 
 ---
 

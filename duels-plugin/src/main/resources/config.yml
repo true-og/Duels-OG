@@ -66,8 +66,8 @@ supported-plugins:
 
       # List of regions to allow dueling.
       regions: [spawn, lobby]
-  BountyHunters:
-    # If set to 'true', player will not lose bounty even if they die in a duel.
+  PlayerBounties-OG:
+    # If set to 'true', bounty claims and new bounty placements involving a player in a duel will be cancelled.
     # default: true
     prevent-bounty-loss-in-duel: true
   SimpleClans:

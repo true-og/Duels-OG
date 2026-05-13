@@ -280,7 +280,7 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         fNoPowerLoss = configuration.getBoolean("supported-plugins.Factions.no-power-loss-in-duel", true);
         duelzoneEnabled = configuration.getBoolean("supported-plugins.WorldGuard.duelzone.enabled", false);
         duelzones = configuration.getStringList("supported-plugins.WorldGuard.duelzone.regions");
-        preventBountyLoss = configuration.getBoolean("supported-plugins.BountyHunters.prevent-bounty-loss-in-duel", true);
+        preventBountyLoss = configuration.getBoolean("supported-plugins.PlayerBounties-OG.prevent-bounty-loss-in-duel", true);
         preventKDRChange = configuration.getBoolean("supported-plugins.SimpleClans.prevent-kdr-change", true);
         lhWinsCmd = configuration.getString("supported-plugins.LeaderHeads.wins.menu.command", "openwins");
         lhWinsTitle = configuration.getString("supported-plugins.LeaderHeads.wins.menu.title", "Duel Wins");
