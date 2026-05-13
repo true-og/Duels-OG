@@ -26,6 +26,7 @@ import me.realized.duels.util.PlayerUtil;
 import me.realized.duels.util.io.FileUtil;
 import me.realized.duels.util.json.JsonUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -114,7 +115,7 @@ public class PlayerInfoManager implements Loadable {
 
             if (info != null) {
                 player.spigot().respawn();
-                teleport.tryTeleport(player, safeReturnLocation(info.getLocation()));
+                teleport.tryTeleport(player, getReturnLocation(info));
                 PlayerUtil.reset(player);
                 info.restore(player);
             }
@@ -179,11 +180,18 @@ public class PlayerInfoManager implements Loadable {
      * @param excludeInventory true to exclude inventory contents from being stored in PlayerInfo, false otherwise
      */
     public void create(final Player player, final boolean excludeInventory) {
-        final PlayerInfo info = new PlayerInfo(player, excludeInventory);
+        create(player, new PlayerInfo(player, excludeInventory));
+    }
 
-        if (!info.hasRideState() && !config.isTeleportToLastLocation()) {
+    public void create(final Player player, final boolean excludeInventory, final GameMode gameMode,
+        final boolean allowFlight, final boolean flying, final boolean forceReturnLocation, final Location location) {
+        create(player, new PlayerInfo(player, excludeInventory, gameMode, allowFlight, flying, forceReturnLocation, location));
+    }
+
+    private void create(final Player player, final PlayerInfo info) {
+        if (!info.hasRideState() && !info.isForceReturnLocation() && !config.isTeleportToLastLocation()) {
             info.setLocation(safeReturnLocation(lobby));
-        } else if (!isEnabledWorld(info.getLocation())) {
+        } else if (!info.isForceReturnLocation() && !isEnabledWorld(info.getLocation())) {
             info.setLocation(safeReturnLocation(info.getLocation()));
         }
 
@@ -233,6 +241,16 @@ public class PlayerInfoManager implements Loadable {
         return fallback != null ? fallback.clone() : null;
     }
 
+    private Location getReturnLocation(final PlayerInfo info) {
+        final Location location = info.getLocation();
+
+        if (info.isForceReturnLocation() && location != null && location.getWorld() != null) {
+            return location.clone();
+        }
+
+        return safeReturnLocation(location);
+    }
+
     private class PlayerInfoListener implements Listener {
 
         // Handles case of some players causing respawn to skip somehow.
@@ -250,7 +268,7 @@ public class PlayerInfoManager implements Loadable {
                 return;
             }
 
-            teleport.tryTeleport(player, safeReturnLocation(info.getLocation()));
+            teleport.tryTeleport(player, getReturnLocation(info));
             info.restore(player);
         }
 
@@ -263,7 +281,7 @@ public class PlayerInfoManager implements Loadable {
                 return;
             }
 
-            event.setRespawnLocation(safeReturnLocation(info.getLocation()));
+            event.setRespawnLocation(getReturnLocation(info));
 
             if (essentials != null) {
                 essentials.setBackLocation(player, event.getRespawnLocation());

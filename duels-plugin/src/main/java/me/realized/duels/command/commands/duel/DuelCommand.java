@@ -15,6 +15,7 @@ import me.realized.duels.data.UserData;
 import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.EternalCombatHook;
+import me.realized.duels.hook.hooks.GameModeInventoriesHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
@@ -37,6 +38,7 @@ public class DuelCommand extends BaseCommand {
     private final EternalCombatHook eternalCombat;
     private final WorldGuardHook worldGuard;
     private final VaultHook vault;
+    private final GameModeInventoriesHook gameModeInventories;
 
     public DuelCommand(final DuelsPlugin plugin) {
         super(plugin, "duel", Permissions.DUEL, true);
@@ -55,6 +57,7 @@ public class DuelCommand extends BaseCommand {
         this.eternalCombat = hookManager.getHook(EternalCombatHook.class);
         this.worldGuard = hookManager.getHook(WorldGuardHook.class);
         this.vault = hookManager.getHook(VaultHook.class);
+        this.gameModeInventories = hookManager.getHook(GameModeInventoriesHook.class);
     }
 
     @Override
@@ -80,7 +83,7 @@ public class DuelCommand extends BaseCommand {
             return true;
         }
 
-        if (config.isPreventCreativeMode() && player.getGameMode() == GameMode.CREATIVE) {
+        if (isCreativeModeBlocked(player)) {
             lang.sendMessage(sender, "ERROR.duel.in-creative-mode");
             return true;
         }
@@ -256,6 +259,12 @@ public class DuelCommand extends BaseCommand {
 
     @Override
     protected void execute(final CommandSender sender, final String label, final String[] args) {}
+
+    private boolean isCreativeModeBlocked(final Player player) {
+        return config.isPreventCreativeMode()
+            && player.getGameMode() == GameMode.CREATIVE
+            && (gameModeInventories == null || !gameModeInventories.canSwitchInventories(player));
+    }
 
     // Disables default TabCompleter
     @Override

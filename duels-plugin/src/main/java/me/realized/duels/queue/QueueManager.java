@@ -36,6 +36,7 @@ import me.realized.duels.duel.DuelManager;
 import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.EternalCombatHook;
+import me.realized.duels.hook.hooks.GameModeInventoriesHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
@@ -87,6 +88,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
     private EternalCombatHook eternalCombat;
     private WorldGuardHook worldGuard;
     private VaultHook vault;
+    private GameModeInventoriesHook gameModeInventories;
     private int queueTask;
 
     @Getter
@@ -155,6 +157,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
         this.eternalCombat = plugin.getHookManager().getHook(EternalCombatHook.class);
         this.worldGuard = plugin.getHookManager().getHook(WorldGuardHook.class);
         this.vault = plugin.getHookManager().getHook(VaultHook.class);
+        this.gameModeInventories = plugin.getHookManager().getHook(GameModeInventoriesHook.class);
         this.queueTask = plugin.doSyncRepeat(() -> {
             boolean update = false;
 
@@ -362,7 +365,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
             return false;
         }
 
-        if (config.isPreventCreativeMode() && player.getGameMode() == GameMode.CREATIVE) {
+        if (isCreativeModeBlocked(player)) {
             lang.sendMessage(player, "ERROR.duel.in-creative-mode");
             return false;
         }
@@ -404,6 +407,12 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
         final String kit = queue.getKit() != null ? queue.getKit().getName() : lang.getMessage("GENERAL.none");
         lang.sendMessage(player, "QUEUE.add", "kit", kit, "bet_amount", queue.getBet());
         return true;
+    }
+
+    private boolean isCreativeModeBlocked(final Player player) {
+        return config.isPreventCreativeMode()
+            && player.getGameMode() == GameMode.CREATIVE
+            && (gameModeInventories == null || !gameModeInventories.canSwitchInventories(player));
     }
 
     public Queue remove(final Player player) {

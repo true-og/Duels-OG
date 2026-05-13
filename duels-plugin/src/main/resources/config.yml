@@ -98,7 +98,7 @@ request:
   # default: false
   requires-cleared-inventory: false
 
-  # If set to 'true', players in creative mode will be prohibited from dueling.
+  # If set to 'true', players in creative mode will be prohibited from dueling unless GameModeInventories-OG can swap them to survival for the match.
   # default: false
   prevent-creative-mode: false
 

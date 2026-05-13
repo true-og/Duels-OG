@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import me.realized.duels.util.PlayerUtil;
 import me.realized.duels.util.inventory.InventoryUtil;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -29,24 +30,59 @@ public class PlayerInfo {
     @Getter
     @Setter
     private Location location;
+    @Getter
+    private final GameMode gameMode;
+    @Getter
+    private final boolean restoreGameMode;
+    @Getter
+    private final boolean restoreFlight;
+    @Getter
+    private final boolean allowFlight;
+    @Getter
+    private final boolean flying;
+    @Getter
+    private final boolean forceReturnLocation;
     private final PlayerRideState rideState;
 
     public PlayerInfo(final List<PotionEffect> effects, final double health, final int hunger, final Location location) {
+        this(effects, health, hunger, location, null, false, false, false, false);
+    }
+
+    public PlayerInfo(final List<PotionEffect> effects, final double health, final int hunger, final Location location,
+        final GameMode gameMode, final boolean restoreFlight, final boolean allowFlight, final boolean flying,
+        final boolean forceReturnLocation) {
         this.effects = effects;
         this.health = health;
         this.hunger = hunger;
         this.location = location;
+        this.gameMode = gameMode;
+        this.restoreGameMode = gameMode != null;
+        this.restoreFlight = restoreFlight;
+        this.allowFlight = allowFlight;
+        this.flying = flying;
+        this.forceReturnLocation = forceReturnLocation;
         this.rideState = null;
     }
 
     public PlayerInfo(final Player player, final boolean excludeInventory) {
+        this(player, excludeInventory, null, player.getAllowFlight(), player.isFlying(), player.isFlying(), player.getLocation());
+    }
+
+    public PlayerInfo(final Player player, final boolean excludeInventory, final GameMode gameMode, final boolean allowFlight,
+        final boolean flying, final boolean forceReturnLocation, final Location location) {
         this.effects = Lists.newArrayList(player.getActivePotionEffects());
         this.health = player.getHealth();
         this.hunger = player.getFoodLevel();
-        this.location = player.getLocation().clone();
+        this.location = location != null ? location.clone() : player.getLocation().clone();
+        this.gameMode = gameMode;
+        this.restoreGameMode = gameMode != null;
+        this.restoreFlight = allowFlight || flying;
+        this.allowFlight = allowFlight;
+        this.flying = flying;
+        this.forceReturnLocation = forceReturnLocation;
         this.rideState = PlayerRideState.capture(player);
 
-        if (rideState != null && rideState.getReturnLocation() != null) {
+        if (!forceReturnLocation && rideState != null && rideState.getReturnLocation() != null) {
             this.location = rideState.getReturnLocation();
         }
 
@@ -65,6 +101,23 @@ public class PlayerInfo {
         InventoryUtil.fillFromMap(player.getInventory(), items);
         InventoryUtil.addOrDrop(player, extra);
         player.updateInventory();
+
+        if (restoreGameMode && gameMode != null && player.getGameMode() != gameMode) {
+            player.setGameMode(gameMode);
+        }
+
+        if (forceReturnLocation && location != null && location.getWorld() != null) {
+            player.teleport(location);
+        }
+
+        if (restoreFlight) {
+            if (allowFlight) {
+                player.setAllowFlight(true);
+            }
+
+            player.setFlying(allowFlight && flying);
+            player.setAllowFlight(allowFlight);
+        }
 
         if (rideState != null) {
             rideState.restore(player);

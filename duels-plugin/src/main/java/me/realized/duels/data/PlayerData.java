@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.util.Log;
+import org.bukkit.GameMode;
 import org.bukkit.inventory.ItemStack;
 
 public class PlayerData {
@@ -25,6 +26,11 @@ public class PlayerData {
     private int hunger;
     private LocationData location;
     private List<ItemData> extra = new ArrayList<>();
+    private String restoreGameMode;
+    private boolean restoreFlight;
+    private boolean allowFlight;
+    private boolean flying;
+    private boolean forceReturnLocation;
 
     private PlayerData() {}
 
@@ -32,6 +38,11 @@ public class PlayerData {
         this.health = info.getHealth();
         this.hunger = info.getHunger();
         this.location = LocationData.fromLocation(info.getLocation());
+        this.restoreGameMode = info.isRestoreGameMode() && info.getGameMode() != null ? info.getGameMode().name() : null;
+        this.restoreFlight = info.isRestoreFlight();
+        this.allowFlight = info.isAllowFlight();
+        this.flying = info.isFlying();
+        this.forceReturnLocation = info.isForceReturnLocation();
 
         for (final Map.Entry<String, Map<Integer, ItemStack>> entry : info.getItems().entrySet()) {
             final Map<Integer, ItemData> data = new HashMap<>();
@@ -46,11 +57,24 @@ public class PlayerData {
     }
 
     public PlayerInfo toPlayerInfo() {
+        GameMode gameMode = null;
+
+        if (restoreGameMode != null) {
+            try {
+                gameMode = GameMode.valueOf(restoreGameMode);
+            } catch (IllegalArgumentException ignored) {}
+        }
+
         final PlayerInfo info = new PlayerInfo(
             effects.stream().map(PotionEffectData::toPotionEffect).filter(Objects::nonNull).collect(Collectors.toList()),
             health,
             hunger,
-            location.toLocation()
+            location.toLocation(),
+            gameMode,
+            restoreFlight,
+            allowFlight,
+            flying,
+            forceReturnLocation
         );
 
         for (final Map.Entry<String, Map<Integer, ItemData>> entry : items.entrySet()) {

@@ -52,6 +52,7 @@ import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.EssentialsHook;
 import me.realized.duels.hook.hooks.EternalCombatHook;
+import me.realized.duels.hook.hooks.GameModeInventoriesHook;
 import me.realized.duels.hook.hooks.McMMOHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.VaultHook;
@@ -98,6 +99,7 @@ public class DuelManager implements Loadable {
     private EssentialsHook essentials;
     private McMMOHook mcMMO;
     private WorldGuardHook worldGuard;
+    private GameModeInventoriesHook gameModeInventories;
 
     private int durationCheckTask;
 
@@ -125,6 +127,7 @@ public class DuelManager implements Loadable {
         this.essentials = plugin.getHookManager().getHook(EssentialsHook.class);
         this.mcMMO = plugin.getHookManager().getHook(McMMOHook.class);
         this.worldGuard = plugin.getHookManager().getHook(WorldGuardHook.class);
+        this.gameModeInventories = plugin.getHookManager().getHook(GameModeInventoriesHook.class);
 
         if (config.getMaxDuration() > 0) {
             this.durationCheckTask = plugin.doSyncRepeat(() -> {
@@ -323,7 +326,7 @@ public class DuelManager implements Loadable {
             return;
         }
 
-        if (config.isPreventCreativeMode() && (first.getGameMode() == GameMode.CREATIVE || second.getGameMode() == GameMode.CREATIVE)) {
+        if (config.isPreventCreativeMode() && (!canPrepareCreativePlayer(first) || !canPrepareCreativePlayer(second))) {
             lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.in-creative-mode");
             refundItems(items, first, second);
             return;
@@ -351,12 +354,23 @@ public class DuelManager implements Loadable {
                 refundItems(items, first, second);
                 return;
             }
+        }
 
+        final Map<UUID, PreDuelState> states = captureStates(first, second);
+
+        if (config.isPreventCreativeMode() && !switchCreativePlayersToSurvival(states, first, second)) {
+            restoreStates(states, first, second);
+            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.in-creative-mode");
+            refundItems(items, first, second);
+            return;
+        }
+
+        if (bet > 0 && vault != null && vault.getEconomy() != null) {
             vault.remove(bet, first, second);
         }
 
         final MatchImpl match = arena.startMatch(kit, items, settings.getBet(), source);
-        addPlayers(match, arena, kit, arena.getPositions(), first, second);
+        addPlayers(match, arena, kit, arena.getPositions(), states, first, second);
 
         if (config.isCdEnabled()) {
             final Map<UUID, Pair<String, Integer>> info = new HashMap<>();
@@ -406,7 +420,50 @@ public class DuelManager implements Loadable {
         return user != null ? user.getRating(kit) : config.getDefaultRating();
     }
 
-    private void addPlayers(final MatchImpl match, final ArenaImpl arena, final KitImpl kit, final Map<Integer, Location> locations, final Player... players) {
+    private boolean canPrepareCreativePlayer(final Player player) {
+        return player.getGameMode() != GameMode.CREATIVE || (gameModeInventories != null && gameModeInventories.canSwitchInventories(player));
+    }
+
+    private Map<UUID, PreDuelState> captureStates(final Player... players) {
+        final Map<UUID, PreDuelState> states = new HashMap<>();
+
+        for (final Player player : players) {
+            states.put(player.getUniqueId(), new PreDuelState(player));
+        }
+
+        return states;
+    }
+
+    private boolean switchCreativePlayersToSurvival(final Map<UUID, PreDuelState> states, final Player... players) {
+        for (final Player player : players) {
+            final PreDuelState state = states.get(player.getUniqueId());
+
+            if (state == null || state.getGameMode() != GameMode.CREATIVE) {
+                continue;
+            }
+
+            player.setGameMode(GameMode.SURVIVAL);
+
+            if (player.getGameMode() != GameMode.SURVIVAL) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void restoreStates(final Map<UUID, PreDuelState> states, final Player... players) {
+        for (final Player player : players) {
+            final PreDuelState state = states.get(player.getUniqueId());
+
+            if (state != null) {
+                state.restore(player);
+            }
+        }
+    }
+
+    private void addPlayers(final MatchImpl match, final ArenaImpl arena, final KitImpl kit, final Map<Integer, Location> locations,
+        final Map<UUID, PreDuelState> states, final Player... players) {
         int position = 0;
 
         for (final Player player : players) {
@@ -414,14 +471,25 @@ public class DuelManager implements Loadable {
                 queueManager.remove(player);
             }
 
+            final PreDuelState state = states.get(player.getUniqueId());
+
+            arena.add(player);
+            player.closeInventory();
+            playerManager.create(
+                player,
+                match.isOwnInventory() && config.isOwnInventoryDropInventoryItems(),
+                state != null && state.getGameMode() == GameMode.CREATIVE ? state.getGameMode() : null,
+                state != null && state.isAllowFlight(),
+                state != null && state.isFlying(),
+                state != null && state.isFlying(),
+                state != null ? state.getLocation() : player.getLocation()
+            );
+
             if (player.getAllowFlight()) {
                 player.setFlying(false);
                 player.setAllowFlight(false);
             }
 
-            arena.add(player);
-            player.closeInventory();
-            playerManager.create(player, match.isOwnInventory() && config.isOwnInventoryDropInventoryItems());
             teleport.tryTeleport(player, locations.get(++position));
 
             if (kit != null) {
@@ -447,6 +515,54 @@ public class DuelManager implements Loadable {
                 mcMMO.disableSkills(player);
             }
 
+        }
+    }
+
+    private static class PreDuelState {
+
+        private final GameMode gameMode;
+        private final boolean allowFlight;
+        private final boolean flying;
+        private final Location location;
+
+        private PreDuelState(final Player player) {
+            this.gameMode = player.getGameMode();
+            this.allowFlight = player.getAllowFlight();
+            this.flying = player.isFlying();
+            this.location = player.getLocation().clone();
+        }
+
+        private GameMode getGameMode() {
+            return gameMode;
+        }
+
+        private boolean isAllowFlight() {
+            return allowFlight;
+        }
+
+        private boolean isFlying() {
+            return flying;
+        }
+
+        private Location getLocation() {
+            return location.clone();
+        }
+
+        private void restore(final Player player) {
+            if (player.getGameMode() != gameMode) {
+                player.setGameMode(gameMode);
+            }
+
+            if (flying && location.getWorld() != null) {
+                player.teleport(location);
+            }
+
+            if (allowFlight) {
+                player.setAllowFlight(true);
+            }
+
+            player.setFlying(allowFlight && flying);
+            player.setAllowFlight(allowFlight);
         }
     }
 

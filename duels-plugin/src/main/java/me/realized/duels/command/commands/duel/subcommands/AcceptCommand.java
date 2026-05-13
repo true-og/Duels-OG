@@ -6,6 +6,7 @@ import me.realized.duels.command.BaseCommand;
 import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.EternalCombatHook;
+import me.realized.duels.hook.hooks.GameModeInventoriesHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
 import me.realized.duels.request.RequestImpl;
@@ -23,6 +24,7 @@ public class AcceptCommand extends BaseCommand {
     private final CombatLogXHook combatLogX;
     private final EternalCombatHook eternalCombat;
     private final WorldGuardHook worldGuard;
+    private final GameModeInventoriesHook gameModeInventories;
 
     public AcceptCommand(final DuelsPlugin plugin) {
         super(plugin, "accept", "accept [player]", "Accepts a duel request.", 2, true);
@@ -31,6 +33,7 @@ public class AcceptCommand extends BaseCommand {
         this.combatLogX = plugin.getHookManager().getHook(CombatLogXHook.class);
         this.eternalCombat = plugin.getHookManager().getHook(EternalCombatHook.class);
         this.worldGuard = hookManager.getHook(WorldGuardHook.class);
+        this.gameModeInventories = hookManager.getHook(GameModeInventoriesHook.class);
     }
 
     @Override
@@ -42,7 +45,7 @@ public class AcceptCommand extends BaseCommand {
             return;
         }
 
-        if (config.isPreventCreativeMode() && player.getGameMode() == GameMode.CREATIVE) {
+        if (isCreativeModeBlocked(player)) {
             lang.sendMessage(sender, "ERROR.duel.in-creative-mode");
             return;
         }
@@ -122,5 +125,11 @@ public class AcceptCommand extends BaseCommand {
         } else {
             duelManager.startMatch(player, target, settings, null, null);
         }
+    }
+
+    private boolean isCreativeModeBlocked(final Player player) {
+        return config.isPreventCreativeMode()
+            && player.getGameMode() == GameMode.CREATIVE
+            && (gameModeInventories == null || !gameModeInventories.canSwitchInventories(player));
     }
 }
