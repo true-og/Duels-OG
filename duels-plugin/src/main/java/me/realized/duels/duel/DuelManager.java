@@ -390,7 +390,7 @@ public class DuelManager implements Loadable {
     }
 
     private boolean isBlacklistedWorld(final Player player) {
-        return !config.isDuelingWorld(player) || config.getBlacklistedWorlds().contains(player.getWorld().getName());
+        return !config.isDuelingWorld(player);
     }
 
     private boolean isTagged(final Player player) {

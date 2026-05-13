@@ -86,6 +86,13 @@ public class ArenaImpl extends BaseButton implements Arena {
             return false;
         }
 
+        if (!config.isArenaWorld(location)) {
+            if (source != null) {
+                lang.sendMessage(source, "ERROR.arena.world-not-whitelisted");
+            }
+            return false;
+        }
+
         final ArenaSetPositionEvent event = new ArenaSetPositionEvent(source, this, pos, location);
         Bukkit.getPluginManager().callEvent(event);
 

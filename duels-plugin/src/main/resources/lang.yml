@@ -41,6 +41,7 @@ ERROR:
     delete-failure: '{PREFIX} &cCannot delete an arena that is currently in use. Please disable it first using the command ''/duels toggle %name%'''
     invalid-position: '{PREFIX} &cPosition must be 1 or 2.'
     no-position-set: '{PREFIX} &cArena ''%name%'' have no positions set.'
+    world-not-whitelisted: '{PREFIX} &cArena positions cannot be set in this world.'
   kit:
     not-found: '{PREFIX} &cNo kit exists with the name ''%name%''.'
     already-exists: '{PREFIX} &cA kit named ''%name%'' already exists.'

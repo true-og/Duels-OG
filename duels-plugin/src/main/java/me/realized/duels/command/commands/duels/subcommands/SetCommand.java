@@ -37,7 +37,9 @@ public class SetCommand extends BaseCommand {
 
         final Player player = (Player) sender;
         final Location location = player.getLocation().clone();
-        arena.setPosition(player, pos, location);
+        if (!arena.setPosition(player, pos, location)) {
+            return;
+        }
         lang.sendMessage(sender, "COMMAND.duels.set", "position", pos, "name", name, "location", StringUtil.parse(location));
     }
 

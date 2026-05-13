@@ -370,7 +370,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
             return false;
         }
 
-        if (!config.isDuelingWorld(player) || config.getBlacklistedWorlds().contains(player.getWorld().getName())) {
+        if (!config.isDuelingWorld(player)) {
             lang.sendMessage(player, "ERROR.duel.in-blacklisted-world");
             return false;
         }

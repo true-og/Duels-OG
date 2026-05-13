@@ -122,7 +122,9 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private boolean cancelIfMoved;
     @Getter
-    private List<String> blacklistedWorlds;
+    private List<String> joinWhitelistedWorlds;
+    @Getter
+    private List<String> arenaWhitelistedWorlds;
     @Getter
     private boolean teleportToLastLocation;
     @Getter
@@ -317,7 +319,8 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         preventTpToMatchPlayers = configuration.getBoolean("duel.prevent-teleport-to-match-players", true);
         forceAllowCombat = configuration.getBoolean("duel.force-allow-combat", true);
         cancelIfMoved = configuration.getBoolean("duel.cancel-if-moved", false);
-        blacklistedWorlds = configuration.getStringList("duel.blacklisted-worlds");
+        joinWhitelistedWorlds = configuration.getStringList("duel.join-whitelisted-worlds");
+        arenaWhitelistedWorlds = configuration.getStringList("duel.arena-whitelisted-worlds");
         teleportToLastLocation = configuration.getBoolean("duel.teleport-to-last-location", false);
         teleportDelay = configuration.getInt("duel.teleport-delay", 5);
         spawnFirework = configuration.getBoolean("duel.spawn-firework", true);
@@ -416,7 +419,12 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
 
     public boolean isDuelingWorld(final Player player) {
         return player != null && player.getWorld() != null
-            && "world".equals(player.getWorld().getName());
+            && joinWhitelistedWorlds.contains(player.getWorld().getName());
+    }
+
+    public boolean isArenaWorld(final org.bukkit.Location location) {
+        return location != null && location.getWorld() != null
+            && arenaWhitelistedWorlds.contains(location.getWorld().getName());
     }
 
     public class MessageSound {

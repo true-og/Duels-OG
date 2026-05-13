@@ -203,6 +203,10 @@ public class ArenaManagerImpl implements Loadable, ArenaManager {
             return false;
         }
 
+        if (!config.isArenaWorld(arena.getPosition(1)) || !config.isArenaWorld(arena.getPosition(2))) {
+            return false;
+        }
+
         if (arena.isBoundless()) {
             if (kit == null) {
                 return true;
