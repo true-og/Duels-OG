@@ -24,7 +24,6 @@ import me.realized.duels.arena.MatchImpl;
 import me.realized.duels.config.Config;
 import me.realized.duels.config.Lang;
 import me.realized.duels.hook.hooks.EssentialsHook;
-import me.realized.duels.hook.hooks.MyPetHook;
 import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.teleport.Teleport;
@@ -66,8 +65,6 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
 
     private Teleport teleport;
     @Nullable
-    private MyPetHook myPet;
-    @Nullable
     private EssentialsHook essentials;
 
     public SpectateManagerImpl(final DuelsPlugin plugin) {
@@ -84,7 +81,6 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
     public void handleLoad() {
         // Late-init since SpectateManager is loaded before below variables are loaded
         this.teleport = plugin.getTeleport();
-        this.myPet = plugin.getHookManager().getHook(MyPetHook.class);
         this.essentials = plugin.getHookManager().getHook(EssentialsHook.class);
     }
 
@@ -152,11 +148,6 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
                         arenaPlayer.hidePlayer(player);
                     }
                 });
-        }
-
-        // Remove pet before teleport
-        if (myPet != null) {
-            myPet.removePet(player);
         }
 
         // Cache current player state to return to after spectating is over

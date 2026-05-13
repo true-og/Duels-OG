@@ -181,7 +181,7 @@ public class PlayerInfoManager implements Loadable {
     public void create(final Player player, final boolean excludeInventory) {
         final PlayerInfo info = new PlayerInfo(player, excludeInventory);
 
-        if (!config.isTeleportToLastLocation()) {
+        if (!info.hasRideState() && !config.isTeleportToLastLocation()) {
             info.setLocation(safeReturnLocation(lobby));
         } else if (!isEnabledWorld(info.getLocation())) {
             info.setLocation(safeReturnLocation(info.getLocation()));

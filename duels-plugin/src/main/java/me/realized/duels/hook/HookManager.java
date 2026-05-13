@@ -10,7 +10,6 @@ import me.realized.duels.hook.hooks.FactionsHook;
 import me.realized.duels.hook.hooks.LeaderHeadsHook;
 import me.realized.duels.hook.hooks.MVdWPlaceholderHook;
 import me.realized.duels.hook.hooks.McMMOHook;
-import me.realized.duels.hook.hooks.MyPetHook;
 import me.realized.duels.hook.hooks.PlaceholderHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.SimpleClansHook;
@@ -31,7 +30,6 @@ public class HookManager extends AbstractHookManager<DuelsPlugin> {
         register(LeaderHeadsHook.NAME, LeaderHeadsHook.class);
         register(McMMOHook.NAME, McMMOHook.class);
         register(MVdWPlaceholderHook.NAME, MVdWPlaceholderHook.class);
-        register(MyPetHook.NAME, MyPetHook.class);
         register(PlaceholderHook.NAME, PlaceholderHook.class);
         register(PvPManagerHook.NAME, PvPManagerHook.class);
         register(SimpleClansHook.NAME, SimpleClansHook.class);

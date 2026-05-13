@@ -121,7 +121,6 @@ project(":duels-plugin") {
         compileOnly(localJar("Factions-1.6.9.5-U0.1.14"))
         compileOnly(localJar("MassiveCore"))
         compileOnly(localJar("Factions"))
-        compileOnly(localJar("MyPet-2.3.4"))
         compileOnly(localJar("BountyHunters-2.2.6"))
         compileOnly(localJar("SimpleClans-2.14.4.1"))
         compileOnly(localJar("LeaderHeadsAPI"))

@@ -53,7 +53,6 @@ import me.realized.duels.hook.hooks.CombatTagPlusHook;
 import me.realized.duels.hook.hooks.EssentialsHook;
 import me.realized.duels.hook.hooks.EternalCombatHook;
 import me.realized.duels.hook.hooks.McMMOHook;
-import me.realized.duels.hook.hooks.MyPetHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
@@ -99,7 +98,6 @@ public class DuelManager implements Loadable {
     private EssentialsHook essentials;
     private McMMOHook mcMMO;
     private WorldGuardHook worldGuard;
-    private MyPetHook myPet;
 
     private int durationCheckTask;
 
@@ -127,7 +125,6 @@ public class DuelManager implements Loadable {
         this.essentials = plugin.getHookManager().getHook(EssentialsHook.class);
         this.mcMMO = plugin.getHookManager().getHook(McMMOHook.class);
         this.worldGuard = plugin.getHookManager().getHook(WorldGuardHook.class);
-        this.myPet = plugin.getHookManager().getHook(MyPetHook.class);
 
         if (config.getMaxDuration() > 0) {
             this.durationCheckTask = plugin.doSyncRepeat(() -> {
@@ -422,6 +419,7 @@ public class DuelManager implements Loadable {
                 player.setAllowFlight(false);
             }
 
+            arena.add(player);
             player.closeInventory();
             playerManager.create(player, match.isOwnInventory() && config.isOwnInventoryDropInventoryItems());
             teleport.tryTeleport(player, locations.get(++position));
@@ -441,10 +439,6 @@ public class DuelManager implements Loadable {
                 }
             }
 
-            if (myPet != null) {
-                myPet.removePet(player);
-            }
-
             if (essentials != null) {
                 essentials.tryUnvanish(player);
             }
@@ -453,7 +447,6 @@ public class DuelManager implements Loadable {
                 mcMMO.disableSkills(player);
             }
 
-            arena.add(player);
         }
     }
 

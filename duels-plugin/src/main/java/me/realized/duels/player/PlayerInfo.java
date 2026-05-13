@@ -29,16 +29,26 @@ public class PlayerInfo {
     @Getter
     @Setter
     private Location location;
+    private final PlayerRideState rideState;
 
     public PlayerInfo(final List<PotionEffect> effects, final double health, final int hunger, final Location location) {
         this.effects = effects;
         this.health = health;
         this.hunger = hunger;
         this.location = location;
+        this.rideState = null;
     }
 
     public PlayerInfo(final Player player, final boolean excludeInventory) {
-        this(Lists.newArrayList(player.getActivePotionEffects()), player.getHealth(), player.getFoodLevel(), player.getLocation().clone());
+        this.effects = Lists.newArrayList(player.getActivePotionEffects());
+        this.health = player.getHealth();
+        this.hunger = player.getFoodLevel();
+        this.location = player.getLocation().clone();
+        this.rideState = PlayerRideState.capture(player);
+
+        if (rideState != null && rideState.getReturnLocation() != null) {
+            this.location = rideState.getReturnLocation();
+        }
 
         if (excludeInventory) {
             return;
@@ -55,5 +65,13 @@ public class PlayerInfo {
         InventoryUtil.fillFromMap(player.getInventory(), items);
         InventoryUtil.addOrDrop(player, extra);
         player.updateInventory();
+
+        if (rideState != null) {
+            rideState.restore(player);
+        }
+    }
+
+    boolean hasRideState() {
+        return rideState != null;
     }
 }
