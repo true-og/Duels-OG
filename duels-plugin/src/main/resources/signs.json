@@ -1,0 +1,26 @@
+[
+  {
+    "location": {
+      "world": "world",
+      "x": -23.0,
+      "y": 59.0,
+      "z": -114.0,
+      "pitch": 0.0,
+      "yaw": 0.0
+    },
+    "kit": "diamond",
+    "bet": 0
+  },
+  {
+    "location": {
+      "world": "world",
+      "x": 51.0,
+      "y": 65.0,
+      "z": -203.0,
+      "pitch": 0.0,
+      "yaw": 0.0
+    },
+    "kit": "leather",
+    "bet": 0
+  }
+]

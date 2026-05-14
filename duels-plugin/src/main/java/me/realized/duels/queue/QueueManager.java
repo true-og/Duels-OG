@@ -132,7 +132,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
         gui.setEmptyIndicator(ItemBuilder.of(Material.PAPER).name(lang.getMessage("GUI.queues.buttons.empty.name")).build());
         plugin.getGuiListener().addGui(gui);
 
-        if (FileUtil.checkNonEmpty(file, true)) {
+        if (FileUtil.checkNonEmpty(plugin, file, FILE_NAME)) {
             try (final Reader reader = new InputStreamReader(new FileInputStream(file), Charsets.UTF_8)) {
                 final List<QueueData> data = JsonUtil.getObjectMapper().readValue(reader, new TypeReference<List<QueueData>>() {});
 

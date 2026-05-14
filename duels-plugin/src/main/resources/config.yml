@@ -9,7 +9,7 @@ supported-plugins:
   CombatTagPlus:
     # If set to 'true', players will not be able to duel while combat tagged.
     # default: true
-    prevent-duel-if-tagged: true
+    prevent-duel-if-tagged: false
 
     # If set to 'true', players will not be combat tagged while in duel.
     # default: true
@@ -17,7 +17,7 @@ supported-plugins:
   PvPManager:
     # If set to 'true', players will not be able to duel while combat tagged.
     # default: true
-    prevent-duel-if-tagged: true
+    prevent-duel-if-tagged: false
 
     # If set to 'true', players will not be combat tagged while in duel.
     # default: true
@@ -25,11 +25,11 @@ supported-plugins:
   CombatLogX:
     # If set to 'true', players will not be able to duel while combat tagged.
     # default: true
-    prevent-duel-if-tagged: true
+    prevent-duel-if-tagged: false
 
     # If set to 'true', players will not be combat tagged while in duel.
     # default: true
-    prevent-tag-in-duel: true
+    prevent-tag-in-duel: false
   EternalCombat:
     # If set to 'true', players will not be able to duel while combat tagged.
     # default: true
@@ -41,7 +41,7 @@ supported-plugins:
   Essentials:
     # If set to 'true', players in vanish will be automatically unvanished at the start of a duel.
     # default: true
-    auto-unvanish: true
+    auto-unvanish: false
 
     # If set to 'true', players will not be able to use '/back' to teleport back to the arena after dying in a duel.
     # default: true
@@ -62,10 +62,10 @@ supported-plugins:
     duelzone:
       # If set to 'true', players will be able to use duel only in the regions listed below.
       # default: false
-      enabled: false
+      enabled: true
 
       # List of regions to allow dueling.
-      regions: [spawn, lobby]
+      regions: [Atlantis, Blizzard, Castle, Chasm, Colosseum, Ender, Frozone, Fungi, Hell, Olympus, Sewer]
   PlayerBounties-OG:
     # If set to 'true', bounty claims and new bounty placements involving a player in a duel will be cancelled.
     # default: true
@@ -107,16 +107,16 @@ request:
     # NOTE: If set to 'false', Kit Selector will first open instead of Request Settings GUI when initiating a duel request.
     # default: true
     enabled: true
-    
+
     # If set to 'true', players will drop their inventory items on death in an own inventory duel.
-    # WARNING: Players will NOT have their inventories restored after the duel if this option is enabled! 
+    # WARNING: Players will NOT have their inventories restored after the duel if this option is enabled!
     #          Increase 'teleport-delay' so that the winner has time to pick up dropped items.
     # default: false
     drop-inventory-items: false
 
     # If set to 'true', players without the permission 'duels.use.own-inventory' will not be able to enable own inventory option.
     # default: false
-    use-permission: false
+    use-permission: true
 
   kit-selecting:
     # If set to 'true', players will be able to choose a kit they wish to fight with through the Kit Selector GUI.
@@ -143,7 +143,7 @@ request:
 
     # If set to 'true', players without the permission 'duels.use.item-betting' will not be able to enable item betting.
     # default: false
-    use-permission: false
+    use-permission: true
 
   money-betting:
     # If set to 'true', players will be able to bet money on their duel by using the command '/duel [player] [bet amount]'.
@@ -152,18 +152,18 @@ request:
 
     # If set to 'true', players without the permission 'duels.use.money-betting' will not be able to bet money on their duel.
     # default: false
-    use-permission: false
+    use-permission: true
 
   # Request expiration, in seconds.
   # default: 30
-  expiration: 30
+  expiration: 60
 
 
 duel:
   match:
     # The max duration of a match, in minutes. Setting it to -1 will disable duration limit.
     # default: -1
-    max-duration: -1
+    max-duration: 10
 
     start-commands:
       # If set to 'true', the commands listed below will run FOR EACH player at the start of a match.
@@ -177,12 +177,12 @@ duel:
       # Available placeholders:
       # %player% - Name of the player entering the match
       commands:
-      - 'broadcast %player% is entering a duel!'
+      - 'broadcast &7[&a&lTrue&c&lOG &e&lNetwork&7] %player% &cis entering a duel!'
 
     end-commands:
       # If set to 'true', the commands listed below will run at the end of a match.
       # default: false
-      enabled: false
+      enabled: true
 
       # If set to 'true', end commands will run only for matches started through the queue system.
       # default: false
@@ -195,13 +195,12 @@ duel:
       # %arena% - Name of the arena the match was played in
       # %bet_amount% - Bet amount of the match
       commands:
-      - 'give %winner% diamond 1'
-      - 'give %loser% dirt 1'
+      - 'broadcast &7[&a&lTrue&c&lOG &e&lNetwork&7] &2%winner% &ahas won %bet_amount% in a duel against &4%loser% &ain Areana &d%arena&a!'
 
   projectile-hit-message:
     # If set to 'true', a message from lang.yml will be sent to the shooter of the projectile.
     # default: true
-    enabled: true
+    enabled: false
 
     # Projectile types to display the message.
     types: [ARROW, TIPPED_ARROW, SPECTRAL_ARROW, TRIDENT]
@@ -246,11 +245,11 @@ duel:
 
   # If set to 'true', players will be teleported to the location where they were before the duel instead of duel lobby.
   # default: false
-  teleport-to-last-location: false
+  teleport-to-last-location: true
 
   # Seconds to wait before teleporting the winner after the duel.
   # default: 5
-  teleport-delay: 5
+  teleport-delay: 3
 
   # If set to 'true', a firework will spawn at the winner's location when a duel ends.
   # default: true
@@ -266,11 +265,11 @@ duel:
 
   # If set to 'true', players in duel will not be able to drop items.
   # default: false
-  prevent-item-drop: false
+  prevent-item-drop: true
 
   # If set to 'true', players in duel will not be able to pickup items on the ground.
   # default: false
-  prevent-item-pickup: false
+  prevent-item-pickup: true
 
   limit-teleportation:
     # If set to 'true', teleportation while in duel will be limited to the distance specified below.
@@ -281,7 +280,7 @@ duel:
     # The max distance players can teleport while in a duel. '-1' to prevent all teleportation.
     # NOTE: If players are getting stuck, try increasing this value.
     # default: 5.0
-    distance-allowed: 5.0
+    distance-allowed: 2.0
 
   # If set to 'true', only commands listed in 'whitelisted-commands' will be usable while in a duel.
   # default: false
@@ -306,81 +305,100 @@ duel:
   # List of commands to block while in a duel.
   # NOTE: Only active if 'block-all-commands' is disabled!
   blacklisted-commands:
-  - 'heal'
-  - 'eheal'
-  - 'essentials:heal'
-  - 'essentials:eheal'
-  - 'kit'
-  - 'ekit'
-  - 'kits'
-  - 'ekits'
-  - 'essentials:kit'
-  - 'essentials:ekit'
-  - 'essentials:kits'
-  - 'essentials:ekits'
-  - 'enderchest'
-  - 'echest'
-  - 'eechest'
-  - 'eenderchest'
-  - 'endersee'
-  - 'eendersee'
-  - 'ec'
-  - 'eec'
-  - 'essentials:enderchest'
-  - 'essentials:echest'
-  - 'essentials:eechest'
-  - 'essentials:eenderchest'
-  - 'essentials:endersee'
-  - 'essentials:eendersee'
-  - 'essentials:ec'
-  - 'essentials:eec'
-  - 'tpaccept'
-  - 'etpaccept'
-  - 'tpyes'
-  - 'etpyes'
-  - 'essentials:tpaccept'
-  - 'essentials:etpaccept'
-  - 'essentials:tpyes'
-  - 'essentials:etpyes'
-  - 'tpahere'
-  - 'etpahere'
-  - 'essentials:tpahere'
-  - 'essentials:etpahere'
-  - 'back'
-  - 'eback'
-  - 'return'
-  - 'ereturn'
-  - 'essentials:back'
-  - 'essentials:eback'
-  - 'essentials:return'
-  - 'essentials:ereturn'
-  - 'sethome'
-  - 'esethome'
-  - 'createhome'
-  - 'ecreatehome'
-  - 'essentials:sethome'
-  - 'essentials:esethome'
-  - 'essentials:createhome'
-  - 'essentials:ecreatehome'
-  - 'spawn'
-  - 'espawn'
-  - 'essentials:spawn'
-  - 'essentials:espawn'
-  - 'vault'
-  - 'chest'
-  - 'pv'
-  - 'playervaults'
-  - 'playervaults:vault'
-  - 'playervaults:chest'
-  - 'playervaults:pv'
-  - 'playervaults:playervaults'
+    - 'gmc'
+    - 'gamemode'
+    - 'spawn'
+    - 'home'
+    - 'union home'
+    - 'duel'
+    - 'vault'
+    - 'spectate'
+    - 'nc'
+    - 'noclip'
+    - 'bank'
+    - 'pay'
+    - 'deposit'
+    - 'withdraw'
+    - 'gmsp'
+    - 'tp'
+    - 'tpa'
+    - 'world'
+    - 'openinv'
+    - 'heal'
+    - 'eheal'
+    - 'essentials:heal'
+    - 'essentials:eheal'
+    - 'kit'
+    - 'ekit'
+    - 'kits'
+    - 'ekits'
+    - 'essentials:kit'
+    - 'essentials:ekit'
+    - 'essentials:kits'
+    - 'essentials:ekits'
+    - 'enderchest'
+    - 'echest'
+    - 'eechest'
+    - 'eenderchest'
+    - 'endersee'
+    - 'eendersee'
+    - 'ec'
+    - 'eec'
+    - 'essentials:enderchest'
+    - 'essentials:echest'
+    - 'essentials:eechest'
+    - 'essentials:eenderchest'
+    - 'essentials:endersee'
+    - 'essentials:eendersee'
+    - 'essentials:ec'
+    - 'essentials:eec'
+    - 'tpaccept'
+    - 'etpaccept'
+    - 'tpyes'
+    - 'etpyes'
+    - 'essentials:tpaccept'
+    - 'essentials:etpaccept'
+    - 'essentials:tpyes'
+    - 'essentials:etpyes'
+    - 'tpahere'
+    - 'etpahere'
+    - 'essentials:tpahere'
+    - 'essentials:etpahere'
+    - 'back'
+    - 'eback'
+    - 'return'
+    - 'ereturn'
+    - 'essentials:back'
+    - 'essentials:eback'
+    - 'essentials:return'
+    - 'essentials:ereturn'
+    - 'sethome'
+    - 'esethome'
+    - 'createhome'
+    - 'ecreatehome'
+    - 'essentials:sethome'
+    - 'essentials:esethome'
+    - 'essentials:createhome'
+    - 'essentials:ecreatehome'
+    - 'spawn'
+    - 'espawn'
+    - 'essentials:spawn'
+    - 'essentials:espawn'
+    - 'vault'
+    - 'chest'
+    - 'pv'
+    - 'playervaults'
+    - 'playervaults:vault'
+    - 'playervaults:chest'
+    - 'playervaults:pv'
+    - 'playervaults:playervaults'
 
   # Determines whether a victory title will be sent upon winning a bet.
   enable-victory-title: true
 
 queue:
   # List of commands to block while in a queue.
-  blacklisted-commands: []
+  blacklisted-commands: [hbjoin, splegg, spleef, spectate]
 
 
 rating:
@@ -409,7 +427,7 @@ spectate:
 
   # If set to 'true', players will be in spectator gamemode while spectating.
   # default: false
-  use-spectator-gamemode: false
+  use-spectator-gamemode: true
 
   # If set to 'true', players spectating will receive invisibility effect.
   # NOTE: This option will not take effect if use-spectator-gamemode is set to true.
@@ -443,21 +461,21 @@ countdown:
   # %kit% - Name of the kit used in this match. If players are using their own inventory, it will display 'none'
   # %arena% - Name of the arena used for this match.
   messages:
-    - '&7Starting in &f5 &7seconds!'
-    - '&7Starting in &f4 &7seconds!'
-    - '&7Starting in &f3 &7seconds!'
-    - '&7Starting in &f2 &7seconds!'
-    - '&7Starting in &f1 &7second!'
-    - '&7Now in a match against &f%opponent%&7(&a%opponent_rating%&7) with kit &3%kit% &7in arena &e%arena%&7.'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3with %opponent% starting in &55 &3seconds...'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3with %opponent% starting in &d4 &3seconds...'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3with %opponent% starting in &c3 &3seconds...'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7]&cDuel &3with %opponent% starting in &e2 &3seconds...'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3with %opponent% starting in &a1 &3second...'
+    - '&aNow in a match against &4%opponent% &7(&e%opponent_rating% ELO&7) &awith kit &d%kit% &ain arena &e%arena%&a!'
 
   # Titles to display along with the countdown. Must have the same size as the countdown list size.
   titles:
-    - '&f&l5'
-    - '&f&l4'
-    - '&e&l3'
-    - '&6&l2'
-    - '&c&l1'
-    - '&a&lGO!'
+    - '&5&l5'
+    - '&d&l4'
+    - '&c&l3'
+    - '&e&l2'
+    - '&a&l1'
+    - '&B&lDUEL!'
 
   prevent:
     # If set to 'true', movements will be cancelled while the countdown is ongoing.
@@ -491,7 +509,7 @@ stats:
 
   # Max amount of matches to display & store in the userdata file.
   # default: 5
-  matches-to-display: 5
+  matches-to-display: 2000
 
 
 top:
@@ -509,10 +527,10 @@ top:
       identifier: 'losses'
     kit:
       type: '%kit%'
-      identifier: 'rating'
+      identifier: 'kit'
     no-kit:
       type: 'Own Inventory'
-      identifier: 'rating'
+      identifier: 'inventory'
 
 
 guis:
@@ -520,7 +538,7 @@ guis:
     # Amount of rows to display in one page of the kit selector GUI.
     # NOTE: Must be between 1 - 5!
     # default: 2
-    rows: 2
+    rows: 1
 
     # Item used to fill empty spaces in the kit selector GUI.
     space-filler-item:
@@ -530,7 +548,7 @@ guis:
     # Amount of rows to display in one page of the arena selector GUI.
     # NOTE: Must be between 1 - 5!
     # default: 3
-    rows: 3
+    rows: 2
 
     # Item used to fill empty spaces in the arena selector GUI.
     space-filler-item:
@@ -583,33 +601,33 @@ sounds:
     pitch: 0.95
     volume: 1.0
     trigger-messages:
-    - '&7Starting in &f5 &7seconds!'
-    - '&7Starting in &f4 &7seconds!'
-    - '&7Starting in &f3 &7seconds!'
-    - '&7Starting in &f2 &7seconds!'
-    - '&7Starting in &f1 &7second!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &55 &3seconds!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &d4 &3seconds!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &c3 &3seconds!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &e2 &3seconds!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &a1 &3seconds!'
   # Remove this sound if your server version is 1.8!
   countdown-ongoing-sound-1-9:
     type: BLOCK_NOTE_PLING
     pitch: 0.95
     volume: 1.0
     trigger-messages:
-    - '&7Starting in &f5 &7seconds!'
-    - '&7Starting in &f4 &7seconds!'
-    - '&7Starting in &f3 &7seconds!'
-    - '&7Starting in &f2 &7seconds!'
-    - '&7Starting in &f1 &7second!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &55 &3seconds!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &d4 &3seconds!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &c3 &3seconds!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &e2 &3seconds!'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3Starting in &a1 &3seconds!'
   # Remove this sound if your server version is above 1.8!
   countdown-end-sound-1-8:
     type: NOTE_PIANO
     pitch: 1.9
     volume: 1.0
     trigger-messages:
-    - '&7Now in a match against &f%opponent%&7(&a%opponent_rating%&7) with kit &3%kit% &7in arena &e%arena%&7.'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &6Now in a match against &4%opponent% &6with kit &3%kit% &6in arena &a%arena%&6!'
   # Remove this sound if your server version is 1.8!
   countdown-end-sound-1-9:
     type: BLOCK_NOTE_PLING
     pitch: 1.9
     volume: 1.0
     trigger-messages:
-    - '&7Now in a match against &f%opponent%&7(&a%opponent_rating%&7) with kit &3%kit% &7in arena &e%arena%&7.'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &6Now in a match against &4%opponent% &6with kit &3%kit% &6in arena &a%arena%&6!'

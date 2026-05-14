@@ -74,7 +74,7 @@ public class KitManagerImpl implements Loadable, KitManager {
         gui.setEmptyIndicator(ItemBuilder.of(Material.PAPER).name(lang.getMessage("GUI.kit-selector.buttons.empty.name")).build());
         plugin.getGuiListener().addGui(gui);
 
-        if (FileUtil.checkNonEmpty(file, true)) {
+        if (FileUtil.checkNonEmpty(plugin, file, FILE_NAME)) {
             try (final Reader reader = new InputStreamReader(new FileInputStream(file), Charsets.UTF_8)) {
                 final Map<String, KitData> data = JsonUtil.getObjectMapper().readValue(reader, new TypeReference<LinkedHashMap<String, KitData>>() {});
 
