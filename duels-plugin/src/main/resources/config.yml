@@ -62,10 +62,10 @@ supported-plugins:
     duelzone:
       # If set to 'true', players will be able to use duel only in the regions listed below.
       # default: false
-      enabled: true
+      enabled: false
 
       # List of regions to allow dueling.
-      regions: [Atlantis, Blizzard, Castle, Chasm, Colosseum, Ender, Frozone, Fungi, Hell, Olympus, Sewer]
+      regions: [spawn, Atlantis, Blizzard, Castle, Chasm, Colosseum, Ender, Frozone, Fungi, Hell, Olympus, Sewer]
   PlayerBounties-OG:
     # If set to 'true', bounty claims and new bounty placements involving a player in a duel will be cancelled.
     # default: true
