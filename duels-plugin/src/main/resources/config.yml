@@ -195,7 +195,7 @@ duel:
       # %arena% - Name of the arena the match was played in
       # %bet_amount% - Bet amount of the match
       commands:
-      - 'broadcast &7[&a&lTrue&c&lOG &e&lNetwork&7] &2%winner% &ahas won %bet_amount% in a duel against &4%loser% &ain Areana &d%arena&a!'
+      - 'broadcast &7[&a&lTrue&c&lOG &e&lNetwork&7] &2%winner% &ahas won &B%bet_amount% Diamonds &ain a duel against &4%loser% &ain Areana &d%arena%&a!'
 
   projectile-hit-message:
     # If set to 'true', a message from lang.yml will be sent to the shooter of the projectile.
