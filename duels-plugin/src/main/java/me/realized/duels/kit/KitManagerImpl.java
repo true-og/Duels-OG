@@ -74,21 +74,34 @@ public class KitManagerImpl implements Loadable, KitManager {
         gui.setEmptyIndicator(ItemBuilder.of(Material.PAPER).name(lang.getMessage("GUI.kit-selector.buttons.empty.name")).build());
         plugin.getGuiListener().addGui(gui);
 
-        if (FileUtil.checkNonEmpty(plugin, file, FILE_NAME)) {
-            try (final Reader reader = new InputStreamReader(new FileInputStream(file), Charsets.UTF_8)) {
-                final Map<String, KitData> data = JsonUtil.getObjectMapper().readValue(reader, new TypeReference<LinkedHashMap<String, KitData>>() {});
+        final Map<String, KitData> combinedData = new LinkedHashMap<>();
 
-                if (data != null) {
-                    for (final Map.Entry<String, KitData> entry : data.entrySet()) {
-                        if (!StringUtil.isAlphanumeric(entry.getKey())) {
-                            Log.warn(this, String.format(ERROR_NOT_ALPHANUMERIC, entry.getKey()));
-                            continue;
-                        }
-
-                        kits.put(entry.getKey(), entry.getValue().toKit(plugin));
-                    }
+        try (final java.io.InputStream in = plugin.getResource(FILE_NAME)) {
+            if (in != null) {
+                final Map<String, KitData> jarData = JsonUtil.getObjectMapper().readValue(in, new TypeReference<LinkedHashMap<String, KitData>>() {});
+                if (jarData != null) {
+                    combinedData.putAll(jarData);
                 }
             }
+        }
+
+        if (FileUtil.checkNonEmpty(plugin, file, FILE_NAME)) {
+            try (final Reader reader = new InputStreamReader(new FileInputStream(file), Charsets.UTF_8)) {
+                final Map<String, KitData> fileData = JsonUtil.getObjectMapper().readValue(reader, new TypeReference<LinkedHashMap<String, KitData>>() {});
+
+                if (fileData != null) {
+                    combinedData.putAll(fileData);
+                }
+            }
+        }
+
+        for (final Map.Entry<String, KitData> entry : combinedData.entrySet()) {
+            if (!StringUtil.isAlphanumeric(entry.getKey())) {
+                Log.warn(this, String.format(ERROR_NOT_ALPHANUMERIC, entry.getKey()));
+                continue;
+            }
+
+            kits.put(entry.getKey(), entry.getValue().toKit(plugin));
         }
 
         Log.info(this, String.format(KITS_LOADED, kits.size()));

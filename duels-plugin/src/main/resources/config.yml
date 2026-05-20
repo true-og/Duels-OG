@@ -464,7 +464,7 @@ countdown:
     - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3with %opponent% starting in &55 &3seconds...'
     - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3with %opponent% starting in &d4 &3seconds...'
     - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3with %opponent% starting in &c3 &3seconds...'
-    - '&7[&a&lTrue&c&lOG &e&lNetwork&7]&cDuel &3with %opponent% starting in &e2 &3seconds...'
+    - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3with %opponent% starting in &e2 &3seconds...'
     - '&7[&a&lTrue&c&lOG &e&lNetwork&7] &cDuel &3with %opponent% starting in &a1 &3second...'
     - '&aNow in a match against &4%opponent% &7(&e%opponent_rating% ELO&7) &awith kit &d%kit% &ain arena &e%arena%&a!'
 

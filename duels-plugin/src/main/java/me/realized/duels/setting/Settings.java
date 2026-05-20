@@ -108,10 +108,6 @@ public class Settings {
 
     public void setOwnInventory(final boolean ownInventory) {
         this.ownInventory = ownInventory;
-
-        if (ownInventory) {
-            this.kit = null;
-        }
     }
 
     // Don't copy the gui since it won't be required to start a match
