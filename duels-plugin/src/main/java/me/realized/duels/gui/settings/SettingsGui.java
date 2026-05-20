@@ -7,6 +7,7 @@ import me.realized.duels.config.Config;
 import me.realized.duels.gui.BaseButton;
 import me.realized.duels.gui.settings.buttons.ArenaSelectButton;
 import me.realized.duels.gui.settings.buttons.CancelButton;
+import me.realized.duels.gui.settings.buttons.DiamondBetButton;
 import me.realized.duels.gui.settings.buttons.ItemBettingButton;
 import me.realized.duels.gui.settings.buttons.KitSelectButton;
 import me.realized.duels.gui.settings.buttons.OwnInventoryButton;
@@ -23,7 +24,8 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
         {13},
         {12, 14},
         {12, 13, 14},
-        {12, 13, 14, 22}
+        {12, 13, 14, 22},
+        {11, 12, 13, 14, 15}
     };
 
     public SettingsGui(final DuelsPlugin plugin) {
@@ -47,6 +49,10 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
 
         if (config.isArenaSelectingEnabled()) {
             buttons.add(new ArenaSelectButton(plugin));
+        }
+
+        if (config.isMoneyBettingEnabled()) {
+            buttons.add(new DiamondBetButton(plugin));
         }
 
         if (config.isItemBettingEnabled()) {

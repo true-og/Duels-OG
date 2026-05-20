@@ -13,6 +13,7 @@ import me.realized.duels.util.inventory.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -85,4 +86,8 @@ public class Button<P extends JavaPlugin> {
     public void update(final Player player) {}
 
     public void onClick(final Player player) {}
+
+    public void onClick(final Player player, final InventoryClickEvent event) {
+        onClick(player);
+    }
 }

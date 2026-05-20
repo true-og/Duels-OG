@@ -4,6 +4,7 @@ The [TrueOG Network](https://trueog.net) fork of [Duels](https://github.com/Real
 
 Changes from Duels:
 
+- Added a chat wizard for setting a bounty amount post-duel command in the GUI by @NotAlexNoyle
 - Remove update checker by @NotAlexNoyle
 - Only start Duels from one world, configurable in config.yml by @NotAlexNoyle
 - Inventory loss bug fixes by @szumielxd
@@ -16,6 +17,8 @@ Changes from Duels:
 - Whitelist arenas/worlds and fix duel transportation, with [PetTeleport-OG](https://github.com/true-og/PetTeleport-OG) and [HorseTp-OG](https://github.com/true-og/HorseTp-OG) support by @NotAlexNoyle
 - Add [EternalCombat](https://github.com/EternalCodeTeam/EternalCombat) support by @NotAlexNoyle
 - Replace BountyHunters hook with [PlayerBounties-OG](https://github.com/true-og/PlayerBounties-OG) support by @NotAlexNoyle
+- Replaced Vault hook with [DiamondBank-OG](https://github.com/true-og/DiamondBank-OG) API by @NotAlexNoyle
+- Replaced Multiverse hook with [MyWorlds](https://github.com/true-og/MyWorlds) API by @NotAlexNoyle
 
 ---
 

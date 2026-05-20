@@ -1,8 +1,8 @@
 name: Duels-OG
 main: me.realized.duels.DuelsPlugin
 version: @VERSION@
-softdepend: [BetterChairs-OG, CombatLogX, CombatTagPlus, Essentials, EternalCombat, Factions, GameModeInventories-OG, LeaderHeads, mcMMO, MVdWPlaceholderAPI, PlaceholderAPI, PvPManager, SimpleClans, Vault, WorldGuard, Multiverse-Core]
-# Multiverse-Core added as soft-depend due to locations being null when Duels is loaded first.
+softdepend: [BetterChairs-OG, CombatLogX, CombatTagPlus, DiamondBank-OG, Essentials, EternalCombat, Factions, GameModeInventories-OG, LeaderHeads, mcMMO, MVdWPlaceholderAPI, MyWorlds, PlaceholderAPI, PvPManager, SimpleClans, WorldGuard]
+# MyWorlds added as soft-depend due to locations being null when Duels is loaded before managed worlds.
 # Add any world management plugins to softdepend list if arena doesn't load properly in the generated world.
 api-version: 1.14
 

@@ -14,10 +14,10 @@ import me.realized.duels.command.commands.duel.subcommands.VersionCommand;
 import me.realized.duels.data.UserData;
 import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
+import me.realized.duels.hook.hooks.DiamondBankHook;
 import me.realized.duels.hook.hooks.EternalCombatHook;
 import me.realized.duels.hook.hooks.GameModeInventoriesHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
-import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
 import me.realized.duels.kit.KitImpl;
 import me.realized.duels.setting.Settings;
@@ -37,7 +37,7 @@ public class DuelCommand extends BaseCommand {
     private final CombatLogXHook combatLogX;
     private final EternalCombatHook eternalCombat;
     private final WorldGuardHook worldGuard;
-    private final VaultHook vault;
+    private final DiamondBankHook diamondBank;
     private final GameModeInventoriesHook gameModeInventories;
 
     public DuelCommand(final DuelsPlugin plugin) {
@@ -56,7 +56,7 @@ public class DuelCommand extends BaseCommand {
         this.combatLogX = hookManager.getHook(CombatLogXHook.class);
         this.eternalCombat = hookManager.getHook(EternalCombatHook.class);
         this.worldGuard = hookManager.getHook(WorldGuardHook.class);
-        this.vault = hookManager.getHook(VaultHook.class);
+        this.diamondBank = hookManager.getHook(DiamondBankHook.class);
         this.gameModeInventories = hookManager.getHook(GameModeInventoriesHook.class);
     }
 
@@ -175,12 +175,12 @@ public class DuelCommand extends BaseCommand {
                     return true;
                 }
 
-                if (vault == null || vault.getEconomy() == null) {
+                if (diamondBank == null) {
                     lang.sendMessage(sender, "ERROR.setting.disabled-option", "option", lang.getMessage("GENERAL.betting"));
                     return true;
                 }
 
-                if (!vault.getEconomy().has(player, amount)) {
+                if (!diamondBank.has(amount, player)) {
                     lang.sendMessage(sender, "ERROR.command.not-enough-money");
                     return true;
                 }

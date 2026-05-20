@@ -50,12 +50,12 @@ import me.realized.duels.data.UserData;
 import me.realized.duels.data.UserManagerImpl;
 import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
+import me.realized.duels.hook.hooks.DiamondBankHook;
 import me.realized.duels.hook.hooks.EssentialsHook;
 import me.realized.duels.hook.hooks.EternalCombatHook;
 import me.realized.duels.hook.hooks.GameModeInventoriesHook;
 import me.realized.duels.hook.hooks.McMMOHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
-import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
 import me.realized.duels.inventories.InventoryManager;
 import me.realized.duels.kit.KitImpl;
@@ -95,7 +95,7 @@ public class DuelManager implements Loadable {
     private PvPManagerHook pvpManager;
     private CombatLogXHook combatLogX;
     private EternalCombatHook eternalCombat;
-    private VaultHook vault;
+    private DiamondBankHook diamondBank;
     private EssentialsHook essentials;
     private McMMOHook mcMMO;
     private WorldGuardHook worldGuard;
@@ -123,7 +123,7 @@ public class DuelManager implements Loadable {
         this.pvpManager = plugin.getHookManager().getHook(PvPManagerHook.class);
         this.combatLogX = plugin.getHookManager().getHook(CombatLogXHook.class);
         this.eternalCombat = plugin.getHookManager().getHook(EternalCombatHook.class);
-        this.vault = plugin.getHookManager().getHook(VaultHook.class);
+        this.diamondBank = plugin.getHookManager().getHook(DiamondBankHook.class);
         this.essentials = plugin.getHookManager().getHook(EssentialsHook.class);
         this.mcMMO = plugin.getHookManager().getHook(McMMOHook.class);
         this.worldGuard = plugin.getHookManager().getHook(WorldGuardHook.class);
@@ -198,9 +198,9 @@ public class DuelManager implements Loadable {
     private void handleTie(final Player player, final ArenaImpl arena, final MatchImpl match, boolean alive) {
         arena.remove(player);
 
-        // Reset player balance if there was a bet placed.
-        if (vault != null && match.getBet() > 0) {
-            vault.add(match.getBet(), player);
+        // Refund the player's bet in the case of a tie.
+        if (diamondBank != null && match.getBet() > 0) {
+            diamondBank.add(match.getBet(), player);
         }
 
         if (mcMMO != null) {
@@ -236,7 +236,7 @@ public class DuelManager implements Loadable {
     }
 
     /**
-     * Rewards the duel winner with money and items bet on the match.
+     * Rewards the duel winner with diamonds and items bet on the match.
      *
      * @param player Player determined to be the winner
      * @param opponent Player that opposed the winner
@@ -248,9 +248,9 @@ public class DuelManager implements Loadable {
 
         final String opponentName = opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none");
 
-        if (vault != null && match.getBet() > 0) {
+        if (diamondBank != null && match.getBet() > 0) {
             final int amount = match.getBet() * 2;
-            vault.add(amount, player);
+            diamondBank.add(amount, player);
             lang.sendMessage(player, "DUEL.reward.money.message", "name", opponentName, "money", amount);
 
             final String title = lang.getMessage("DUEL.reward.money.title", "name", opponentName, "money", amount);
@@ -348,12 +348,10 @@ public class DuelManager implements Loadable {
 
         final int bet = settings.getBet();
 
-        if (bet > 0 && vault != null && vault.getEconomy() != null) {
-            if (!vault.has(bet, first, second)) {
-                lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-enough-money", "bet_amount", bet);
-                refundItems(items, first, second);
-                return;
-            }
+        if (bet > 0 && (diamondBank == null || !diamondBank.has(bet, first, second))) {
+            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-enough-money", "bet_amount", bet);
+            refundItems(items, first, second);
+            return;
         }
 
         final Map<UUID, PreDuelState> states = captureStates(first, second);
@@ -365,8 +363,10 @@ public class DuelManager implements Loadable {
             return;
         }
 
-        if (bet > 0 && vault != null && vault.getEconomy() != null) {
-            vault.remove(bet, first, second);
+        if (bet > 0 && !diamondBank.remove(bet, first, second)) {
+            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-enough-money", "bet_amount", bet);
+            refundItems(items, first, second);
+            return;
         }
 
         final MatchImpl match = arena.startMatch(kit, items, settings.getBet(), source);

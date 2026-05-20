@@ -148,7 +148,7 @@ public class BettingGui extends AbstractGui<DuelsPlugin> {
             return;
         }
 
-        button.onClick(player);
+        button.onClick(player, event);
     }
 
     @Override

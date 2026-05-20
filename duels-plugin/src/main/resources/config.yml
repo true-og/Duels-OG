@@ -138,19 +138,19 @@ request:
 
   item-betting:
     # If set to 'true', players will be able to choose to enable or disable item betting in the Request Settings GUI.
-    # default: true
-    enabled: true
+    # default: false
+    enabled: false
 
     # If set to 'true', players without the permission 'duels.use.item-betting' will not be able to enable item betting.
     # default: false
     use-permission: true
 
   money-betting:
-    # If set to 'true', players will be able to bet money on their duel by using the command '/duel [player] [bet amount]'.
+    # If set to 'true', players will be able to bet DiamondBank-OG diamonds on their duel by using the command '/duel [player] [bet amount]'.
     # default: true
     enabled: true
 
-    # If set to 'true', players without the permission 'duels.use.money-betting' will not be able to bet money on their duel.
+    # If set to 'true', players without the permission 'duels.use.money-betting' will not be able to bet diamonds on their duel.
     # default: false
     use-permission: true
 

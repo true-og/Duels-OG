@@ -35,10 +35,10 @@ import me.realized.duels.data.UserManagerImpl;
 import me.realized.duels.duel.DuelManager;
 import me.realized.duels.hook.hooks.CombatLogXHook;
 import me.realized.duels.hook.hooks.CombatTagPlusHook;
+import me.realized.duels.hook.hooks.DiamondBankHook;
 import me.realized.duels.hook.hooks.EternalCombatHook;
 import me.realized.duels.hook.hooks.GameModeInventoriesHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
-import me.realized.duels.hook.hooks.VaultHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
 import me.realized.duels.kit.KitManagerImpl;
 import me.realized.duels.setting.Settings;
@@ -87,7 +87,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
     private CombatLogXHook combatLogX;
     private EternalCombatHook eternalCombat;
     private WorldGuardHook worldGuard;
-    private VaultHook vault;
+    private DiamondBankHook diamondBank;
     private GameModeInventoriesHook gameModeInventories;
     private int queueTask;
 
@@ -156,7 +156,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
         this.combatLogX = plugin.getHookManager().getHook(CombatLogXHook.class);
         this.eternalCombat = plugin.getHookManager().getHook(EternalCombatHook.class);
         this.worldGuard = plugin.getHookManager().getHook(WorldGuardHook.class);
-        this.vault = plugin.getHookManager().getHook(VaultHook.class);
+        this.diamondBank = plugin.getHookManager().getHook(DiamondBankHook.class);
         this.gameModeInventories = plugin.getHookManager().getHook(GameModeInventoriesHook.class);
         this.queueTask = plugin.doSyncRepeat(() -> {
             boolean update = false;
@@ -390,7 +390,7 @@ public class QueueManager implements Loadable, DQueueManager, Listener {
             return false;
         }
 
-        if (queue.getBet() > 0 && vault != null && !vault.has(queue.getBet(), player)) {
+        if (queue.getBet() > 0 && (diamondBank == null || !diamondBank.has(queue.getBet(), player))) {
             lang.sendMessage(player, "ERROR.queue.not-enough-money", "bet_amount", queue.getBet());
             return false;
         }

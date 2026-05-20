@@ -2,7 +2,7 @@ package me.realized.duels.betting;
 
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.gui.betting.BettingGui;
-import me.realized.duels.hook.hooks.VaultHook;
+import me.realized.duels.hook.hooks.DiamondBankHook;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.Loadable;
 import me.realized.duels.util.Log;
@@ -22,12 +22,10 @@ public class BettingManager implements Loadable, Listener {
 
     @Override
     public void handleLoad() {
-        final VaultHook vaultHook = plugin.getHookManager().getHook(VaultHook.class);
+        final DiamondBankHook diamondBankHook = plugin.getHookManager().getHook(DiamondBankHook.class);
 
-        if (vaultHook == null) {
-            Log.info(this, "Vault was not found! Money betting feature will be automatically disabled.");
-        } else if (vaultHook.getEconomy() == null) {
-            Log.info(this, "Economy plugin supporting Vault was not found! Money betting feature will be automatically disabled.");
+        if (diamondBankHook == null) {
+            Log.info(this, "DiamondBank-OG was not found! Diamond betting feature will be automatically disabled.");
         }
     }
 

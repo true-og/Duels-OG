@@ -91,7 +91,7 @@ ERROR:
     invalid-sub-command: '{PREFIX} &c''%argument%'' is not a valid sub command. Please type ''/%command%'' for help.'
     invalid-option: '{PREFIX} &c''%option%'' is not a valid option. Available options are: %available_options%'
     invalid-action: '{PREFIX} &c''%action%'' is not a valid action. Available actions are: %available_actions%'
-    not-enough-money: '{PREFIX} &cYou do not have enough money to bet!'
+    not-enough-money: '{PREFIX} &cYou do not have enough Diamonds to bet!'
     lobby-save-failure: '{PREFIX} &cCould not save lobby location. Please check the console for more information.'
     name-not-alphanumeric: '{PREFIX} &c''%name%'' is not alphanumeric.'
 
@@ -351,10 +351,6 @@ GUI:
         - '&7Kit: &d%kit%'
         - '&7Arena: &e%arena%'
         - '&7Bet: &B%bet_amount% Diamond(s)'
-        - ' '
-        - '&7To change the bet'
-        - '&7amount, type:'
-        - '&e/duel &f%opponent% &B[amount]'
       kit-selector:
         name: '&2Kit Selection'
         lore:
@@ -379,6 +375,19 @@ GUI:
         - '&7Selected Arena: &e%arena%'
         - ' '
         - '&aClick to Change Arena!'
+        lore-no-permission:
+        - '&cYou do not have permission to'
+        - '&cuse this option.'
+      diamond-bet:
+        name: '&BDiamond Bet'
+        lore:
+        - '&7Bet: &B%bet_amount% Diamond(s)'
+        - ' '
+        - '&aClick to enter a bet amount.'
+        prompt: '{PREFIX} &7Type the Diamond bet amount in chat, or type &ccancel &7to keep the current amount.'
+        invalid: '{PREFIX} &cPlease enter a whole number of Diamonds.'
+        cancelled: '{PREFIX} &7Diamond bet unchanged.'
+        set: '{PREFIX} &7Diamond bet set to &B%bet_amount% Diamond(s)&7.'
         lore-no-permission:
         - '&cYou do not have permission to'
         - '&cuse this option.'

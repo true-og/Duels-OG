@@ -115,7 +115,6 @@ project(":duels-plugin") {
         }
 
         compileOnly(localJar("MVdWPlaceholderAPI-3.1.1"))
-        compileOnly(localJar("Vault-1.6.7"))
         compileOnly(localJar("CombatTagPlus"))
         compileOnly(localJar("PvPManager-3.7.16"))
         compileOnly(localJar("Factions-1.6.9.5-U0.1.14"))

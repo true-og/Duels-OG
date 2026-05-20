@@ -298,7 +298,7 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         kitSelectingUsePermission = configuration.getBoolean("request.kit-selecting.use-permission", false);
         arenaSelectingEnabled = configuration.getBoolean("request.arena-selecting.enabled", true);
         arenaSelectingUsePermission = configuration.getBoolean("request.arena-selecting.use-permission", false);
-        itemBettingEnabled = configuration.getBoolean("request.item-betting.enabled", true);
+        itemBettingEnabled = configuration.getBoolean("request.item-betting.enabled", false);
         itemBettingUsePermission = configuration.getBoolean("request.item-betting.use-permission", false);
         moneyBettingEnabled = configuration.getBoolean("request.money-betting.enabled", true);
         moneyBettingUsePermission = configuration.getBoolean("request.money-betting.use-permission", false);
