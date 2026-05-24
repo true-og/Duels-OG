@@ -194,8 +194,16 @@ duel:
       # %kit% - Name of the kit used in the match
       # %arena% - Name of the arena the match was played in
       # %bet_amount% - Bet amount of the match
-      commands:
-      - 'broadcast &7[&a&lTrue&c&lOG &e&lNetwork&7] &2%winner% &ahas won &B%bet_amount% Diamonds &ain a duel against &4%loser% &ain Areana &d%arena%&a!'
+      # Legacy fallback list. Used when 'bet-commands' or 'no-bet-commands' is empty for the matching match type.
+      commands: []
+
+      # Commands run when the match HAD a diamond bet (bet_amount > 0).
+      bet-commands:
+      - 'broadcast &7[&a&lTrue&c&lOG &e&lNetwork&7] &2%winner% &ahas won &B%bet_amount% Diamonds &ain a duel against &4%loser% &ain Arena &d%arena%&a!'
+
+      # Commands run when the match had NO diamond bet (bet_amount == 0).
+      no-bet-commands:
+      - 'broadcast &7[&a&lTrue&c&lOG &e&lNetwork&7] &2%winner% &ahas defeated &4%loser% &ain Arena &d%arena%&a!'
 
   projectile-hit-message:
     # If set to 'true', a message from lang.yml will be sent to the shooter of the projectile.

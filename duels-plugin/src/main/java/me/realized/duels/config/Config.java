@@ -106,6 +106,10 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private List<String> endCommands;
     @Getter
+    private List<String> endCommandsBet;
+    @Getter
+    private List<String> endCommandsNoBet;
+    @Getter
     private boolean projectileHitMessageEnabled;
     @Getter
     private List<String> projectileHitMessageTypes;
@@ -311,6 +315,8 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         endCommandsEnabled = configuration.getBoolean("duel.match.end-commands.enabled", false);
         endCommandsQueueOnly = configuration.getBoolean("duel.match.end-commands.queue-matches-only", false);
         endCommands = configuration.getStringList("duel.match.end-commands.commands");
+        endCommandsBet = configuration.getStringList("duel.match.end-commands.bet-commands");
+        endCommandsNoBet = configuration.getStringList("duel.match.end-commands.no-bet-commands");
         projectileHitMessageEnabled = configuration.getBoolean("duel.projectile-hit-message.enabled", true);
         projectileHitMessageTypes = configuration.getStringList("duel.projectile-hit-message.types");
         preventInventoryOpen = configuration.getBoolean("duel.prevent-inventory-open", true);

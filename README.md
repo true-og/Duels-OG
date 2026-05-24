@@ -18,7 +18,13 @@ Changes from Duels:
 - Add [EternalCombat](https://github.com/EternalCodeTeam/EternalCombat) support by @NotAlexNoyle
 - Replace BountyHunters hook with [PlayerBounties-OG](https://github.com/true-og/PlayerBounties-OG) support by @NotAlexNoyle
 - Replaced Vault hook with [DiamondBank-OG](https://github.com/true-og/DiamondBank-OG) API by @NotAlexNoyle
-- Replaced Multiverse hook with [MyWorlds](https://github.com/true-og/MyWorlds) API by @NotAlexNoyle
+- Removed Multiverse hook; world whitelisting now uses plain Bukkit world names with [MyWorlds](https://github.com/true-og/MyWorlds) listed as a soft-depend to ensure managed worlds load before Duels by @NotAlexNoyle
+- Bundled live TrueOG Network config files for plug-and-play deployment by @NotAlexNoyle
+- Bundled default kits (chain, iron, diamond, leather, netherite, debuff, nodebuff) in the plugin jar by @NotAlexNoyle
+- Removed WorldGuard region restrictions inside duel arenas by @NotAlexNoyle
+- Fixed victory message formatting by @NotAlexNoyle
+- Fixed kits equipping into an empty inventory caused by a delayed inventory reset wiping the kit by @NotAlexNoyle
+- Added separate configurable end-of-match broadcast commands for bet and no-bet duels by @NotAlexNoyle
 
 ---
 

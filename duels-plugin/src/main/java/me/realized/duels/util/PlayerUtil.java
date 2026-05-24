@@ -1,6 +1,5 @@
 package me.realized.duels.util;
 
-import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
@@ -8,7 +7,6 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import me.realized.duels.DuelsPlugin;
 import me.realized.duels.util.compat.CompatUtil;
 
 public final class PlayerUtil {
@@ -37,26 +35,24 @@ public final class PlayerUtil {
     }
 
     public static void reset(final Player player) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DuelsPlugin.getInstance(), () -> {
-            player.closeInventory();
-	        player.setFireTicks(0);
-	        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
-	        setMaxHealth(player);
-	        player.setExhaustion(DEFAULT_EXHAUSTION);
-	        player.setSaturation(DEFAULT_SATURATION);
-	        player.setFoodLevel(DEFAULT_MAX_FOOD_LEVEL);
-	        player.setItemOnCursor(null);
+        player.closeInventory();
+        player.setFireTicks(0);
+        player.getActivePotionEffects().forEach(effect -> player.removePotionEffect(effect.getType()));
+        setMaxHealth(player);
+        player.setExhaustion(DEFAULT_EXHAUSTION);
+        player.setSaturation(DEFAULT_SATURATION);
+        player.setFoodLevel(DEFAULT_MAX_FOOD_LEVEL);
+        player.setItemOnCursor(null);
 
-	        final Inventory top = player.getOpenInventory().getTopInventory();
+        final Inventory top = player.getOpenInventory().getTopInventory();
 
-            if (top != null && top.getType() == InventoryType.CRAFTING) {
-                top.clear();
-            }
+        if (top != null && top.getType() == InventoryType.CRAFTING) {
+            top.clear();
+        }
 
-	        player.getInventory().setArmorContents(new ItemStack[4]);
-	        player.getInventory().clear();
-	        player.updateInventory();
-        }, 2L);
+        player.getInventory().setArmorContents(new ItemStack[4]);
+        player.getInventory().clear();
+        player.updateInventory();
     }
 
     private PlayerUtil() {}

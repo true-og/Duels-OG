@@ -705,7 +705,11 @@ public class DuelManager implements Loadable {
 
                     if (config.isEndCommandsEnabled() && !(!match.isFromQueue() && config.isEndCommandsQueueOnly())) {
                         try {
-                            for (final String command : config.getEndCommands()) {
+                            final boolean hasBet = match.getBet() > 0;
+                            final List<String> selected = hasBet ? config.getEndCommandsBet() : config.getEndCommandsNoBet();
+                            final List<String> commands = (selected != null && !selected.isEmpty()) ? selected : config.getEndCommands();
+
+                            for (final String command : commands) {
                                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command
                                     .replace("%winner%", winner.getName()).replace("%loser%", player.getName())
                                     .replace("%kit%", kitName).replace("%arena%", arena.getName())
