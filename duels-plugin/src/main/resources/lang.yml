@@ -243,7 +243,7 @@ COMMAND:
     create-queue: '{PREFIX} &7Created a queue with kit &d%kit% &7and a bet of &B%bet_amount% Diamond(s) &7.'
     delete-queue: '{PREFIX} &7Deleted a queue with kit &d%kit% &7and a bet of &B%bet_amount% Diamond(s) &7.'
     add-sign: '{PREFIX} &7Created queue sign at &3%location% &7with kit &d%kit% &7and bet &B%bet_amount% Diamond(s)&7.'
-    del-sign: '{PREFIX} &7Deleted queue sign at &3%location% &7with kit &d%kit% &7and bet &B%bet_amount Diamond(s)%&7.'
+    del-sign: '{PREFIX} &7Deleted queue sign at &3%location% &7with kit &d%kit% &7and bet &B%bet_amount% Diamond(s)&7.'
     set-lobby: '{PREFIX} &7Duel lobby set at your current location.'
     lobby: '{PREFIX} &7You have been teleported to lobby!'
     edit: '{PREFIX} &7Following action has been executed for &6%name%&7: &6%action% %amount% %type%'
@@ -294,7 +294,8 @@ DUEL:
     no-arena-available: '{FAIL_PREFIX} No arenas are currently available. Please try again later.'
     arena-in-use: '{FAIL_PREFIX} That arena is already in use. Please select a different arena.'
     arena-not-applicable: '{FAIL_PREFIX} You cannot use kit %kit% on this arena.'
-    not-enough-money: '{FAIL_PREFIX} &cYou or your opponent does not have &B%bet_amount% Diamond(s)&c.'
+    not-enough-money: '{FAIL_PREFIX} &cYou do not have &B%bet_amount% Diamond(s)&c.'
+    opponent-not-enough-money: '{FAIL_PREFIX} &c%name% does not have &B%bet_amount% Diamond(s)&c to cover that bet.'
   prevent:
     item-drop: '&cYou cannot drop items while in a duel.'
     command: '&cYou cannot use ''%command%'' while in a duel.'

@@ -32,6 +32,7 @@ import me.realized.duels.kit.KitManagerImpl;
 import me.realized.duels.listeners.DamageListener;
 import me.realized.duels.listeners.EnderpearlListener;
 import me.realized.duels.listeners.KitItemListener;
+import me.realized.duels.listeners.KitItemPacketListener;
 import me.realized.duels.listeners.KitOptionsListener;
 import me.realized.duels.listeners.LingerPotionListener;
 import me.realized.duels.listeners.PotionListener;
@@ -171,6 +172,17 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
         }
 
         new KitItemListener(this);
+
+        // Strip kit-item NBT from outgoing packets so legacy (ViaVersion) clients don't desync the
+        // held slot. Only needed when kit-item protection is on (otherwise no tag is ever applied).
+        if (configuration.isProtectKitItems() && getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+            try {
+                new KitItemPacketListener(this);
+            } catch (final Throwable ex) {
+                Log.warn("Failed to register ProtocolLib kit-item listener: " + ex.getMessage());
+            }
+        }
+
         new DamageListener(this);
         new PotionListener(this);
         new TeleportListener(this);

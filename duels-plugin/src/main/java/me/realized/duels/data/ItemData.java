@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import me.realized.duels.DuelsPlugin;
 import me.realized.duels.util.EnumUtil;
 import me.realized.duels.util.collection.StreamUtil;
 import me.realized.duels.util.compat.CompatUtil;
@@ -67,7 +68,13 @@ public class ItemData {
 
         final String dumped = YamlUtil.yamlDump(item);
         ItemStack item = YamlUtil.bukkitYamlLoadAs(dumped, ItemStack.class);
-        return kitItem ? Identifiers.addIdentifier(item) : item;
+
+        // Only stamp the custom NBT identifier when kit-item protection is actually enabled.
+        // The tag is purely for KitItemListener; when protection is off it adds nothing but
+        // can trip up legacy clients via ViaVersion/ViaBackwards (held-item "bobbing", bows not
+        // staying drawn, food not consuming) due to client/server NBT mismatch on the held slot.
+        final boolean protect = DuelsPlugin.getInstance().getConfiguration().isProtectKitItems();
+        return kitItem && protect ? Identifiers.addIdentifier(item) : item;
     }
 
     public ItemStack toItemStack() {

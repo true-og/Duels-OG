@@ -114,6 +114,7 @@ project(":duels-plugin") {
             isTransitive = false
         }
 
+        compileOnly(localJar("ProtocolLib/ProtocolLib-5.0"))
         compileOnly(localJar("MVdWPlaceholderAPI-3.1.1"))
         compileOnly(localJar("CombatTagPlus"))
         compileOnly(localJar("PvPManager-3.7.16"))

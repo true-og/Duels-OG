@@ -4,27 +4,47 @@ The [TrueOG Network](https://trueog.net) fork of [Duels](https://github.com/Real
 
 Changes from Duels:
 
-- Added a chat wizard for setting a bounty amount post-duel command in the GUI by @NotAlexNoyle
-- Remove update checker by @NotAlexNoyle
-- Only start Duels from one world, configurable in config.yml by @NotAlexNoyle
-- Inventory loss bug fixes by @szumielxd
-- Essentials API NPE fix by @skbeh
-- Update deprecated pickup API by @NotAlexNoyle
-- Added an option to hide the Duel winning title message by @NotAlexNoyle
-- Added an option to hide the bet winning title message by @NotAlexNoyle
-- Prevent players from stealing Duels items from the inventory by @dwaslashe
-- Prevent players from stealing Duels items from the ground by @SrBedrock
-- Whitelist arenas/worlds and fix duel transportation, with [PetTeleport-OG](https://github.com/true-og/PetTeleport-OG) and [HorseTp-OG](https://github.com/true-og/HorseTp-OG) support by @NotAlexNoyle
-- Add [EternalCombat](https://github.com/EternalCodeTeam/EternalCombat) support by @NotAlexNoyle
-- Replace BountyHunters hook with [PlayerBounties-OG](https://github.com/true-og/PlayerBounties-OG) support by @NotAlexNoyle
-- Replaced Vault hook with [DiamondBank-OG](https://github.com/true-og/DiamondBank-OG) API by @NotAlexNoyle
-- Removed Multiverse hook; world whitelisting now uses plain Bukkit world names with [MyWorlds](https://github.com/true-og/MyWorlds) listed as a soft-depend to ensure managed worlds load before Duels by @NotAlexNoyle
-- Bundled live TrueOG Network config files for plug-and-play deployment by @NotAlexNoyle
-- Bundled default kits (chain, iron, diamond, leather, netherite, debuff, nodebuff) in the plugin jar by @NotAlexNoyle
-- Removed WorldGuard region restrictions inside duel arenas by @NotAlexNoyle
-- Fixed victory message formatting by @NotAlexNoyle
-- Fixed kits equipping into an empty inventory caused by a delayed inventory reset wiping the kit by @NotAlexNoyle
-- Added separate configurable end-of-match broadcast commands for bet and no-bet duels by @NotAlexNoyle
+#### @NotAlexNoyle
+
+- Added a chat wizard for setting a bounty amount post-duel command in the GUI
+- Remove update checker
+- Only start Duels from one world, configurable in config.yml
+- Update deprecated pickup API
+- Added an option to hide the Duel winning title message
+- Added an option to hide the bet winning title message
+- Whitelist arenas/worlds and fix duel transportation, with [PetTeleport-OG](https://github.com/true-og/PetTeleport-OG) and [HorseTp-OG](https://github.com/true-og/HorseTp-OG) support
+- Add [EternalCombat](https://github.com/EternalCodeTeam/EternalCombat) support
+- Replace BountyHunters hook with [PlayerBounties-OG](https://github.com/true-og/PlayerBounties-OG) support
+- Replaced Vault hook with [DiamondBank-OG](https://github.com/true-og/DiamondBank-OG) API
+- Removed Multiverse hook; world whitelisting now uses plain Bukkit world names with [MyWorlds](https://github.com/true-og/MyWorlds) listed as a soft-depend to ensure managed worlds load before Duels
+- Bundled live TrueOG Network config files for plug-and-play deployment
+- Bundled default kits (chain, iron, diamond, leather, netherite, debuff, nodebuff) in the plugin jar
+- Removed WorldGuard region restrictions inside duel arenas
+- Fixed victory message formatting
+- Fixed kits equipping into an empty inventory caused by a delayed inventory reset wiping the kit
+- Added separate configurable end-of-match broadcast commands for bet and no-bet duels
+- Fixed diamond bet payouts so the total bounty equals the bet amount (the loser pays the winner, instead of both staking and the winner receiving double)
+- Added a message telling the bet maker when their opponent cannot afford the bet
+- Pluralize "Diamond"/"Diamonds" in messages based on the amount
+- Fixed a bug where a selected kit could not be de-selected, blocking own-inventory duels
+- Select a random kit and arena if none are selected
+- Strip kit-item NBT from outgoing packets via [ProtocolLib](https://github.com/dmulloy2/ProtocolLib) so legacy clients (1.8+ through ViaVersion) can eat, draw bows, and hold items without desync, while keeping kit-item protection intact
+
+#### @szumielxd
+
+- Inventory loss bug fixes
+
+#### @skbeh
+
+- Essentials API NPE fix
+
+#### @dwaslashe
+
+- Prevent players from stealing Duels items from the inventory
+
+#### @SrBedrock
+
+- Prevent players from stealing Duels items from the ground
 
 ---
 

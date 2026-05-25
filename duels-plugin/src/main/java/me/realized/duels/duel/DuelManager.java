@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -58,7 +59,9 @@ import me.realized.duels.hook.hooks.McMMOHook;
 import me.realized.duels.hook.hooks.PvPManagerHook;
 import me.realized.duels.hook.hooks.worldguard.WorldGuardHook;
 import me.realized.duels.inventories.InventoryManager;
+import me.realized.duels.api.kit.Kit;
 import me.realized.duels.kit.KitImpl;
+import me.realized.duels.kit.KitManagerImpl;
 import me.realized.duels.player.PlayerInfo;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.queue.Queue;
@@ -86,6 +89,7 @@ public class DuelManager implements Loadable {
     private final Lang lang;
     private final UserManagerImpl userDataManager;
     private final ArenaManagerImpl arenaManager;
+    private final KitManagerImpl kitManager;
     private final PlayerInfoManager playerManager;
     private final InventoryManager inventoryManager;
 
@@ -109,6 +113,7 @@ public class DuelManager implements Loadable {
         this.lang = plugin.getLang();
         this.userDataManager = plugin.getUserManager();
         this.arenaManager = plugin.getArenaManager();
+        this.kitManager = plugin.getKitManager();
         this.playerManager = plugin.getPlayerManager();
         this.inventoryManager = plugin.getInventoryManager();
 
@@ -198,10 +203,7 @@ public class DuelManager implements Loadable {
     private void handleTie(final Player player, final ArenaImpl arena, final MatchImpl match, boolean alive) {
         arena.remove(player);
 
-        // Refund the player's bet in the case of a tie.
-        if (diamondBank != null && match.getBet() > 0) {
-            diamondBank.add(match.getBet(), player);
-        }
+        // No bet is escrowed up-front, so a tie requires no refund.
 
         if (mcMMO != null) {
             mcMMO.enableSkills(player);
@@ -248,15 +250,23 @@ public class DuelManager implements Loadable {
 
         final String opponentName = opponent != null ? opponent.getName() : lang.getMessage("GENERAL.none");
 
-        if (diamondBank != null && match.getBet() > 0) {
-            final int amount = match.getBet() * 2;
-            diamondBank.add(amount, player);
-            lang.sendMessage(player, "DUEL.reward.money.message", "name", opponentName, "money", amount);
+        if (diamondBank != null && opponent != null && match.getBet() > 0) {
+            final int amount = match.getBet();
 
-            final String title = lang.getMessage("DUEL.reward.money.title", "name", opponentName, "money", amount);
+            // Transfer the bet from the loser to the winner: total payout equals the bet amount.
+            if (diamondBank.remove(amount, opponent)) {
+                if (diamondBank.add(amount, player)) {
+                    lang.sendMessage(player, "DUEL.reward.money.message", "name", opponentName, "money", amount);
 
-            if (title != null && config.isVictoryTitleEnabled()) {
-                Titles.send(player, title, null, 0, 20, 50);
+                    final String title = lang.getMessage("DUEL.reward.money.title", "name", opponentName, "money", amount);
+
+                    if (title != null && config.isVictoryTitleEnabled()) {
+                        Titles.send(player, title, null, 0, 20, 50);
+                    }
+                } else {
+                    // Pay-out failed: refund the loser so no Diamonds are lost.
+                    diamondBank.add(amount, opponent);
+                }
             }
         }
 
@@ -288,12 +298,17 @@ public class DuelManager implements Loadable {
     }
 
     public void startMatch(final Player first, final Player second, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
-        final KitImpl kit = settings.getKit();
+        KitImpl kit = settings.getKit();
 
+        // If neither a kit nor own inventory was chosen, fall back to a random kit.
         if (!settings.isOwnInventory() && kit == null) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.mode-unselected");
-            refundItems(items, first, second);
-            return;
+            kit = randomKit();
+
+            if (kit == null) {
+                lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.mode-unselected");
+                refundItems(items, first, second);
+                return;
+            }
         }
 
         if (first.isDead() || second.isDead()) {
@@ -348,10 +363,33 @@ public class DuelManager implements Loadable {
 
         final int bet = settings.getBet();
 
-        if (bet > 0 && (diamondBank == null || !diamondBank.has(bet, first, second))) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-enough-money", "bet_amount", bet);
-            refundItems(items, first, second);
-            return;
+        if (bet > 0) {
+            if (diamondBank == null) {
+                lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-enough-money", "bet_amount", bet);
+                refundItems(items, first, second);
+                return;
+            }
+
+            final boolean firstHas = diamondBank.has(bet, first);
+            final boolean secondHas = diamondBank.has(bet, second);
+
+            if (!firstHas || !secondHas) {
+                // Tell whoever is short that they can't afford it, and tell the solvent player which opponent fell short.
+                if (!firstHas) {
+                    lang.sendMessage(first, "DUEL.start-failure.not-enough-money", "bet_amount", bet);
+                } else {
+                    lang.sendMessage(first, "DUEL.start-failure.opponent-not-enough-money", "name", second.getName(), "bet_amount", bet);
+                }
+
+                if (!secondHas) {
+                    lang.sendMessage(second, "DUEL.start-failure.not-enough-money", "bet_amount", bet);
+                } else {
+                    lang.sendMessage(second, "DUEL.start-failure.opponent-not-enough-money", "name", first.getName(), "bet_amount", bet);
+                }
+
+                refundItems(items, first, second);
+                return;
+            }
         }
 
         final Map<UUID, PreDuelState> states = captureStates(first, second);
@@ -359,12 +397,6 @@ public class DuelManager implements Loadable {
         if (config.isPreventCreativeMode() && !switchCreativePlayersToSurvival(states, first, second)) {
             restoreStates(states, first, second);
             lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.in-creative-mode");
-            refundItems(items, first, second);
-            return;
-        }
-
-        if (bet > 0 && !diamondBank.remove(bet, first, second)) {
-            lang.sendMessage(Arrays.asList(first, second), "DUEL.start-failure.not-enough-money", "bet_amount", bet);
             refundItems(items, first, second);
             return;
         }
@@ -387,6 +419,16 @@ public class DuelManager implements Loadable {
         if (items != null) {
             Arrays.stream(players).forEach(player -> InventoryUtil.addOrDrop(player, items.getOrDefault(player.getUniqueId(), Collections.emptyList())));
         }
+    }
+
+    private KitImpl randomKit() {
+        final List<Kit> kits = kitManager.getKits();
+
+        if (kits.isEmpty()) {
+            return null;
+        }
+
+        return (KitImpl) kits.get(ThreadLocalRandom.current().nextInt(kits.size()));
     }
 
     private boolean isBlacklistedWorld(final Player player) {

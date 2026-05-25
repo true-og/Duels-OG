@@ -107,15 +107,46 @@ public class Lang extends AbstractConfiguration<DuelsPlugin> implements Reloadab
             replacers = (Object[]) replacers[0];
         }
 
+        Long diamondCount = null;
+
         for (int i = 0; i < replacers.length; i += 2) {
             if (i + 1 >= replacers.length) {
                 break;
             }
 
-            message = message.replace("%" + replacers[i].toString() + "%", String.valueOf(replacers[i + 1]));
+            final String key = replacers[i].toString();
+            final Object value = replacers[i + 1];
+
+            // Track the Diamond count so "Diamond(s)" can be pluralized to match.
+            if (key.equals("bet_amount") || key.equals("money")) {
+                final Long parsed = toLong(value);
+
+                if (parsed != null) {
+                    diamondCount = parsed;
+                }
+            }
+
+            message = message.replace("%" + key + "%", String.valueOf(value));
+        }
+
+        // Resolve "Diamond(s)" to "Diamond" or "Diamonds" based on the amount.
+        if (message.contains("Diamond(s)") && diamondCount != null) {
+            message = message.replace("Diamond(s)", diamondCount == 1 ? "Diamond" : "Diamonds");
         }
 
         return message;
+    }
+
+    private Long toLong(final Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).longValue();
+        }
+
+        try {
+            return (long) Double.parseDouble(String.valueOf(value));
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 
     public String getMessage(final String key, final Object... replacers) {

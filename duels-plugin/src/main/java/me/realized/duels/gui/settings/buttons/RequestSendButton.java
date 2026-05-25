@@ -33,12 +33,7 @@ public class RequestSendButton extends BaseButton {
             return;
         }
 
-        if (!settings.isOwnInventory() && settings.getKit() == null) {
-            player.closeInventory();
-            lang.sendMessage(player, "ERROR.duel.mode-unselected");
-            return;
-        }
-
+        // No kit / own-inventory selected is allowed: a random kit is chosen when the match starts.
         player.closeInventory();
         requestManager.send(player, target, settings);
     }
