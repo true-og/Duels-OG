@@ -454,12 +454,12 @@
             "==": "org.bukkit.inventory.ItemStack",
             "v": 2975,
             "type": "DIAMOND_SWORD",
-			"meta": {
+            "meta": {
               "==": "ItemMeta",
               "meta-type": "UNSPECIFIC",
               "enchants": {
                 "DAMAGE_ALL": 2,
-				"DURABILITY": 3,
+                "DURABILITY": 3
               }
             }
           }
@@ -469,7 +469,7 @@
             "==": "org.bukkit.inventory.ItemStack",
             "v": 2975,
             "type": "FISHING_ROD",
-			"meta": {
+			      "meta": {
               "==": "ItemMeta",
               "meta-type": "UNSPECIFIC",
               "enchants": {
@@ -490,7 +490,7 @@
             "==": "org.bukkit.inventory.ItemStack",
             "v": 2975,
             "type": "GOLDEN_APPLE",
-			"amount": 4,
+			      "amount": 4
           }
         },
         "4": {
@@ -585,6 +585,19 @@
             }
           }
         },
+	    "40": {
+		  "item": {
+			  "==": "org.bukkit.inventory.ItemStack",
+			  "v": 2975,
+			  "type": "TRIDENT",
+			  "meta": {
+              "==": "ItemMeta",
+              "meta-type": "UNSPECIFIC",
+              "enchants": {
+                "IMPALING": 2
+              }
+            }
+		    },
         "8": {
           "item": {
             "==": "org.bukkit.inventory.ItemStack",
@@ -593,20 +606,7 @@
             "amount": 64
           }
         }
-      },
-	  "40": {
-		"item": {
-			"==": "org.bukkit.inventory.ItemStack",
-			"v": 2975,
-			"type": "TRIDENT",
-			"meta": {
-              "==": "ItemMeta",
-              "meta-type": "UNSPECIFIC",
-              "enchants": {
-                "IMPALING": 2
-              }
-            }
-		},	
+      }
 	  },
       "ARMOR": {
         "1": {
