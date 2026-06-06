@@ -52,6 +52,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
 /**
  * Renders per-player glass walls along arena boundaries while the player is in a match. Mirrors the
@@ -140,6 +141,36 @@ public class BorderManager implements Loadable, Listener {
         }
 
         updateBorder(event.getPlayer(), to);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onPearlTeleport(final PlayerTeleportEvent event) {
+        if (!enabled || worldGuard == null || event.getCause() != TeleportCause.ENDER_PEARL) {
+            return;
+        }
+
+        final Player player = event.getPlayer();
+        final ArenaImpl arena = arenaManager.get(player);
+        if (arena == null) {
+            return;
+        }
+
+        final Location to = event.getTo();
+        if (to == null) {
+            return;
+        }
+
+        final RegionBounds bounds = lookupBounds(arena, to.getWorld());
+        // No WG region for this arena → no enforcement; honour vanilla pearl behaviour.
+        if (bounds == null) {
+            return;
+        }
+
+        if (containsBlock(bounds, to)) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -292,6 +323,15 @@ public class BorderManager implements Loadable, Listener {
         }
 
         return points;
+    }
+
+    private static boolean containsBlock(final RegionBounds bounds, final Location location) {
+        final int x = location.getBlockX();
+        final int y = location.getBlockY();
+        final int z = location.getBlockZ();
+        return x >= bounds.minX() && x <= bounds.maxX()
+            && y >= bounds.minY() && y <= bounds.maxY()
+            && z >= bounds.minZ() && z <= bounds.maxZ();
     }
 
     private RegionBounds lookupBounds(final ArenaImpl arena, final World playerWorld) {

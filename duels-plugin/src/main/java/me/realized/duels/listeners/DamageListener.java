@@ -3,6 +3,7 @@ package me.realized.duels.listeners;
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.arena.ArenaImpl;
 import me.realized.duels.arena.ArenaManagerImpl;
+import me.realized.duels.config.Config;
 import me.realized.duels.util.EventUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,40 +13,53 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 /**
- * Overrides damage cancellation by other plugins for players in a duel.
+ * Restricts in-duel damage so a player in a match can only damage their match opponent. Also
+ * un-cancels damage between the two duelists when 'force-allow-combat' is on, so other plugins
+ * (factions, anti-pvp, etc.) cannot block the duel itself.
  */
 public class DamageListener implements Listener {
 
     private final ArenaManagerImpl arenaManager;
+    private final Config config;
 
     public DamageListener(final DuelsPlugin plugin) {
         this.arenaManager = plugin.getArenaManager();
+        this.config = plugin.getConfiguration();
 
-        if (plugin.getConfiguration().isForceAllowCombat()) {
-            plugin.doSyncAfter(() -> Bukkit.getPluginManager().registerEvents(this, plugin), 1L);
-        }
+        plugin.doSyncAfter(() -> Bukkit.getPluginManager().registerEvents(this, plugin), 1L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void on(final EntityDamageByEntityEvent event) {
-        if (!event.isCancelled() || !(event.getEntity() instanceof Player)) {
+        if (!(event.getEntity() instanceof Player)) {
             return;
         }
 
-        final Player player = (Player) event.getEntity();
+        final Player victim = (Player) event.getEntity();
         final Player damager = EventUtil.getDamager(event);
 
-        if (damager == null) {
+        if (damager == null || damager.equals(victim)) {
             return;
         }
 
-        final ArenaImpl arena = arenaManager.get(player);
+        final ArenaImpl attackerArena = arenaManager.get(damager);
 
-        // Only activate when winner is undeclared
-        if (arena == null || !arenaManager.isInMatch(damager) || arena.isEndGame()) {
+        if (attackerArena == null) {
             return;
         }
 
-        event.setCancelled(false);
+        final ArenaImpl victimArena = arenaManager.get(victim);
+
+        // Attacker is in a duel; the only legal target is their match opponent (same arena).
+        if (victimArena != attackerArena) {
+            event.setCancelled(true);
+            return;
+        }
+
+        // Same arena - allow the hit. Un-cancel only when the duel hasn't been decided yet,
+        // so post-victory hits stay blocked.
+        if (config.isForceAllowCombat() && event.isCancelled() && !attackerArena.isEndGame()) {
+            event.setCancelled(false);
+        }
     }
 }
