@@ -5,6 +5,7 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.config.Config;
 import me.realized.duels.util.hook.PluginHook;
 import me.realized.duels.util.reflect.ReflectionUtil;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class WorldGuardHook extends PluginHook<DuelsPlugin> {
@@ -32,5 +33,9 @@ public class WorldGuardHook extends PluginHook<DuelsPlugin> {
         }
 
         return handler.findRegion(player, allowedRegions);
+    }
+
+    public RegionBounds findSmallestRegionBounds(final Location location) {
+        return handler.findSmallestRegionBounds(location);
     }
 }

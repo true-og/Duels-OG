@@ -194,6 +194,15 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     private boolean preventInteract;
 
     @Getter
+    private boolean arenaBoundaryEnabled;
+    @Getter
+    private String arenaBoundaryBlock;
+    @Getter
+    private int arenaBoundaryDistance;
+    @Getter
+    private long arenaBoundaryUpdateTicks;
+
+    @Getter
     private boolean displayKitRatings;
     @Getter
     private boolean displayNoKitRating;
@@ -360,6 +369,11 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         preventLaunchProjectile = configuration.getBoolean("countdown.prevent.launch-projectile", true);
         preventPvp = configuration.getBoolean("countdown.prevent.pvp", true);
         preventInteract = configuration.getBoolean("countdown.prevent.interact", true);
+
+        arenaBoundaryEnabled = configuration.getBoolean("arena.boundary.enabled", true);
+        arenaBoundaryBlock = configuration.getString("arena.boundary.block", "RED_STAINED_GLASS");
+        arenaBoundaryDistance = Math.max(configuration.getInt("arena.boundary.distance", 6), 1);
+        arenaBoundaryUpdateTicks = Math.max(configuration.getLong("arena.boundary.update-interval-ticks", 4L), 1L);
 
         displayKitRatings = configuration.getBoolean("stats.display-kit-ratings", true);
         displayNoKitRating = configuration.getBoolean("stats.display-nokit-rating", false);

@@ -502,6 +502,30 @@ countdown:
     # default: true
     interact: true
 
+arena:
+  boundary:
+    # If set to 'true', a personal colored glass wall will be rendered for players in a duel
+    # along the inner edge of their arena's bounds, so they cannot leave the arena mid-match.
+    # Bounds are derived automatically from the smallest WorldGuard region that contains the
+    # arena's spawn position 1. Arenas not enclosed by a WorldGuard region get no wall, and
+    # the wall stays inactive if WorldGuard is not installed.
+    # default: true
+    enabled: true
+
+    # Block used for the boundary wall. Must be a solid Bukkit Material name (1.14.4+).
+    # default: RED_STAINED_GLASS
+    block: RED_STAINED_GLASS
+
+    # View distance in blocks; the wall only appears within this radius of the player.
+    # default: 6
+    distance: 6
+
+    # How often the wall is refreshed for each player, in ticks (20 ticks = 1 second).
+    # Lower values are smoother but more expensive.
+    # default: 4
+    update-interval-ticks: 4
+
+
 stats:
   # If set to 'true', kit ratings of a player will be displayed when the command '/duel stats' is executed.
   # default: true
