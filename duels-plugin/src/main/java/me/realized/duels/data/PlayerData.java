@@ -24,6 +24,9 @@ public class PlayerData {
     private Collection<PotionEffectData> effects = new ArrayList<>();
     private double health;
     private int hunger;
+    private int level;
+    private float exp;
+    private int totalExperience;
     private LocationData location;
     private List<ItemData> extra = new ArrayList<>();
     private String restoreGameMode;
@@ -37,6 +40,9 @@ public class PlayerData {
     private PlayerData(final PlayerInfo info) {
         this.health = info.getHealth();
         this.hunger = info.getHunger();
+        this.level = info.getLevel();
+        this.exp = info.getExp();
+        this.totalExperience = info.getTotalExperience();
         this.location = LocationData.fromLocation(info.getLocation());
         this.restoreGameMode = info.isRestoreGameMode() && info.getGameMode() != null ? info.getGameMode().name() : null;
         this.restoreFlight = info.isRestoreFlight();
@@ -69,6 +75,9 @@ public class PlayerData {
             effects.stream().map(PotionEffectData::toPotionEffect).filter(Objects::nonNull).collect(Collectors.toList()),
             health,
             hunger,
+            level,
+            exp,
+            totalExperience,
             location.toLocation(),
             gameMode,
             restoreFlight,

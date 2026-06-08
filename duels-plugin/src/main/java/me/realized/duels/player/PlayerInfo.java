@@ -26,6 +26,12 @@ public class PlayerInfo {
     @Getter
     private final int hunger;
     @Getter
+    private final int level;
+    @Getter
+    private final float exp;
+    @Getter
+    private final int totalExperience;
+    @Getter
     private final List<ItemStack> extra = new ArrayList<>();
     @Getter
     @Setter
@@ -45,15 +51,19 @@ public class PlayerInfo {
     private final PlayerRideState rideState;
 
     public PlayerInfo(final List<PotionEffect> effects, final double health, final int hunger, final Location location) {
-        this(effects, health, hunger, location, null, false, false, false, false);
+        this(effects, health, hunger, 0, 0F, 0, location, null, false, false, false, false);
     }
 
-    public PlayerInfo(final List<PotionEffect> effects, final double health, final int hunger, final Location location,
+    public PlayerInfo(final List<PotionEffect> effects, final double health, final int hunger,
+        final int level, final float exp, final int totalExperience, final Location location,
         final GameMode gameMode, final boolean restoreFlight, final boolean allowFlight, final boolean flying,
         final boolean forceReturnLocation) {
         this.effects = effects;
         this.health = health;
         this.hunger = hunger;
+        this.level = level;
+        this.exp = exp;
+        this.totalExperience = totalExperience;
         this.location = location;
         this.gameMode = gameMode;
         this.restoreGameMode = gameMode != null;
@@ -73,6 +83,9 @@ public class PlayerInfo {
         this.effects = Lists.newArrayList(player.getActivePotionEffects());
         this.health = player.getHealth();
         this.hunger = player.getFoodLevel();
+        this.level = player.getLevel();
+        this.exp = player.getExp();
+        this.totalExperience = player.getTotalExperience();
         this.location = location != null ? location.clone() : player.getLocation().clone();
         this.gameMode = gameMode;
         this.restoreGameMode = gameMode != null;
@@ -98,6 +111,9 @@ public class PlayerInfo {
         player.addPotionEffects(effects);
         player.setHealth(health > maxHealth ? maxHealth : health);
         player.setFoodLevel(hunger);
+        player.setLevel(level);
+        player.setExp(exp);
+        player.setTotalExperience(totalExperience);
         InventoryUtil.fillFromMap(player.getInventory(), items);
         InventoryUtil.addOrDrop(player, extra);
         player.updateInventory();
