@@ -33,6 +33,10 @@ public class Settings {
     @Getter
     private boolean ownInventory;
     @Getter
+    private boolean mirrorMyInventory;
+    @Getter
+    private boolean mirrorTheirInventory;
+    @Getter
     private Map<UUID, CachedInfo> cache = new HashMap<>();
 
     public Settings(final DuelsPlugin plugin, final Player player) {
@@ -53,6 +57,8 @@ public class Settings {
         bet = 0;
         itemBetting = false;
         ownInventory = !plugin.getConfiguration().isKitSelectingEnabled();
+        mirrorMyInventory = false;
+        mirrorTheirInventory = false;
     }
 
     public void setTarget(final Player target) {
@@ -104,15 +110,39 @@ public class Settings {
     public void setKit(final KitImpl kit) {
         this.kit = kit;
         this.ownInventory = false;
+        this.mirrorMyInventory = false;
+        this.mirrorTheirInventory = false;
     }
 
+    // The four inventory-mode flags (kit, ownInventory, mirrorMyInventory, mirrorTheirInventory)
+    // are mutually exclusive: turning one on must clear the others.
     public void setOwnInventory(final boolean ownInventory) {
         this.ownInventory = ownInventory;
 
-        // Own inventory and a selected kit are mutually exclusive, so enabling
-        // own inventory must clear any remembered kit (otherwise the kit wins at match start).
         if (ownInventory) {
             this.kit = null;
+            this.mirrorMyInventory = false;
+            this.mirrorTheirInventory = false;
+        }
+    }
+
+    public void setMirrorMyInventory(final boolean mirrorMyInventory) {
+        this.mirrorMyInventory = mirrorMyInventory;
+
+        if (mirrorMyInventory) {
+            this.kit = null;
+            this.ownInventory = false;
+            this.mirrorTheirInventory = false;
+        }
+    }
+
+    public void setMirrorTheirInventory(final boolean mirrorTheirInventory) {
+        this.mirrorTheirInventory = mirrorTheirInventory;
+
+        if (mirrorTheirInventory) {
+            this.kit = null;
+            this.ownInventory = false;
+            this.mirrorMyInventory = false;
         }
     }
 
@@ -125,6 +155,8 @@ public class Settings {
         copy.bet = bet;
         copy.itemBetting = itemBetting;
         copy.ownInventory = ownInventory;
+        copy.mirrorMyInventory = mirrorMyInventory;
+        copy.mirrorTheirInventory = mirrorTheirInventory;
         copy.cache = new HashMap<>(cache);
         return copy;
     }

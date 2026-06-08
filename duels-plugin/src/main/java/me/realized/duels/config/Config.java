@@ -73,6 +73,10 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private boolean ownInventoryUsePermission;
     @Getter
+    private boolean mirrorInventoryEnabled;
+    @Getter
+    private boolean mirrorInventoryUsePermission;
+    @Getter
     private boolean kitSelectingEnabled;
     @Getter
     private boolean kitSelectingUsePermission;
@@ -307,6 +311,8 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         ownInventoryEnabled = configuration.getBoolean("request.use-own-inventory.enabled", true);
         ownInventoryDropInventoryItems = configuration.getBoolean("request.use-own-inventory.drop-inventory-items", false);
         ownInventoryUsePermission = configuration.getBoolean("request.use-own-inventory.use-permission", false);
+        mirrorInventoryEnabled = configuration.getBoolean("request.use-mirror-inventory.enabled", true);
+        mirrorInventoryUsePermission = configuration.getBoolean("request.use-mirror-inventory.use-permission", false);
         kitSelectingEnabled = configuration.getBoolean("request.kit-selecting.enabled", true);
         kitSelectingUsePermission = configuration.getBoolean("request.kit-selecting.use-permission", false);
         arenaSelectingEnabled = configuration.getBoolean("request.arena-selecting.enabled", true);

@@ -214,10 +214,9 @@ public class DuelManager implements Loadable {
 
         if (alive) {
             playerManager.remove(player);
-            
-            if (!(match.isOwnInventory() && config.isOwnInventoryDropInventoryItems())) {
-                PlayerUtil.reset(player);
-            }
+
+            // Always wipe the (clone) inventory before restoring the cached original.
+            PlayerUtil.reset(player);
 
             if (info != null) {
                 teleport.tryTeleport(player, info.getLocation());
@@ -279,10 +278,8 @@ public class DuelManager implements Loadable {
 
         if (!player.isDead()) {
             playerManager.remove(player);
-
-            if (!(match.isOwnInventory() && config.isOwnInventoryDropInventoryItems())) {
-                PlayerUtil.reset(player);
-            }
+            // Always wipe the (clone) inventory before restoring the cached original.
+            PlayerUtil.reset(player);
 
             if (info != null) {
                 teleport.tryTeleport(player, info.getLocation());
@@ -299,9 +296,13 @@ public class DuelManager implements Loadable {
 
     public void startMatch(final Player first, final Player second, final Settings settings, final Map<UUID, List<ItemStack>> items, final Queue source) {
         KitImpl kit = settings.getKit();
+        final boolean ownInventory = settings.isOwnInventory();
+        final boolean mirrorMyInventory = settings.isMirrorMyInventory();
+        final boolean mirrorTheirInventory = settings.isMirrorTheirInventory();
+        final boolean clonedInventory = ownInventory || mirrorMyInventory || mirrorTheirInventory;
 
-        // If neither a kit nor own inventory was chosen, fall back to a random kit.
-        if (!settings.isOwnInventory() && kit == null) {
+        // If no mode (kit / Each Use Own / My / Their) was chosen, fall back to a random kit.
+        if (!clonedInventory && kit == null) {
             kit = randomKit();
 
             if (kit == null) {
@@ -401,8 +402,62 @@ public class DuelManager implements Loadable {
             return;
         }
 
-        final MatchImpl match = arena.startMatch(kit, items, settings.getBet(), source);
-        addPlayers(match, arena, kit, arena.getPositions(), states, first, second);
+        // Snapshot each player's inventory + armor BEFORE PlayerInfoManager.create() and the pre-duel
+        // teleport so the chosen source loadout reflects what the player actually had when the duel
+        // started. Used only for clone modes (Each Use Own / My / Their); kit matches ignore these.
+        final Map<UUID, ItemStack[]> sourceContents = new HashMap<>();
+        final Map<UUID, ItemStack[]> sourceArmor = new HashMap<>();
+
+        if (clonedInventory) {
+            final ItemStack[] firstContents = cloneItemArray(first.getInventory().getContents());
+            final ItemStack[] firstArmor = cloneItemArray(first.getInventory().getArmorContents());
+            final ItemStack[] secondContents = cloneItemArray(second.getInventory().getContents());
+            final ItemStack[] secondArmor = cloneItemArray(second.getInventory().getArmorContents());
+
+            if (ownInventory) {
+                // Each duelist fights a clone of their OWN inventory.
+                sourceContents.put(first.getUniqueId(), firstContents);
+                sourceArmor.put(first.getUniqueId(), firstArmor);
+                sourceContents.put(second.getUniqueId(), secondContents);
+                sourceArmor.put(second.getUniqueId(), secondArmor);
+            } else {
+                // Mirror modes: identify the request sender vs the recipient via Settings.getTarget().
+                // The settings's target is the OPPONENT of the request sender, so:
+                //   sender   = the player whose UUID != settings.getTarget()
+                //   opponent = the player whose UUID == settings.getTarget()
+                // For queue matches settings.getTarget() is null; in that case both players are
+                // symmetric so fall back to using `first` as the sender. This branch should not be
+                // reachable from the queue path anyway since queue Settings never enable mirror modes.
+                final UUID targetId = settings.getTarget();
+                final ItemStack[] senderContents;
+                final ItemStack[] senderArmor;
+                final ItemStack[] opponentContents;
+                final ItemStack[] opponentArmor;
+
+                if (targetId != null && targetId.equals(first.getUniqueId())) {
+                    senderContents = secondContents;
+                    senderArmor = secondArmor;
+                    opponentContents = firstContents;
+                    opponentArmor = firstArmor;
+                } else {
+                    senderContents = firstContents;
+                    senderArmor = firstArmor;
+                    opponentContents = secondContents;
+                    opponentArmor = secondArmor;
+                }
+
+                final ItemStack[] sharedContents = mirrorMyInventory ? senderContents : opponentContents;
+                final ItemStack[] sharedArmor = mirrorMyInventory ? senderArmor : opponentArmor;
+
+                sourceContents.put(first.getUniqueId(), sharedContents);
+                sourceArmor.put(first.getUniqueId(), sharedArmor);
+                sourceContents.put(second.getUniqueId(), sharedContents);
+                sourceArmor.put(second.getUniqueId(), sharedArmor);
+            }
+        }
+
+        final MatchImpl match = arena.startMatch(kit, items, settings.getBet(), source, clonedInventory);
+        addPlayers(match, arena, kit, arena.getPositions(), states, sourceContents, sourceArmor, first, second);
 
         if (config.isCdEnabled()) {
             final Map<UUID, Pair<String, Integer>> info = new HashMap<>();
@@ -466,6 +521,20 @@ public class DuelManager implements Loadable {
         return player.getGameMode() != GameMode.CREATIVE || (gameModeInventories != null && gameModeInventories.canSwitchInventories(player));
     }
 
+    private ItemStack[] cloneItemArray(final ItemStack[] source) {
+        if (source == null) {
+            return null;
+        }
+
+        final ItemStack[] copy = new ItemStack[source.length];
+
+        for (int i = 0; i < source.length; i++) {
+            copy[i] = source[i] != null ? source[i].clone() : null;
+        }
+
+        return copy;
+    }
+
     private Map<UUID, PreDuelState> captureStates(final Player... players) {
         final Map<UUID, PreDuelState> states = new HashMap<>();
 
@@ -505,7 +574,8 @@ public class DuelManager implements Loadable {
     }
 
     private void addPlayers(final MatchImpl match, final ArenaImpl arena, final KitImpl kit, final Map<Integer, Location> locations,
-        final Map<UUID, PreDuelState> states, final Player... players) {
+        final Map<UUID, PreDuelState> states, final Map<UUID, ItemStack[]> sourceContents, final Map<UUID, ItemStack[]> sourceArmor,
+        final Player... players) {
         int position = 0;
 
         for (final Player player : players) {
@@ -517,9 +587,12 @@ public class DuelManager implements Loadable {
 
             arena.add(player);
             player.closeInventory();
+            // Always capture inventory into PlayerInfo so the original can be restored after the
+            // match - in clone modes the player fights with a separate copy of the source loadout
+            // and the captured original is handed back regardless of outcome.
             playerManager.create(
                 player,
-                match.isOwnInventory() && config.isOwnInventoryDropInventoryItems(),
+                false,
                 state != null && state.getGameMode() == GameMode.CREATIVE ? state.getGameMode() : null,
                 state != null && state.isAllowFlight(),
                 state != null && state.isFlying(),
@@ -537,6 +610,24 @@ public class DuelManager implements Loadable {
             if (kit != null) {
                 PlayerUtil.reset(player);
                 kit.equip(player);
+            } else if (match.isClonedInventory()) {
+                // Clone the chosen source inventory onto the player so any in-duel damage,
+                // consumption, or drops affect the clone only - the original is stashed in
+                // PlayerInfo and restored when the match ends.
+                PlayerUtil.reset(player);
+
+                final ItemStack[] contents = sourceContents.get(player.getUniqueId());
+                final ItemStack[] armor = sourceArmor.get(player.getUniqueId());
+
+                if (contents != null) {
+                    player.getInventory().setContents(cloneItemArray(contents));
+                }
+
+                if (armor != null) {
+                    player.getInventory().setArmorContents(cloneItemArray(armor));
+                }
+
+                player.updateInventory();
             }
 
             if (config.isStartCommandsEnabled() && !(match.getSource() == null && config.isStartCommandsQueueOnly())) {
@@ -698,12 +789,12 @@ public class DuelManager implements Loadable {
                 top.clear();
             }
             
-            if (!(match.isOwnInventory() && config.isOwnInventoryDropInventoryItems())) {    
-                event.getDrops().clear();
-                event.setKeepLevel(true);
-                event.setDroppedExp(0);
-                event.setKeepInventory(false);
-            }
+            // Originals are always restored from PlayerInfo after the match - clear the in-duel
+            // clone items so nothing drops on death and the loser doesn't lose their real gear.
+            event.getDrops().clear();
+            event.setKeepLevel(true);
+            event.setDroppedExp(0);
+            event.setKeepInventory(false);
             
             inventoryManager.create(player, true);
             arena.remove(player);

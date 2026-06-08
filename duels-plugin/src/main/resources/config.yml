@@ -103,20 +103,31 @@ request:
   prevent-creative-mode: false
 
   use-own-inventory:
-    # If set to 'true', players will be able to choose to enable or disable own inventory duel through the Request Settings GUI.
-    # NOTE: If set to 'false', Kit Selector will first open instead of Request Settings GUI when initiating a duel request.
+    # If set to 'true', players will be able to choose 'Each Use Own Inventory' through the Request Settings GUI.
+    # In this mode each duelist fights with an identical CLONE of their OWN inventory and armor.
+    # Originals are stashed and restored after the duel - inventories are never part of betting.
+    # NOTE: If set to 'false' (and 'use-mirror-inventory.enabled' is also 'false'), Kit Selector will first open instead of Request Settings GUI when initiating a duel request.
     # default: true
     enabled: true
 
-    # If set to 'true', players will drop their inventory items on death in an own inventory duel.
-    # WARNING: Players will NOT have their inventories restored after the duel if this option is enabled!
-    #          Increase 'teleport-delay' so that the winner has time to pick up dropped items.
-    # default: false
+    # Deprecated: inventories are now ALWAYS restored after the duel (clone is fought with, original is preserved).
+    # This option is ignored at runtime and kept only so existing configs continue to load.
     drop-inventory-items: false
 
-    # If set to 'true', players without the permission 'duels.use.own-inventory' will not be able to enable own inventory option.
+    # If set to 'true', players without the permission 'duels.use.own-inventory' will not be able to enable Each Use Own Inventory option.
     # default: false
     use-permission: true
+
+  use-mirror-inventory:
+    # If set to 'true', players will be able to choose 'Each Use My Inventory' and 'Each Use Their Inventory' through the Request Settings GUI.
+    # In these modes BOTH duelists fight with an identical CLONE of either the requester's ('My') or the recipient's ('Their') inventory and armor.
+    # Originals are stashed and restored after the duel - inventories are never part of betting.
+    # default: true
+    enabled: true
+
+    # If set to 'true', players without the permission 'duels.use.mirror-inventory' will not be able to enable Each Use My Inventory or Each Use Their Inventory.
+    # default: false
+    use-permission: false
 
   kit-selecting:
     # If set to 'true', players will be able to choose a kit they wish to fight with through the Kit Selector GUI.

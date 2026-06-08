@@ -15,6 +15,7 @@ public final class Permissions {
     public static final String KIT_ALL = "duels.kits.*";
     public static final String KIT_SELECTING = "duels.use.kit-select";
     public static final String OWN_INVENTORY = "duels.use.own-inventory";
+    public static final String MIRROR_INVENTORY = "duels.use.mirror-inventory";
     public static final String ARENA_SELECTING = "duels.use.arena-select";
     public static final String ITEM_BETTING = "duels.use.item-betting";
     public static final String MONEY_BETTING = "duels.use.money-betting";

@@ -31,6 +31,13 @@ public class MatchImpl implements Match {
     private final int bet;
     @Getter
     private final Queue source;
+    /**
+     * True when player inventories were cloned for the match (Each Use Own / My / Their modes).
+     * Originals are stashed in PlayerInfo and restored on match end, so the in-duel inventory is
+     * an identical-but-separate copy of the chosen source loadout.
+     */
+    @Getter
+    private final boolean clonedInventory;
 
     @Getter
     private boolean finished;
@@ -38,13 +45,14 @@ public class MatchImpl implements Match {
     // Default value for players is false, which is set to true if player is killed in the match.
     private final Map<Player, Boolean> players = new HashMap<>();
 
-    MatchImpl(final ArenaImpl arena, final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source) {
+    MatchImpl(final ArenaImpl arena, final KitImpl kit, final Map<UUID, List<ItemStack>> items, final int bet, final Queue source, final boolean clonedInventory) {
         this.arena = arena;
         this.start = System.currentTimeMillis();
         this.kit = kit;
         this.items = items;
         this.bet = bet;
         this.source = source;
+        this.clonedInventory = clonedInventory;
     }
 
     Map<Player, Boolean> getPlayerMap() {
@@ -68,7 +76,11 @@ public class MatchImpl implements Match {
     }
 
     public boolean isOwnInventory() {
-        return kit == null;
+        // Retained for API compatibility: true only for kitless matches that are NOT clone-mode
+        // (Each Use Own/My/Their). With the new design all kitless matches are clone-mode, so
+        // this returns false in those modes too. Used by legacy drop-on-death paths which now
+        // always restore inventories, so the result is effectively unused at runtime.
+        return kit == null && !clonedInventory;
     }
     
     public List<ItemStack> getItems() {

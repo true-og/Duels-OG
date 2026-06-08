@@ -34,12 +34,14 @@ public class OwnInventoryButton extends BaseButton {
             return;
         }
 
-        if (!config.isKitSelectingEnabled()) {
+        final Settings settings = settingManager.getSafely(player);
+
+        // Forbid disabling Each Use Own Inventory when no other mode is available to select.
+        if (settings.isOwnInventory() && !config.isKitSelectingEnabled() && !config.isMirrorInventoryEnabled()) {
             lang.sendMessage(player, "ERROR.duel.mode-fixed");
             return;
         }
 
-        final Settings settings = settingManager.getSafely(player);
         settings.setOwnInventory(!settings.isOwnInventory());
         settings.updateGui(player);
     }

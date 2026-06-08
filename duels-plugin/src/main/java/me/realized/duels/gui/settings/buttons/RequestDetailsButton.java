@@ -30,6 +30,8 @@ public class RequestDetailsButton extends BaseButton {
             "opponent", target.getName(),
             "kit", settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected"),
             "own_inventory", settings.isOwnInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),
+            "mirror_my_inventory", settings.isMirrorMyInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),
+            "mirror_their_inventory", settings.isMirrorTheirInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),
             "arena", settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random"),
             "item_betting", settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),
             "bet_amount", settings.getBet()

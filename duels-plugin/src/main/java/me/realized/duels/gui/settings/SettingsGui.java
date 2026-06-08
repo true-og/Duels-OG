@@ -10,6 +10,8 @@ import me.realized.duels.gui.settings.buttons.CancelButton;
 import me.realized.duels.gui.settings.buttons.DiamondBetButton;
 import me.realized.duels.gui.settings.buttons.ItemBettingButton;
 import me.realized.duels.gui.settings.buttons.KitSelectButton;
+import me.realized.duels.gui.settings.buttons.MirrorMyInventoryButton;
+import me.realized.duels.gui.settings.buttons.MirrorTheirInventoryButton;
 import me.realized.duels.gui.settings.buttons.OwnInventoryButton;
 import me.realized.duels.gui.settings.buttons.RequestDetailsButton;
 import me.realized.duels.gui.settings.buttons.RequestSendButton;
@@ -25,7 +27,9 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
         {12, 14},
         {12, 13, 14},
         {12, 13, 14, 22},
-        {11, 12, 13, 14, 15}
+        {11, 12, 13, 14, 15},
+        {10, 11, 12, 14, 15, 16},
+        {10, 11, 12, 13, 14, 15, 16}
     };
 
     public SettingsGui(final DuelsPlugin plugin) {
@@ -45,6 +49,11 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
 
         if (config.isOwnInventoryEnabled()) {
             buttons.add(new OwnInventoryButton(plugin));
+        }
+
+        if (config.isMirrorInventoryEnabled()) {
+            buttons.add(new MirrorMyInventoryButton(plugin));
+            buttons.add(new MirrorTheirInventoryButton(plugin));
         }
 
         if (config.isArenaSelectingEnabled()) {
