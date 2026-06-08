@@ -30,6 +30,9 @@ Changes from Duels:
 - Select a random kit and arena if none are selected
 - Strip kit-item NBT from outgoing packets via [ProtocolLib](https://github.com/dmulloy2/ProtocolLib) so legacy clients (1.8+ through ViaVersion) can eat, draw bows, and hold items without desync, while keeping kit-item protection intact
 - Ported the per-player colored-glass arena boundary wall from [EternalCombat-OG](https://github.com/true-og/EternalCombat-OG). For the duration of a duel, each combatant sees a client-side glass wall hugging the inner edge of the arena, so they cannot wander out mid-match. The arena's bounds are read straight from the smallest WorldGuard region enclosing its first spawn point, so existing arenas pick up the wall with no extra setup. Block type, view distance, and refresh rate live under `arena.boundary` in `config.yml`.
+- Hardened arena protections: combatants snap back if they leave the WorldGuard region, and outside players cannot damage anyone in the match
+- Three inventory modes in the settings GUI — **Own**, **Mirror Mine**, **Mirror Theirs** — each player fights with a clone, originals restored after, never staked in bets
+- Fixed winner losing XP after a duel
 
 #### @szumielxd
 
