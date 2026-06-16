@@ -314,7 +314,7 @@ DUEL:
   on-end:
     tie: '{PREFIX} &7Tie Game!'
     plugin-disable: '{PREFIX} &cPlugin is disabling! Ending match automatically.'
-    opponent-defeat: '{PREFIX} &f%winner% &a(%winner_rating%) (+%change%) &7has defeated &f%loser% &c(%loser_rating%) (-%change%) &7on kit &d%kit% &7with &c%health% ❤'
+    opponent-defeat: '{PREFIX} &f%winner% &a(%winner_rating%) (+%change%) &7has defeated &f%loser% &c(%loser_rating%) (-%change%) &7on kit &d%kit% &7in arena &d%arena% &7with &c%health% ❤'
   inventories:
     message: '&7Inventories (click on the name to view): '
     name-color: '&b'
