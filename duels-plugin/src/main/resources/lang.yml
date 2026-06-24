@@ -22,9 +22,9 @@ GENERAL:
   arena-selector: 'Arena Selector'
   item-betting: 'Item Betting'
   betting: 'Betting'
-  own-inventory: 'Each Use Own Inventory'
-  mirror-my-inventory: 'Each Use My Inventory'
-  mirror-their-inventory: 'Each Use Their Inventory'
+  own-inventory: 'Each Uses Own Inventory'
+  mirror-my-inventory: 'Both Use My Inventory'
+  mirror-their-inventory: 'Both Use Their Inventory'
 
 
 ERROR:
@@ -63,7 +63,7 @@ ERROR:
       target: '{PREFIX} &c%name% is already in a duel.'
     already-in-queue: '{PREFIX} &cYou cannot do this while in a queue.'
     prevent-teleportation: '{PREFIX} &cCannot teleport to a player in a duel.'
-    mode-unselected: '{PREFIX} &cChoose a kit or enable one of: Each Use Own Inventory, Each Use My Inventory, Each Use Their Inventory.'
+    mode-unselected: '{PREFIX} &cChoose a kit or enable one of: Each Uses Own Inventory, Both Use My Inventory, Both Use Their Inventory.'
     mode-fixed: '{PREFIX} &cYou are not allowed to change inventory mode here.'
   spectate:
     already-spectating:
@@ -116,9 +116,9 @@ COMMAND:
         - '{LINE}'
         - '&7Duel request sent to &4%name%&7.'
         - '&6- &7Kit: &d%kit%'
-        - '&6- &7Each Use Own Inventory: &r%own_inventory%'
-        - '&6- &7Each Use My Inventory: &r%mirror_my_inventory%'
-        - '&6- &7Each Use Their Inventory: &r%mirror_their_inventory%'
+        - '&6- &7Each Uses Own Inventory: &r%own_inventory%'
+        - '&6- &7Both Use My Inventory: &r%mirror_my_inventory%'
+        - '&6- &7Both Use Their Inventory: &r%mirror_their_inventory%'
         - '&6- &7Arena: &e%arena%'
         - '&6- &7Bet: &B%bet_amount% Diamond(s)'
         - '{LINE}'
@@ -126,9 +126,9 @@ COMMAND:
         - '{LINE}'
         - '&7Duel request received from &4%name%&7.'
         - '&6- &7Kit: &d%kit%'
-        - '&6- &7Each Use Own Inventory: &r%own_inventory%'
-        - '&6- &7Each Use My Inventory: &r%mirror_my_inventory%'
-        - '&6- &7Each Use Their Inventory: &r%mirror_their_inventory%'
+        - '&6- &7Each Uses Own Inventory: &r%own_inventory%'
+        - '&6- &7Both Use My Inventory: &r%mirror_my_inventory%'
+        - '&6- &7Both Use Their Inventory: &r%mirror_their_inventory%'
         - '&6- &7Arena: &e%arena%'
         - '&6- &7Bet: &B%bet_amount% Diamond(s)'
         clickable-text:
@@ -293,7 +293,7 @@ COMMAND:
 
 DUEL:
   start-failure:
-    mode-unselected: '{FAIL_PREFIX} &cChoose a kit or enable one of: Each Use Own Inventory, Each Use My Inventory, Each Use Their Inventory.'
+    mode-unselected: '{FAIL_PREFIX} &cChoose a kit or enable one of: Each Uses Own Inventory, Both Use My Inventory, Both Use Their Inventory.'
     player-is-dead: '{FAIL_PREFIX} You or your opponent is not alive!'
     in-blacklisted-world: '{FAIL_PREFIX} You or your opponent is in a blacklisted world!'
     is-tagged: '{FAIL_PREFIX} You or your opponent is in combat!'
@@ -359,53 +359,58 @@ GUI:
         lore:
         - '&7Opponent: &4%opponent%'
         - '&7Kit: &d%kit%'
-        - '&7Each Use Own Inventory: &r%own_inventory%'
-        - '&7Each Use My Inventory: &r%mirror_my_inventory%'
-        - '&7Each Use Their Inventory: &r%mirror_their_inventory%'
+        - '&7Each Uses Own Inventory: &r%own_inventory%'
+        - '&7Both Use My Inventory: &r%mirror_my_inventory%'
+        - '&7Both Use Their Inventory: &r%mirror_their_inventory%'
         - '&7Arena: &e%arena%'
         - '&7Bet: &B%bet_amount% Diamond(s)'
       kit-selector:
-        name: '&2Kit Selection'
+        name: '&2Use a Kit &7(Sword)'
         lore:
-        - '&7Selected Kit: &d%kit%'
+        - '&7Both duelists fight with the same'
+        - '&7preset kit chosen here.'
         - ' '
-        - '&aClick to Change Kit!'
+        - '&7Selected Kit: &d%kit%'
+        - '&aClick to choose a kit.'
         lore-no-permission:
           - '&cYou do not have permission to'
           - '&cuse this option.'
       use-own-inventory:
-        name: '&9Each Use Own Inventory'
+        name: '&aEach Uses Own Inventory &7(Chest)'
         lore:
-          - '&7Each duelist fights with an identical CLONE of'
+          - '&7Both duelists fight with a CLONE of'
           - '&7their OWN inventory and armor.'
+          - '&7Each keeps their own gear.'
           - '&7Originals are restored after the match.'
-          - '&7Each Use Own Inventory: &r%own_inventory%'
           - ' '
-          - '&aClick to Toggle Each Use Own Inventory!'
+          - '&7Currently: &r%own_inventory%'
+          - '&aClick to toggle.'
         lore-no-permission:
           - '&cYou do not have permission to'
           - '&cuse this option.'
       use-mirror-my-inventory:
-        name: '&9Each Use My Inventory'
+        name: '&bBoth Use My Inventory &7(Your Head)'
         lore:
-          - '&7Both duelists fight with an identical CLONE of'
-          - '&7YOUR inventory and armor (request sender).'
+          - '&7Both duelists fight with a CLONE of'
+          - '&7YOUR inventory and armor (the challenger).'
+          - '&7You both get the same gear: yours.'
           - '&7Originals are restored after the match.'
-          - '&7Each Use My Inventory: &r%mirror_my_inventory%'
           - ' '
-          - '&aClick to Toggle Each Use My Inventory!'
+          - '&7Currently: &r%mirror_my_inventory%'
+          - '&aClick to toggle.'
         lore-no-permission:
           - '&cYou do not have permission to'
           - '&cuse this option.'
       use-mirror-their-inventory:
-        name: '&9Each Use Their Inventory'
+        name: '&eBoth Use Their Inventory &7(Opponent Head)'
         lore:
-          - '&7Both duelists fight with an identical CLONE of'
+          - '&7Both duelists fight with a CLONE of'
           - '&7the OPPONENT''s inventory and armor.'
+          - '&7You both get the same gear: theirs.'
           - '&7Originals are restored after the match.'
-          - '&7Each Use Their Inventory: &r%mirror_their_inventory%'
           - ' '
-          - '&aClick to Toggle Each Use Their Inventory!'
+          - '&7Currently: &r%mirror_their_inventory%'
+          - '&aClick to toggle.'
         lore-no-permission:
           - '&cYou do not have permission to'
           - '&cuse this option.'

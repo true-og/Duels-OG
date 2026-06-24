@@ -4,14 +4,16 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.gui.BaseButton;
 import me.realized.duels.setting.Settings;
+import me.realized.duels.util.compat.Items;
 import me.realized.duels.util.inventory.ItemBuilder;
-import org.bukkit.Material;
+import java.util.UUID;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class MirrorTheirInventoryButton extends BaseButton {
 
     public MirrorTheirInventoryButton(final DuelsPlugin plugin) {
-        super(plugin, ItemBuilder.of(Material.TRAPPED_CHEST).name(plugin.getLang().getMessage("GUI.settings.buttons.use-mirror-their-inventory.name")).build());
+        super(plugin, ItemBuilder.of(Items.HEAD.clone()).name(plugin.getLang().getMessage("GUI.settings.buttons.use-mirror-their-inventory.name")).build());
     }
 
     @Override
@@ -22,6 +24,17 @@ public class MirrorTheirInventoryButton extends BaseButton {
         }
 
         final Settings settings = settingManager.getSafely(player);
+
+        // Display the opponent's head so it is obvious whose inventory is cloned.
+        final UUID targetId = settings.getTarget();
+
+        if (targetId != null) {
+            final Player target = Bukkit.getPlayer(targetId);
+
+            if (target != null) {
+                setOwner(target);
+            }
+        }
         final String value = settings.isMirrorTheirInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
         final String lore = plugin.getLang().getMessage("GUI.settings.buttons.use-mirror-their-inventory.lore", "mirror_their_inventory", value);
         setLore(lore.split("\n"));

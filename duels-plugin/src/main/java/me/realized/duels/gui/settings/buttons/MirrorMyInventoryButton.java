@@ -4,14 +4,14 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.Permissions;
 import me.realized.duels.gui.BaseButton;
 import me.realized.duels.setting.Settings;
+import me.realized.duels.util.compat.Items;
 import me.realized.duels.util.inventory.ItemBuilder;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public class MirrorMyInventoryButton extends BaseButton {
 
     public MirrorMyInventoryButton(final DuelsPlugin plugin) {
-        super(plugin, ItemBuilder.of(Material.ENDER_CHEST).name(plugin.getLang().getMessage("GUI.settings.buttons.use-mirror-my-inventory.name")).build());
+        super(plugin, ItemBuilder.of(Items.HEAD.clone()).name(plugin.getLang().getMessage("GUI.settings.buttons.use-mirror-my-inventory.name")).build());
     }
 
     @Override
@@ -20,6 +20,9 @@ public class MirrorMyInventoryButton extends BaseButton {
             setLore(lang.getMessage("GUI.settings.buttons.use-mirror-my-inventory.lore-no-permission").split("\n"));
             return;
         }
+
+        // Display the request sender's (challenger's) head so it is obvious whose inventory is cloned.
+        setOwner(player);
 
         final Settings settings = settingManager.getSafely(player);
         final String value = settings.isMirrorMyInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");

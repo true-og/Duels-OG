@@ -22,11 +22,13 @@ import org.bukkit.inventory.ItemStack;
 
 public class SettingsGui extends SinglePageGui<DuelsPlugin> {
 
+    // Option buttons are centered in the middle row (slots 9-16). Center is slot 13.
+    // The bottom row is reserved for SEND / CANCEL, so options never collide with them.
     private static final int[][] PATTERNS = {
         {13},
         {12, 14},
         {12, 13, 14},
-        {12, 13, 14, 22},
+        {11, 12, 14, 15},
         {11, 12, 13, 14, 15},
         {10, 11, 12, 14, 15, 16},
         {10, 11, 12, 13, 14, 15, 16}
@@ -36,9 +38,10 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
         super(plugin, plugin.getLang().getMessage("GUI.settings.title"), 3);
         final Config config = plugin.getConfiguration();
         final ItemStack spacing = Items.from(config.getSettingsFillerType(), config.getSettingsFillerData());
-        Slots.run(2, 7, slot -> inventory.setItem(slot, spacing));
-        Slots.run(11, 16, slot -> inventory.setItem(slot, spacing));
-        Slots.run(20, 25, slot -> inventory.setItem(slot, spacing));
+        // Fill the whole window first, then paint buttons on top so nothing is left as a gap.
+        Slots.run(0, 27, slot -> inventory.setItem(slot, spacing));
+
+        // Top row: request details, centered.
         set(4, new RequestDetailsButton(plugin));
 
         final List<BaseButton> buttons = new ArrayList<>();
@@ -68,6 +71,7 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
             buttons.add(new ItemBettingButton(plugin));
         }
 
+        // Middle row: option buttons, centered. PATTERNS supports up to 7 options (the max possible).
         if (!buttons.isEmpty()) {
             final int[] pattern = PATTERNS[buttons.size() - 1];
 
@@ -76,7 +80,8 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
             }
         }
 
-        set(0, 2, 3, new RequestSendButton(plugin));
-        set(7, 9, 3, new CancelButton(plugin));
+        // Bottom row: SEND on the left half, CANCEL on the right half, divider in the center.
+        set(18, 22, 1, new RequestSendButton(plugin));
+        set(23, 27, 1, new CancelButton(plugin));
     }
 }
