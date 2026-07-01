@@ -67,6 +67,18 @@ public class DiamondBankHook extends PluginHook<DuelsPlugin> {
         }
     }
 
+    /**
+     * @return the whole number of Diamonds the given player can currently spend (bank + inventory), or 0 on failure.
+     */
+    public int getDiamonds(final Player player) {
+        try {
+            return ((Number) invoke(shardsToDiamonds, totalShards(player))).intValue();
+        } catch (ReflectiveOperationException | RuntimeException ex) {
+            Log.warn("Failed to read DiamondBank-OG balance: " + ex.getMessage());
+            return 0;
+        }
+    }
+
     public boolean add(final int amount, final Player... players) {
         try {
             final long shards = toShards(amount);

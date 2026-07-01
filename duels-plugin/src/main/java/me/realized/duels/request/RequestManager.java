@@ -7,6 +7,7 @@ import me.realized.duels.DuelsPlugin;
 import me.realized.duels.api.event.request.RequestSendEvent;
 import me.realized.duels.config.Config;
 import me.realized.duels.config.Lang;
+import me.realized.duels.hook.hooks.LuckPermsHook;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.Loadable;
 import me.realized.duels.util.TextBuilder;
@@ -20,11 +21,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class RequestManager implements Loadable, Listener {
 
+    private final DuelsPlugin plugin;
     private final Config config;
     private final Lang lang;
     private final Map<UUID, Map<UUID, RequestImpl>> requests = new HashMap<>();
 
     public RequestManager(final DuelsPlugin plugin) {
+        this.plugin = plugin;
         this.config = plugin.getConfiguration();
         this.lang = plugin.getLang();
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -66,13 +69,15 @@ public class RequestManager implements Loadable, Listener {
         final String arena = settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random");
         final int betAmount = settings.getBet();
         final String itemBetting = settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
+        final String challengerName = LuckPermsHook.coloredName(plugin, sender);
+        final String opponentName = LuckPermsHook.coloredName(plugin, target);
 
         lang.sendMessage(sender, "COMMAND.duel.request.send.sender",
-            "name", target.getName(), "kit", kit,
+            "name", opponentName, "challenger", challengerName, "opponent", opponentName, "kit", kit,
             "own_inventory", ownInventory, "mirror_my_inventory", mirrorMyInventory, "mirror_their_inventory", mirrorTheirInventory,
             "arena", arena, "bet_amount", betAmount, "item_betting", itemBetting);
         lang.sendMessage(target, "COMMAND.duel.request.send.receiver",
-            "name", sender.getName(), "kit", kit,
+            "name", challengerName, "challenger", challengerName, "opponent", opponentName, "kit", kit,
             "own_inventory", ownInventory, "mirror_my_inventory", mirrorMyInventory, "mirror_their_inventory", mirrorTheirInventory,
             "arena", arena, "bet_amount", betAmount, "item_betting", itemBetting);
 

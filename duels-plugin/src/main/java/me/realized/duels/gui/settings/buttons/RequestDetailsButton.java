@@ -2,6 +2,7 @@ package me.realized.duels.gui.settings.buttons;
 
 import me.realized.duels.DuelsPlugin;
 import me.realized.duels.gui.BaseButton;
+import me.realized.duels.hook.hooks.LuckPermsHook;
 import me.realized.duels.setting.Settings;
 import me.realized.duels.util.compat.Items;
 import me.realized.duels.util.inventory.ItemBuilder;
@@ -27,7 +28,8 @@ public class RequestDetailsButton extends BaseButton {
         }
 
         final String lore = lang.getMessage("GUI.settings.buttons.details.lore",
-            "opponent", target.getName(),
+            "opponent", LuckPermsHook.coloredName(plugin, target),
+            "challenger", LuckPermsHook.coloredName(plugin, player),
             "kit", settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected"),
             "own_inventory", settings.isOwnInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),
             "mirror_my_inventory", settings.isMirrorMyInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled"),

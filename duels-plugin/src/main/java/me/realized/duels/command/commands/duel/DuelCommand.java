@@ -185,6 +185,13 @@ public class DuelCommand extends BaseCommand {
                     return true;
                 }
 
+                // Reject a bet the opponent cannot cover so the match is not doomed to fail on start.
+                if (!diamondBank.has(amount, target)) {
+                    lang.sendMessage(sender, "ERROR.command.opponent-not-enough-money",
+                        "name", target.getName(), "max", diamondBank.getDiamonds(target), "bet_amount", amount);
+                    return true;
+                }
+
                 settings.setBet(amount);
             }
 

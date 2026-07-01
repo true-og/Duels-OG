@@ -108,6 +108,7 @@ project(":duels-plugin") {
         compileOnly("org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT")
         compileOnly("com.mojang:authlib:1.5.21")
         compileOnly("me.clip:placeholderapi:2.11.6")
+        compileOnly("net.luckperms:api:5.4")
         compileOnly("com.SirBlobman.combatlogx:CombatLogX-API:10.0.0.0-SNAPSHOT")
 
         compileOnly("net.essentialsx:EssentialsX:2.19.2") {

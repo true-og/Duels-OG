@@ -15,6 +15,7 @@ import me.realized.duels.gui.settings.buttons.MirrorTheirInventoryButton;
 import me.realized.duels.gui.settings.buttons.OwnInventoryButton;
 import me.realized.duels.gui.settings.buttons.RequestDetailsButton;
 import me.realized.duels.gui.settings.buttons.RequestSendButton;
+import me.realized.duels.gui.settings.buttons.ShuffleAllButton;
 import me.realized.duels.util.compat.Items;
 import me.realized.duels.util.gui.SinglePageGui;
 import me.realized.duels.util.inventory.Slots;
@@ -22,16 +23,16 @@ import org.bukkit.inventory.ItemStack;
 
 public class SettingsGui extends SinglePageGui<DuelsPlugin> {
 
-    // Option buttons are centered in the middle row (slots 9-16). Center is slot 13.
+    // Option buttons flank the middle row around the center slot 13, which is reserved for Shuffle All.
     // The bottom row is reserved for SEND / CANCEL, so options never collide with them.
     private static final int[][] PATTERNS = {
-        {13},
+        {12},
         {12, 14},
-        {12, 13, 14},
+        {11, 12, 14},
         {11, 12, 14, 15},
-        {11, 12, 13, 14, 15},
+        {10, 11, 12, 14, 15},
         {10, 11, 12, 14, 15, 16},
-        {10, 11, 12, 13, 14, 15, 16}
+        {9, 10, 11, 12, 14, 15, 16}
     };
 
     public SettingsGui(final DuelsPlugin plugin) {
@@ -71,7 +72,7 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
             buttons.add(new ItemBettingButton(plugin));
         }
 
-        // Middle row: option buttons, centered. PATTERNS supports up to 7 options (the max possible).
+        // Middle row: option buttons flanking the center. PATTERNS supports up to 7 options (the max possible).
         if (!buttons.isEmpty()) {
             final int[] pattern = PATTERNS[buttons.size() - 1];
 
@@ -79,6 +80,9 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
                 set(pattern[i], buttons.get(i));
             }
         }
+
+        // Center of the window: Shuffle All (randomizes every option except the Diamond bet).
+        set(13, new ShuffleAllButton(plugin));
 
         // Bottom row: SEND on the left half, CANCEL on the right half, divider in the center.
         set(18, 22, 1, new RequestSendButton(plugin));

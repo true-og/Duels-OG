@@ -9,6 +9,7 @@ import me.realized.duels.hook.hooks.EternalCombatHook;
 import me.realized.duels.hook.hooks.FactionsHook;
 import me.realized.duels.hook.hooks.GameModeInventoriesHook;
 import me.realized.duels.hook.hooks.LeaderHeadsHook;
+import me.realized.duels.hook.hooks.LuckPermsHook;
 import me.realized.duels.hook.hooks.MVdWPlaceholderHook;
 import me.realized.duels.hook.hooks.McMMOHook;
 import me.realized.duels.hook.hooks.PlaceholderHook;
@@ -30,6 +31,7 @@ public class HookManager extends AbstractHookManager<DuelsPlugin> {
         register(FactionsHook.NAME, FactionsHook.class);
         register(GameModeInventoriesHook.NAME, GameModeInventoriesHook.class);
         register(LeaderHeadsHook.NAME, LeaderHeadsHook.class);
+        register(LuckPermsHook.NAME, LuckPermsHook.class);
         register(McMMOHook.NAME, McMMOHook.class);
         register(MVdWPlaceholderHook.NAME, MVdWPlaceholderHook.class);
         register(PlaceholderHook.NAME, PlaceholderHook.class);
