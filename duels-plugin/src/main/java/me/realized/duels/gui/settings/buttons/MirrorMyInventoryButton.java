@@ -18,6 +18,7 @@ public class MirrorMyInventoryButton extends BaseButton {
     @Override
     public void update(final Player player) {
         if (config.isMirrorInventoryUsePermission() && !player.hasPermission(Permissions.MIRROR_INVENTORY) && !player.hasPermission(Permissions.SETTING_ALL)) {
+            setGlow(false);
             setLore(lang.getMessage("GUI.settings.buttons.use-mirror-my-inventory.lore-no-permission").split("\n"));
             return;
         }
@@ -29,6 +30,7 @@ public class MirrorMyInventoryButton extends BaseButton {
         setDisplayName(lang.getMessage("GUI.settings.buttons.use-mirror-my-inventory.name", "name", name));
 
         final Settings settings = settingManager.getSafely(player);
+        setGlow(settings.isMirrorMyInventory());
         final String value = settings.isMirrorMyInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
         final String lore = plugin.getLang().getMessage("GUI.settings.buttons.use-mirror-my-inventory.lore", "name", name, "mirror_my_inventory", value);
         setLore(lore.split("\n"));

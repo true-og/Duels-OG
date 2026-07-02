@@ -17,11 +17,13 @@ public class ArenaSelectButton extends BaseButton {
     @Override
     public void update(final Player player) {
         if (config.isArenaSelectingUsePermission() && !player.hasPermission(Permissions.ARENA_SELECTING) && !player.hasPermission(Permissions.SETTING_ALL)) {
+            setGlow(false);
             setLore(lang.getMessage("GUI.settings.buttons.arena-selector.lore-no-permission").split("\n"));
             return;
         }
 
         final Settings settings = settingManager.getSafely(player);
+        setGlow(settings.getArena() != null);
         final String arena = settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random");
         final String lore = lang.getMessage("GUI.settings.buttons.arena-selector.lore", "arena", arena);
         setLore(lore.split("\n"));

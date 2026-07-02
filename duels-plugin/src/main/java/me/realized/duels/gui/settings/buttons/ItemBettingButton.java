@@ -17,11 +17,13 @@ public class ItemBettingButton extends BaseButton {
     @Override
     public void update(final Player player) {
         if (config.isItemBettingUsePermission() && !player.hasPermission(Permissions.ITEM_BETTING) && !player.hasPermission(Permissions.SETTING_ALL)) {
+            setGlow(false);
             setLore(lang.getMessage("GUI.settings.buttons.item-betting.lore-no-permission").split("\n"));
             return;
         }
 
         final Settings settings = settingManager.getSafely(player);
+        setGlow(settings.isItemBetting());
         final String itemBetting = settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
         final String lore = plugin.getLang().getMessage("GUI.settings.buttons.item-betting.lore", "item_betting", itemBetting);
         setLore(lore.split("\n"));

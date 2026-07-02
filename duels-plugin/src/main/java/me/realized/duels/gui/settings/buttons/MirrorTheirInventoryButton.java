@@ -20,11 +20,13 @@ public class MirrorTheirInventoryButton extends BaseButton {
     @Override
     public void update(final Player player) {
         if (config.isMirrorInventoryUsePermission() && !player.hasPermission(Permissions.MIRROR_INVENTORY) && !player.hasPermission(Permissions.SETTING_ALL)) {
+            setGlow(false);
             setLore(lang.getMessage("GUI.settings.buttons.use-mirror-their-inventory.lore-no-permission").split("\n"));
             return;
         }
 
         final Settings settings = settingManager.getSafely(player);
+        setGlow(settings.isMirrorTheirInventory());
 
         // Display the opponent's head and rank-colored name so it is obvious whose inventory is cloned.
         final UUID targetId = settings.getTarget();

@@ -17,11 +17,13 @@ public class OwnInventoryButton extends BaseButton {
     @Override
     public void update(final Player player) {
         if (config.isOwnInventoryUsePermission() && !player.hasPermission(Permissions.OWN_INVENTORY) && !player.hasPermission(Permissions.SETTING_ALL)) {
+            setGlow(false);
             setLore(lang.getMessage("GUI.settings.buttons.use-own-inventory.lore-no-permission").split("\n"));
             return;
         }
 
         final Settings settings = settingManager.getSafely(player);
+        setGlow(settings.isOwnInventory());
         final String ownInventory = settings.isOwnInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
         final String lore = plugin.getLang().getMessage("GUI.settings.buttons.use-own-inventory.lore", "own_inventory", ownInventory);
         setLore(lore.split("\n"));

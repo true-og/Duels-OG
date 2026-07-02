@@ -17,11 +17,13 @@ public class KitSelectButton extends BaseButton {
     @Override
     public void update(final Player player) {
         if (config.isKitSelectingUsePermission() && !player.hasPermission(Permissions.KIT_SELECTING) && !player.hasPermission(Permissions.SETTING_ALL)) {
+            setGlow(false);
             setLore(lang.getMessage("GUI.settings.buttons.kit-selector.lore-no-permission").split("\n"));
             return;
         }
 
         final Settings settings = settingManager.getSafely(player);
+        setGlow(settings.getKit() != null);
         final String kit = settings.getKit() != null ? settings.getKit().getName() : lang.getMessage("GENERAL.not-selected");
         final String lore = lang.getMessage("GUI.settings.buttons.kit-selector.lore", "kit", kit);
         setLore(lore.split("\n"));

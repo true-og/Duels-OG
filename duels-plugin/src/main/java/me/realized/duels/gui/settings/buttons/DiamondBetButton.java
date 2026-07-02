@@ -18,12 +18,14 @@ public class DiamondBetButton extends BaseButton {
     @Override
     public void update(final Player player) {
         if (config.isMoneyBettingUsePermission() && !player.hasPermission(Permissions.MONEY_BETTING) && !player.hasPermission(Permissions.SETTING_ALL)) {
+            setGlow(false);
             setLore(lang.getMessage("GUI.settings.buttons.diamond-bet.lore-no-permission").split("\n"));
             return;
         }
 
         final Settings settings = settingManager.getSafely(player);
         final int bet = settings.getBet();
+        setGlow(bet > 0);
         getDisplayed().setAmount(Math.max(1, Math.min(64, bet)));
         setLore(lang.getMessage("GUI.settings.buttons.diamond-bet.lore", "bet_amount", bet).split("\n"));
     }
