@@ -72,6 +72,18 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
             buttons.add(new ItemBettingButton(plugin));
         }
 
+        // Swap the "Use a Kit" and "Both Use <opponent>'s Inventory" buttons so they trade positions.
+        // Move Kit to right after the mirror pair so the two "Both Use" buttons stay next to each other.
+        // Both are behind independent config flags, so only reorder when both are present.
+        final int kitIndex = indexOf(buttons, KitSelectButton.class);
+        final int theirIndex = indexOf(buttons, MirrorTheirInventoryButton.class);
+
+        if (kitIndex != -1 && theirIndex != -1) {
+            final BaseButton kit = buttons.remove(kitIndex);
+            // theirIndex shifts left by one if the removed Kit came before it.
+            buttons.add(kitIndex < theirIndex ? theirIndex : theirIndex + 1, kit);
+        }
+
         // Middle row: option buttons flanking the center. PATTERNS supports up to 7 options (the max possible).
         if (!buttons.isEmpty()) {
             final int[] pattern = PATTERNS[buttons.size() - 1];
@@ -87,5 +99,15 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
         // Bottom row: SEND on the left half, CANCEL on the right half, divider in the center.
         set(18, 22, 1, new RequestSendButton(plugin));
         set(23, 27, 1, new CancelButton(plugin));
+    }
+
+    private static int indexOf(final List<BaseButton> buttons, final Class<? extends BaseButton> type) {
+        for (int i = 0; i < buttons.size(); i++) {
+            if (type.isInstance(buttons.get(i))) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 }
