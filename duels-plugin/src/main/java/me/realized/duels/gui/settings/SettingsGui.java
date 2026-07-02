@@ -72,16 +72,40 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
             buttons.add(new ItemBettingButton(plugin));
         }
 
-        // Swap the "Use a Kit" and "Both Use <opponent>'s Inventory" buttons so they trade positions.
-        // Move Kit to right after the mirror pair so the two "Both Use" buttons stay next to each other.
-        // Both are behind independent config flags, so only reorder when both are present.
+        // Swap the "Use a Kit" button with the "Both Use ... Inventory" pair so they trade positions.
+        // The mirror pair takes Kit's (earlier) slot and Kit takes the opponent-inventory slot, keeping
+        // the two "Both Use" buttons contiguous. Placing the pair on Kit's side avoids the center slot
+        // (13, Shuffle All) landing between them, which would visually split them in some layouts.
+        // All three are behind independent config flags, so only reorder when every one is present.
         final int kitIndex = indexOf(buttons, KitSelectButton.class);
+        final int myIndex = indexOf(buttons, MirrorMyInventoryButton.class);
         final int theirIndex = indexOf(buttons, MirrorTheirInventoryButton.class);
 
-        if (kitIndex != -1 && theirIndex != -1) {
-            final BaseButton kit = buttons.remove(kitIndex);
-            // theirIndex shifts left by one if the removed Kit came before it.
-            buttons.add(kitIndex < theirIndex ? theirIndex : theirIndex + 1, kit);
+        if (kitIndex != -1 && myIndex != -1 && theirIndex != -1) {
+            final BaseButton kit = buttons.get(kitIndex);
+            final BaseButton mirrorMy = buttons.get(myIndex);
+            final BaseButton mirrorTheir = buttons.get(theirIndex);
+
+            final List<BaseButton> reordered = new ArrayList<>(buttons.size());
+
+            for (final BaseButton button : buttons) {
+                if (button == kit) {
+                    // Kit's slot becomes the mirror pair, kept together in My/Their order.
+                    reordered.add(mirrorMy);
+                    reordered.add(mirrorTheir);
+                } else if (button == mirrorMy) {
+                    // Already emitted as part of the pair at the Kit slot.
+                    continue;
+                } else if (button == mirrorTheir) {
+                    // The opponent-inventory slot becomes the Kit button.
+                    reordered.add(kit);
+                } else {
+                    reordered.add(button);
+                }
+            }
+
+            buttons.clear();
+            buttons.addAll(reordered);
         }
 
         // Middle row: option buttons flanking the center. PATTERNS supports up to 7 options (the max possible).
