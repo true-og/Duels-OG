@@ -39,6 +39,17 @@ public class Settings {
     @Getter
     private Map<UUID, CachedInfo> cache = new HashMap<>();
 
+    // Snapshot of the shuffleable options as of the most recent Shuffle All, used to glint the Shuffle
+    // button only while the current selection still matches what that shuffle produced. Diamond bet is
+    // excluded because Shuffle All never touches it.
+    private boolean shuffled;
+    private KitImpl shuffledKit;
+    private ArenaImpl shuffledArena;
+    private boolean shuffledItemBetting;
+    private boolean shuffledOwnInventory;
+    private boolean shuffledMirrorMyInventory;
+    private boolean shuffledMirrorTheirInventory;
+
     public Settings(final DuelsPlugin plugin, final Player player) {
         this.plugin = plugin;
         this.gui = player != null ? plugin.getGuiListener().addGui(player, new SettingsGui(plugin)) : null;
@@ -59,6 +70,30 @@ public class Settings {
         ownInventory = !plugin.getConfiguration().isKitSelectingEnabled();
         mirrorMyInventory = false;
         mirrorTheirInventory = false;
+        shuffled = false;
+    }
+
+    // Record the current shuffleable options as the result of a Shuffle All click.
+    public void markShuffled() {
+        shuffled = true;
+        shuffledKit = kit;
+        shuffledArena = arena;
+        shuffledItemBetting = itemBetting;
+        shuffledOwnInventory = ownInventory;
+        shuffledMirrorMyInventory = mirrorMyInventory;
+        shuffledMirrorTheirInventory = mirrorTheirInventory;
+    }
+
+    // True while every shuffleable option still matches the most recent Shuffle All. Any manual change
+    // to one of those options makes this false, so the Shuffle button stops glinting.
+    public boolean isShuffleActive() {
+        return shuffled
+            && kit == shuffledKit
+            && arena == shuffledArena
+            && itemBetting == shuffledItemBetting
+            && ownInventory == shuffledOwnInventory
+            && mirrorMyInventory == shuffledMirrorMyInventory
+            && mirrorTheirInventory == shuffledMirrorTheirInventory;
     }
 
     public void setTarget(final Player target) {
