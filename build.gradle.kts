@@ -21,10 +21,10 @@ subprojects {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(8))
+            languageVersion.set(JavaLanguageVersion.of(21))
         }
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     repositories {
@@ -84,7 +84,7 @@ project(":duels-worldguard-v6") {
 
 project(":duels-worldguard-v7") {
     dependencies {
-        compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.0") {
+        compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.15") {
             exclude(group = "org.bukkit", module = "bukkit")
         }
         implementation(project(":duels-worldguard"))
@@ -102,8 +102,8 @@ project(":duels-plugin") {
     dependencies {
         compileOnly("org.jetbrains:annotations-java5:22.0.0")
 
-        compileOnly("org.projectlombok:lombok:1.18.22")
-        annotationProcessor("org.projectlombok:lombok:1.18.22")
+        compileOnly("org.projectlombok:lombok:1.18.30")
+        annotationProcessor("org.projectlombok:lombok:1.18.30")
 
         compileOnly("org.spigotmc:spigot-api:1.14.4-R0.1-SNAPSHOT")
         compileOnly("com.mojang:authlib:1.5.21")
