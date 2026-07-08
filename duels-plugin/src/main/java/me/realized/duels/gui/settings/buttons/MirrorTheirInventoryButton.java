@@ -26,7 +26,7 @@ public class MirrorTheirInventoryButton extends BaseButton {
         }
 
         final Settings settings = settingManager.getSafely(player);
-        setGlow(settings.isMirrorTheirInventory());
+        setGlow(false);
 
         // Display the opponent's head and rank-colored name so it is obvious whose inventory is cloned.
         final UUID targetId = settings.getTarget();

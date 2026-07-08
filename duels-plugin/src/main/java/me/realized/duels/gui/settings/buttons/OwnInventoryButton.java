@@ -23,7 +23,7 @@ public class OwnInventoryButton extends BaseButton {
         }
 
         final Settings settings = settingManager.getSafely(player);
-        setGlow(settings.isOwnInventory());
+        setGlow(false);
         final String ownInventory = settings.isOwnInventory() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
         final String lore = plugin.getLang().getMessage("GUI.settings.buttons.use-own-inventory.lore", "own_inventory", ownInventory);
         setLore(lore.split("\n"));

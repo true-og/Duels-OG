@@ -25,7 +25,7 @@ public class DiamondBetButton extends BaseButton {
 
         final Settings settings = settingManager.getSafely(player);
         final int bet = settings.getBet();
-        setGlow(bet > 0);
+        setGlow(false);
         getDisplayed().setAmount(Math.max(1, Math.min(64, bet)));
         setLore(lang.getMessage("GUI.settings.buttons.diamond-bet.lore", "bet_amount", bet).split("\n"));
     }

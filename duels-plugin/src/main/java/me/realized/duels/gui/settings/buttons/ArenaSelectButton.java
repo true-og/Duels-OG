@@ -23,7 +23,7 @@ public class ArenaSelectButton extends BaseButton {
         }
 
         final Settings settings = settingManager.getSafely(player);
-        setGlow(settings.getArena() != null);
+        setGlow(false);
         final String arena = settings.getArena() != null ? settings.getArena().getName() : lang.getMessage("GENERAL.random");
         final String lore = lang.getMessage("GUI.settings.buttons.arena-selector.lore", "arena", arena);
         setLore(lore.split("\n"));

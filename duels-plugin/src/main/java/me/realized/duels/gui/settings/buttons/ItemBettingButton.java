@@ -23,7 +23,7 @@ public class ItemBettingButton extends BaseButton {
         }
 
         final Settings settings = settingManager.getSafely(player);
-        setGlow(settings.isItemBetting());
+        setGlow(false);
         final String itemBetting = settings.isItemBetting() ? lang.getMessage("GENERAL.enabled") : lang.getMessage("GENERAL.disabled");
         final String lore = plugin.getLang().getMessage("GUI.settings.buttons.item-betting.lore", "item_betting", itemBetting);
         setLore(lore.split("\n"));

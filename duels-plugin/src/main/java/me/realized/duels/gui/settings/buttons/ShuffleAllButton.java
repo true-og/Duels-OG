@@ -21,8 +21,7 @@ public class ShuffleAllButton extends BaseButton {
 
     @Override
     public void update(final Player player) {
-        // Glint the button only while the current selection still matches the most recent shuffle.
-        setGlow(settingManager.getSafely(player).isShuffleActive());
+        setGlow(false);
         setLore(lang.getMessage("GUI.settings.buttons.shuffle-all.lore").split("\n"));
     }
 
