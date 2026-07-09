@@ -53,7 +53,7 @@ public class SettingsGui extends SinglePageGui<DuelsPlugin> {
         super(plugin, plugin.getLang().getMessage("GUI.settings.title"), 5);
         this.config = plugin.getConfiguration();
         final ItemStack filler = Items.from(config.getSettingsFillerType(), config.getSettingsFillerData());
-        this.selectedFrame = ItemBuilder.of(Items.GREEN_PANE.clone()).name(" ").build();
+        this.selectedFrame = ItemBuilder.of(Items.ORANGE_PANE.clone()).name(" ").build();
         this.unselectedFrame = ItemBuilder.of(Items.GRAY_PANE.clone()).name(" ").build();
 
         // Fill the whole window first, then paint buttons on top so nothing is left as a gap.
