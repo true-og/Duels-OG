@@ -29,7 +29,10 @@ public class DamageListener implements Listener {
         plugin.doSyncAfter(() -> Bukkit.getPluginManager().registerEvents(this, plugin), 1L);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    // Run before HIGHEST lethal-damage rescue handlers. In particular, PurpurExtras-OG
+    // cancels lethal damage at HIGHEST after consuming a totem from the victim's hotbar.
+    // Running at the same priority could undo that rescue when force-allow-combat is enabled.
+    @EventHandler(priority = EventPriority.HIGH)
     public void on(final EntityDamageByEntityEvent event) {
         if (!(event.getEntity() instanceof Player)) {
             return;
