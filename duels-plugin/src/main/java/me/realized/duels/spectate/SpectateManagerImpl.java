@@ -41,6 +41,7 @@ import org.bukkit.event.block.BlockCanBuildEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -50,6 +51,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+// TODO: Re-implement spectator mode using GxUI-OG (https://github.com/true-og/GxUI-OG).
+// Carried over from the retired DuelEnhancer-OG plugin.
 public class SpectateManagerImpl implements Loadable, SpectateManager {
 
     private final DuelsPlugin plugin;
@@ -299,6 +302,23 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
             }
 
             stopSpectating(player, spectator);
+        }
+
+        // Ends spectating when a spectator is forced into survival mode (e.g. by a WorldGuard
+        // game-mode region flag). stopSpectating teleports the player back to their original
+        // location. Merged from the retired DuelEnhancer-OG plugin.
+        @EventHandler
+        public void on(final PlayerGameModeChangeEvent event) {
+            final Player player = event.getPlayer();
+            final SpectatorImpl spectator = get(player);
+
+            // getNewGameMode() is the mode being switched to; the event has not been applied yet.
+            if (spectator == null || event.getNewGameMode() != GameMode.SURVIVAL) {
+                return;
+            }
+
+            stopSpectating(player, spectator);
+            lang.sendMessage(player, "SPECTATE.out-of-bounds");
         }
 
         @EventHandler(ignoreCancelled = true)

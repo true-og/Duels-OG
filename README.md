@@ -33,6 +33,11 @@ Changes from Duels:
 - Hardened arena protections: combatants snap back if they leave the WorldGuard region, and outside players cannot damage anyone in the match
 - Three inventory modes in the settings GUI — **Own**, **Mirror Mine**, **Mirror Theirs** — each player fights with a clone, originals restored after, never staked in bets
 - Fixed winner losing XP after a duel
+- Merged in the retired DuelEnhancer-OG plugin: spectators forced into survival mode (e.g. by a WorldGuard region flag) are removed from spectating and teleported back to their original location
+
+Planned:
+
+- Re-implement spectator mode using [GxUI-OG](https://github.com/true-og/GxUI-OG)
 
 #### @szumielxd
 

@@ -1,5 +1,5 @@
 # DO NOT EDIT THIS VALUE!
-config-version: 11
+config-version: 12
 
 # Define placeholders usable in any message below.
 # Example: Adding 'PREFIX: "[Cool]"' below and then putting '{PREFIX}' in a message will display '[Cool]' when the message is sent in game.
@@ -346,6 +346,7 @@ SIGN:
 SPECTATE:
   arena-broadcast: '{PREFIX} &f%name% &7is now spectating the match!'
   match-end: '{PREFIX} &7The match you were spectating has ended.'
+  out-of-bounds: '{PREFIX} &6Out of bounds! Your Duel spectating session has ended.'
   prevent:
     command: '&cYou cannot use ''%command%'' while in spectator mode.'
     teleportation: '&cYou cannot teleport while in spectator mode.'
