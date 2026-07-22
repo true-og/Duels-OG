@@ -219,11 +219,11 @@ public class DuelManager implements Loadable {
             PlayerUtil.reset(player);
 
             if (info != null) {
-                teleport.tryTeleport(player, info.getLocation());
+                teleport.tryTeleport(player, playerManager.getReturnLocation(info));
                 info.restore(player);
             } else {
                 // If somehow PlayerInfo is not found...
-                teleport.tryTeleport(player, playerManager.getLobby());
+                teleport.tryTeleport(player, playerManager.getReturnLocation(null));
             }
 
             // Give back bet items
@@ -281,8 +281,9 @@ public class DuelManager implements Loadable {
             // Always wipe the (clone) inventory before restoring the cached original.
             PlayerUtil.reset(player);
 
+            teleport.tryTeleport(player, playerManager.getReturnLocation(info));
+
             if (info != null) {
-                teleport.tryTeleport(player, info.getLocation());
                 info.restore(player);
             }
 

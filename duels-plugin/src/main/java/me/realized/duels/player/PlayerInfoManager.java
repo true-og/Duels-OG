@@ -10,18 +10,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
-import lombok.Getter;
 import me.realized.duels.DuelsPlugin;
-import me.realized.duels.config.Config;
-import me.realized.duels.data.LocationData;
 import me.realized.duels.data.PlayerData;
 import me.realized.duels.hook.hooks.EssentialsHook;
 import me.realized.duels.teleport.Teleport;
 import me.realized.duels.util.Loadable;
-import me.realized.duels.util.Log;
 import me.realized.duels.util.PlayerUtil;
 import me.realized.duels.util.io.FileUtil;
 import me.realized.duels.util.json.JsonUtil;
@@ -37,37 +36,28 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 /**
- * Manages:
- * (1) player info cache for restoration after matches.
- * (2) lobby location for teleportation after matches.
+ * Manages player info cache for restoration after matches.
  */
 public class PlayerInfoManager implements Loadable {
 
     private static final String CACHE_FILE_NAME = "player-cache.json";
-
-    private static final String LOBBY_FILE_NAME = "lobby.json";
-    private static final String ERROR_LOBBY_LOAD = "Could not load lobby location!";
-    private static final String ERROR_LOBBY_SAVE = "Could not save lobby location!";
-    private static final String ERROR_LOBBY_DEFAULT = "Lobby location was not set, using %s's spawn location as default. Use the command /duels setlobby in-game to set the lobby location.";
+    private static final Set<String> RETURN_WORLDS = new HashSet<>(Arrays.asList(
+        "world",
+        "world_nether",
+        "world_the_end"
+    ));
 
     private final DuelsPlugin plugin;
-    private final Config config;
     private final File cacheFile;
-    private final File lobbyFile;
 
     private final Map<UUID, PlayerInfo> cache = new HashMap<>();
 
     private Teleport teleport;
     private EssentialsHook essentials;
 
-    @Getter
-    private Location lobby;
-
     public PlayerInfoManager(final DuelsPlugin plugin) {
         this.plugin = plugin;
-        this.config = plugin.getConfiguration();
         this.cacheFile = new File(plugin.getDataFolder(), CACHE_FILE_NAME);
-        this.lobbyFile = new File(plugin.getDataFolder(), LOBBY_FILE_NAME);
         plugin.doSyncAfter(() -> Bukkit.getPluginManager().registerEvents(new PlayerInfoListener(), plugin), 1L);
     }
 
@@ -82,29 +72,14 @@ public class PlayerInfoManager implements Loadable {
 
                 if (data != null) {
                     for (final Map.Entry<UUID, PlayerData> entry : data.entrySet()) {
-                        cache.put(entry.getKey(), entry.getValue().toPlayerInfo());
+                        final PlayerInfo info = entry.getValue().toPlayerInfo();
+                        info.setLocation(safeReturnLocation(info.getLocation()));
+                        cache.put(entry.getKey(), info);
                     }
                 }
             }
 
             cacheFile.delete();
-        }
-
-        if (FileUtil.checkNonEmpty(lobbyFile, false)) {
-            try (final Reader reader = new InputStreamReader(new FileInputStream(lobbyFile), Charsets.UTF_8)) {
-                this.lobby = JsonUtil.getObjectMapper().readValue(reader, LocationData.class).toLocation();
-            } catch (IOException ex) {
-                Log.error(this, ERROR_LOBBY_LOAD, ex);
-            }
-        }
-
-        // If lobby is not found or points at a disabled/unloaded world, use the
-        // configured dueling world's spawn location for lobby.
-        if (!isEnabledWorld(lobby)) {
-            this.lobby = getFallbackLocation();
-            final World world = this.lobby != null ? this.lobby.getWorld() : null;
-            Log.warn(this,
-                String.format(ERROR_LOBBY_DEFAULT, world != null ? world.getName() : "world"));
         }
     }
 
@@ -140,30 +115,6 @@ public class PlayerInfoManager implements Loadable {
     }
 
     /**
-     * Sets a lobby location at given player's location.
-     *
-     * @param player Player to get location for lobby
-     * @return true if setting lobby was successful, false otherwise
-     */
-    public boolean setLobby(final Player player) {
-        if (!config.isDuelingWorld(player)) {
-            return false;
-        }
-
-        final Location lobby = player.getLocation().clone();
-
-        try (final Writer writer = new OutputStreamWriter(new FileOutputStream(lobbyFile), Charsets.UTF_8)) {
-            JsonUtil.getObjectWriter().writeValue(writer, LocationData.fromLocation(lobby));
-            writer.flush();
-            this.lobby = lobby;
-            return true;
-        } catch (IOException ex) {
-            Log.error(this, ERROR_LOBBY_SAVE, ex);
-            return false;
-        }
-    }
-
-    /**
      * Gets cached PlayerInfo instance for given player.
      *
      * @param player Player to get cached PlayerInfo instance
@@ -189,11 +140,7 @@ public class PlayerInfoManager implements Loadable {
     }
 
     private void create(final Player player, final PlayerInfo info) {
-        if (!info.hasRideState() && !info.isForceReturnLocation() && !config.isTeleportToLastLocation()) {
-            info.setLocation(safeReturnLocation(lobby));
-        } else if (!info.isForceReturnLocation() && !isEnabledWorld(info.getLocation())) {
-            info.setLocation(safeReturnLocation(info.getLocation()));
-        }
+        info.setLocation(safeReturnLocation(info.getLocation()));
 
         cache.put(player.getUniqueId(), info);
     }
@@ -217,23 +164,18 @@ public class PlayerInfoManager implements Loadable {
         return cache.remove(player.getUniqueId());
     }
 
-    private boolean isEnabledWorld(final Location location) {
+    private boolean isReturnWorld(final Location location) {
         return location != null && location.getWorld() != null
-            && "world".equals(location.getWorld().getName());
+            && RETURN_WORLDS.contains(location.getWorld().getName());
     }
 
     private Location getFallbackLocation() {
-        World world = Bukkit.getWorld("world");
-
-        if (world == null && !Bukkit.getWorlds().isEmpty()) {
-            world = Bukkit.getWorlds().get(0);
-        }
-
+        final World world = Bukkit.getWorld("world");
         return world != null ? world.getSpawnLocation() : null;
     }
 
     private Location safeReturnLocation(final Location location) {
-        if (isEnabledWorld(location)) {
+        if (isReturnWorld(location)) {
             return location.clone();
         }
 
@@ -241,14 +183,22 @@ public class PlayerInfoManager implements Loadable {
         return fallback != null ? fallback.clone() : null;
     }
 
-    private Location getReturnLocation(final PlayerInfo info) {
-        final Location location = info.getLocation();
+    /**
+     * Gets a safe return location from cached player data. Only the three main
+     * worlds are accepted; missing or invalid data falls back to world spawn.
+     *
+     * @param info Cached player data, or null if it could not be found
+     * @return safe return location, or null if the main world is unavailable
+     */
+    public Location getReturnLocation(final PlayerInfo info) {
+        final Location location = safeReturnLocation(info != null ? info.getLocation() : null);
 
-        if (info.isForceReturnLocation() && location != null && location.getWorld() != null) {
-            return location.clone();
+        if (info != null) {
+            // PlayerInfo#restore may teleport again when restoring flight state.
+            info.setLocation(location);
         }
 
-        return safeReturnLocation(location);
+        return location;
     }
 
     private class PlayerInfoListener implements Listener {

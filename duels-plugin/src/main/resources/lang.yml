@@ -96,7 +96,6 @@ ERROR:
     invalid-action: '{PREFIX} &c''%action%'' is not a valid action. Available actions are: %available_actions%'
     not-enough-money: '{PREFIX} &cYou do not have enough Diamonds to bet!'
     opponent-not-enough-money: '{PREFIX} &c%name% only has %max% Diamond(s) and cannot cover a bet of &B%bet_amount% Diamond(s)&c.'
-    lobby-save-failure: '{PREFIX} &cCould not save lobby location. Please check the console for more information.'
     name-not-alphanumeric: '{PREFIX} &c''%name%'' is not alphanumeric.'
 
 
@@ -236,8 +235,6 @@ COMMAND:
       - '{HALF_LINE} &eUser Edit Commands {HALF_LINE}'
       extra:
       - '{HALF_LINE} &aExtra Commands {HALF_LINE}'
-      - '&f/%command% setlobby &e- &7Sets duel lobby location.'
-      - '&f/%command% lobby &e- &7Teleports to duel lobby.'
       - '&f/%command% playsound [name] &e- &7Plays the selected sound if defined in config.'
       - '&f/%command% reload <module> &e- &7Reloads the plugin or the specified module.'
       - '{HALF_LINE} &aExtra Commands {HALF_LINE}'
@@ -254,8 +251,6 @@ COMMAND:
     delete-queue: '{PREFIX} &7Deleted a queue with kit &d%kit% &7and a bet of &B%bet_amount% Diamond(s) &7.'
     add-sign: '{PREFIX} &7Created queue sign at &3%location% &7with kit &d%kit% &7and bet &B%bet_amount% Diamond(s)&7.'
     del-sign: '{PREFIX} &7Deleted queue sign at &3%location% &7with kit &d%kit% &7and bet &B%bet_amount% Diamond(s)&7.'
-    set-lobby: '{PREFIX} &7Duel lobby set at your current location.'
-    lobby: '{PREFIX} &7You have been teleported to lobby!'
     edit: '{PREFIX} &7Following action has been executed for &6%name%&7: &6%action% %amount% %type%'
     set-rating: '{PREFIX} &6%name%&7''s rating for kit &d%kit% &7was set to &a%rating%&7.'
     reset-rating: '{PREFIX} &7Reset &6%name%&7''s &7rating for kit &d%kit%&7.'
@@ -278,7 +273,6 @@ COMMAND:
     - '&7Kits: &9%kits%'
     - '&7Queues: &b%queues%'
     - '&7Queue Signs: &d%queue_signs%'
-    - '&7Duel lobby is located at &e%lobby%&7.'
     - '{LINE}'
 
   spectate:

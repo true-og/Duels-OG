@@ -29,8 +29,7 @@ public class ListCommand extends BaseCommand {
             "arenas", !arenas.isEmpty() ? StringUtil.join(arenas, "&r, &r") : lang.getMessage("GENERAL.none"),
             "kits", !kits.isEmpty() ? kits : lang.getMessage("GENERAL.none"),
             "queues", !queues.isEmpty() ? queues : lang.getMessage("GENERAL.none"),
-            "queue_signs", !signs.isEmpty() ? signs : lang.getMessage("GENERAL.none"),
-            "lobby", StringUtil.parse(playerManager.getLobby()));
+            "queue_signs", !signs.isEmpty() ? signs : lang.getMessage("GENERAL.none"));
     }
 
     private String getColor(final ArenaImpl arena) {

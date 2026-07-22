@@ -16,7 +16,6 @@ import me.realized.duels.command.commands.duels.subcommands.HelpCommand;
 import me.realized.duels.command.commands.duels.subcommands.InfoCommand;
 import me.realized.duels.command.commands.duels.subcommands.ListCommand;
 import me.realized.duels.command.commands.duels.subcommands.LoadkitCommand;
-import me.realized.duels.command.commands.duels.subcommands.LobbyCommand;
 import me.realized.duels.command.commands.duels.subcommands.OptionsCommand;
 import me.realized.duels.command.commands.duels.subcommands.PlaysoundCommand;
 import me.realized.duels.command.commands.duels.subcommands.ReloadCommand;
@@ -25,7 +24,6 @@ import me.realized.duels.command.commands.duels.subcommands.ResetratingCommand;
 import me.realized.duels.command.commands.duels.subcommands.SavekitCommand;
 import me.realized.duels.command.commands.duels.subcommands.SetCommand;
 import me.realized.duels.command.commands.duels.subcommands.SetitemCommand;
-import me.realized.duels.command.commands.duels.subcommands.SetlobbyCommand;
 import me.realized.duels.command.commands.duels.subcommands.SetratingCommand;
 import me.realized.duels.command.commands.duels.subcommands.TeleportCommand;
 import me.realized.duels.command.commands.duels.subcommands.ToggleCommand;
@@ -52,8 +50,6 @@ public class DuelsCommand extends BaseCommand {
             new DeletequeueCommand(plugin),
             new AddsignCommand(plugin),
             new DeletesignCommand(plugin),
-            new SetlobbyCommand(plugin),
-            new LobbyCommand(plugin),
             new InfoCommand(plugin),
             new ListCommand(plugin),
             new EditCommand(plugin),

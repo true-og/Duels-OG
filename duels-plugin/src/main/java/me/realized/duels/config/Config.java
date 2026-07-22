@@ -134,8 +134,6 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     @Getter
     private List<String> arenaWhitelistedWorlds;
     @Getter
-    private boolean teleportToLastLocation;
-    @Getter
     private int teleportDelay;
     @Getter
     private boolean spawnFirework;
@@ -342,7 +340,6 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         cancelIfMoved = configuration.getBoolean("duel.cancel-if-moved", false);
         joinWhitelistedWorlds = configuration.getStringList("duel.join-whitelisted-worlds");
         arenaWhitelistedWorlds = configuration.getStringList("duel.arena-whitelisted-worlds");
-        teleportToLastLocation = configuration.getBoolean("duel.teleport-to-last-location", false);
         teleportDelay = configuration.getInt("duel.teleport-delay", 5);
         spawnFirework = configuration.getBoolean("duel.spawn-firework", true);
         arenaOnlyEndMessage = configuration.getBoolean("duel.arena-only-end-message", false);

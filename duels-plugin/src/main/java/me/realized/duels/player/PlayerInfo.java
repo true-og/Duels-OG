@@ -140,7 +140,4 @@ public class PlayerInfo {
         }
     }
 
-    boolean hasRideState() {
-        return rideState != null;
-    }
 }

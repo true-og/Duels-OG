@@ -211,10 +211,10 @@ public class SpectateManagerImpl implements Loadable, SpectateManager {
         final PlayerInfo info = playerManager.remove(player);
 
         if (info != null) {
-            teleport.tryTeleport(player, info.getLocation());
+            teleport.tryTeleport(player, playerManager.getReturnLocation(info));
             info.restore(player);
         } else {
-            teleport.tryTeleport(player, playerManager.getLobby());
+            teleport.tryTeleport(player, playerManager.getReturnLocation(null));
         }
 
         final MatchImpl match = spectator.getArena().getMatch();
