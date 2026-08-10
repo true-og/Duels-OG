@@ -39,6 +39,7 @@ import me.realized.duels.listeners.LingerPotionListener;
 import me.realized.duels.listeners.PotionListener;
 import me.realized.duels.listeners.ProjectileHitListener;
 import me.realized.duels.listeners.TeleportListener;
+import me.realized.duels.listeners.TridentListener;
 import me.realized.duels.logging.LogManager;
 import me.realized.duels.player.PlayerInfoManager;
 import me.realized.duels.queue.QueueManager;
@@ -53,6 +54,7 @@ import me.realized.duels.util.Log;
 import me.realized.duels.util.Log.LogSource;
 import me.realized.duels.util.Reloadable;
 import me.realized.duels.util.command.AbstractCommand;
+import me.realized.duels.util.compat.CompatUtil;
 import me.realized.duels.util.gui.GuiListener;
 import me.realized.duels.util.json.JsonUtil;
 import org.bukkit.Bukkit;
@@ -192,6 +194,12 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
         new TeleportListener(this);
         new ProjectileHitListener(this);
         new EnderpearlListener(this);
+
+        // Tridents (and the API they need) only exist from 1.13 onwards.
+        if (!CompatUtil.isPre1_13()) {
+            new TridentListener(this);
+        }
+
         new KitOptionsListener(this);
         new LingerPotionListener(this);
 

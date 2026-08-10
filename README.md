@@ -34,6 +34,7 @@ Changes from Duels:
 - Three inventory modes in the settings GUI — **Own**, **Mirror Mine**, **Mirror Theirs** — each player fights with a clone, originals restored after, never staked in bets
 - Fixed winner losing XP after a duel
 - Merged in the retired DuelEnhancer-OG plugin: spectators forced into survival mode (e.g. by a WorldGuard region flag) are removed from spectating and teleported back to their original location
+- A trident thrown right before a duel is no longer lost: the thrown trident is pulled out of the world when the match starts and handed back with the player's inventory once the duel ends. The item is moved rather than copied, so it cannot be duplicated
 
 Planned:
 
