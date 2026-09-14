@@ -11,6 +11,7 @@ public final class Permissions {
     public static final String SPEC_ANON = SPECTATE + ".anonymously";
     public static final String ADMIN = "duels.admin";
     public static final String TP_BYPASS = "duels.teleport.bypass";
+    public static final String ARENA_BYPASS = "duels.arena.bypass";
     public static final String KIT = "duels.kits.%s";
     public static final String KIT_ALL = "duels.kits.*";
     public static final String KIT_SELECTING = "duels.use.kit-select";

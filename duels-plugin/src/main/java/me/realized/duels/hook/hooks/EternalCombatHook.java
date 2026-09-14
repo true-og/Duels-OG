@@ -18,7 +18,7 @@ import org.bukkit.plugin.Plugin;
 
 public class EternalCombatHook extends PluginHook<DuelsPlugin> {
 
-    public static final String NAME = "EternalCombat";
+    public static final String NAME = "EternalCombat-OG";
 
     private static final String API_CLASS = "com.eternalcode.combat.EternalCombatApi";
     private static final String FIGHT_MANAGER_CLASS = "com.eternalcode.combat.fight.FightManager";

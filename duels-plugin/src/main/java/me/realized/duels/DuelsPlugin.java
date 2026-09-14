@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import me.realized.duels.api.Duels;
 import me.realized.duels.api.command.SubCommand;
+import me.realized.duels.arena.ArenaGuard;
 import me.realized.duels.arena.ArenaManagerImpl;
 import me.realized.duels.arena.border.BorderManager;
 import me.realized.duels.betting.BettingManager;
@@ -93,6 +94,8 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
     @Getter
     private BorderManager borderManager;
     @Getter
+    private ArenaGuard arenaGuard;
+    @Getter
     private SettingsManager settingManager;
     @Getter
     private PlayerInfoManager playerManager;
@@ -159,6 +162,7 @@ public class DuelsPlugin extends JavaPlugin implements Duels, LogSource {
         loadables.add(kitManager = new KitManagerImpl(this));
         loadables.add(arenaManager = new ArenaManagerImpl(this));
         loadables.add(borderManager = new BorderManager(this));
+        loadables.add(arenaGuard = new ArenaGuard(this));
         loadables.add(settingManager = new SettingsManager(this));
         loadables.add(playerManager = new PlayerInfoManager(this));
         loadables.add(spectateManager = new SpectateManagerImpl(this));

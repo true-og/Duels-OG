@@ -532,6 +532,22 @@ arena:
     # default: 4
     update-interval-ticks: 4
 
+  protection:
+    # If set to 'true', WorldGuard lets the two match players damage each other even inside
+    # regions with pvp:deny, so arenas can deny PvP for everyone who is not dueling there.
+    # default: true
+    allow-match-damage: true
+
+    # If set to 'true', damage between a match player and anyone outside that match is cancelled.
+    # default: true
+    prevent-outsider-damage: true
+
+    # If set to 'true', players who are neither in the match nor spectating are kept out of an
+    # arena's WorldGuard region while it is in use, and moved out if they were already inside.
+    # Players with 'duels.arena.bypass' are exempt.
+    # default: true
+    eject-outsiders: true
+
 
 stats:
   # If set to 'true', kit ratings of a player will be displayed when the command '/duel stats' is executed.

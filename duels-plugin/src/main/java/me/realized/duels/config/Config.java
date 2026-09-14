@@ -205,6 +205,13 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
     private long arenaBoundaryUpdateTicks;
 
     @Getter
+    private boolean arenaAllowMatchDamage;
+    @Getter
+    private boolean arenaPreventOutsiderDamage;
+    @Getter
+    private boolean arenaEjectOutsiders;
+
+    @Getter
     private boolean displayKitRatings;
     @Getter
     private boolean displayNoKitRating;
@@ -377,6 +384,9 @@ public class Config extends AbstractConfiguration<DuelsPlugin> {
         arenaBoundaryBlock = configuration.getString("arena.boundary.block", "RED_STAINED_GLASS");
         arenaBoundaryDistance = Math.max(configuration.getInt("arena.boundary.distance", 6), 1);
         arenaBoundaryUpdateTicks = Math.max(configuration.getLong("arena.boundary.update-interval-ticks", 4L), 1L);
+        arenaAllowMatchDamage = configuration.getBoolean("arena.protection.allow-match-damage", true);
+        arenaPreventOutsiderDamage = configuration.getBoolean("arena.protection.prevent-outsider-damage", true);
+        arenaEjectOutsiders = configuration.getBoolean("arena.protection.eject-outsiders", true);
 
         displayKitRatings = configuration.getBoolean("stats.display-kit-ratings", true);
         displayNoKitRating = configuration.getBoolean("stats.display-nokit-rating", false);

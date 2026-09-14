@@ -6,6 +6,9 @@ import me.realized.duels.config.Config;
 import me.realized.duels.util.hook.PluginHook;
 import me.realized.duels.util.reflect.ReflectionUtil;
 import org.bukkit.Location;
+import org.bukkit.event.Listener;
+import org.bukkit.World;
+import java.util.function.BiPredicate;
 import org.bukkit.entity.Player;
 
 public class WorldGuardHook extends PluginHook<DuelsPlugin> {
@@ -37,5 +40,18 @@ public class WorldGuardHook extends PluginHook<DuelsPlugin> {
 
     public RegionBounds findSmallestRegionBounds(final Location location) {
         return handler.findSmallestRegionBounds(location);
+    }
+
+    public String findSmallestRegionId(final Location location) {
+        return handler.findSmallestRegionId(location);
+    }
+
+    public boolean isInRegion(final World world, final String regionId, final Location location) {
+        return handler.isInRegion(world, regionId, location);
+    }
+
+    // Lets WorldGuard allow PvP for the given attacker and victim pairs even in pvp:deny regions.
+    public Listener registerDamageAllow(final BiPredicate<Player, Player> allow) {
+        return handler.registerDamageAllow(plugin, allow);
     }
 }

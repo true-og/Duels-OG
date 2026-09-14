@@ -305,6 +305,8 @@ DUEL:
     command: '&cYou cannot use ''%command%'' while in a duel.'
     teleportation: '&cYou cannot teleport while in a duel.'
     inventory-open: '&cYou cannot open inventories while in a duel.'
+    outsider-damage: '&cYou cannot interfere with a duel.'
+    arena-in-use: '&cThis arena is in use by a duel.'
   projectile-hit-message: '&7{PREFIX} &4%name% &7is now at &c%health% ❤&7!'
   on-end:
     tie: '{PREFIX} &7Tie Game!'
