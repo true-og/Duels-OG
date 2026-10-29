@@ -15,8 +15,8 @@ Changes from Duels:
 - Whitelist arenas/worlds and fix duel transportation, with [PetTeleport-OG](https://github.com/true-og/PetTeleport-OG) and [HorseTp-OG](https://github.com/true-og/HorseTp-OG) support
 - Add [EternalCombat](https://github.com/EternalCodeTeam/EternalCombat) support
 - Replace BountyHunters hook with [PlayerBounties-OG](https://github.com/true-og/PlayerBounties-OG) support
-- Replaced Vault hook with [DiamondBank-OG](https://github.com/true-og/DiamondBank-OG) API
-- Removed Multiverse hook; world whitelisting now uses plain Bukkit world names with [MyWorlds](https://github.com/true-og/MyWorlds) listed as a soft-depend to ensure managed worlds load before Duels
+- Replaced Vault hook with [DiamondBank-OG](https://git.trueog.net/trueog/DiamondBank-OG) API
+- Removed Multiverse hook; world whitelisting now uses plain Bukkit world names with [MyWorlds](https://git.trueog.net/trueog/MyWorlds) listed as a soft-depend to ensure managed worlds load before Duels
 - Bundled live TrueOG Network config files for plug-and-play deployment
 - Bundled default kits (chain, iron, diamond, leather, netherite, debuff, nodebuff) in the plugin jar
 - Removed WorldGuard region restrictions inside duel arenas
@@ -38,7 +38,7 @@ Changes from Duels:
 
 Planned:
 
-- Re-implement spectator mode using [GxUI-OG](https://github.com/true-og/GxUI-OG)
+- Re-implement spectator mode using [GxUI-OG](https://git.trueog.net/trueog/GxUI-OG)
 
 #### @szumielxd
 
