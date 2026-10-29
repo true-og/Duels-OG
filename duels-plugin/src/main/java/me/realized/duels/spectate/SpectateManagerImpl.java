@@ -51,7 +51,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-// TODO: Re-implement spectator mode using GxUI-OG (https://github.com/true-og/GxUI-OG).
+// TODO: Re-implement spectator mode using GxUI-OG (https://git.trueog.net/trueog/GxUI-OG).
 // Carried over from the retired DuelEnhancer-OG plugin.
 public class SpectateManagerImpl implements Loadable, SpectateManager {
 
