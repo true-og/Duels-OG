@@ -12,9 +12,9 @@ Changes from Duels:
 - Update deprecated pickup API
 - Added an option to hide the Duel winning title message
 - Added an option to hide the bet winning title message
-- Whitelist arenas/worlds and fix duel transportation, with [PetTeleport-OG](https://github.com/true-og/PetTeleport-OG) and [HorseTp-OG](https://github.com/true-og/HorseTp-OG) support
+- Whitelist arenas/worlds and fix duel transportation, with [PetTeleport-OG](https://git.trueog.net/trueog/PetTeleport-OG) and [HorseTp-OG](https://git.trueog.net/trueog/HorseTP-OG) support
 - Add [EternalCombat](https://github.com/EternalCodeTeam/EternalCombat) support
-- Replace BountyHunters hook with [PlayerBounties-OG](https://github.com/true-og/PlayerBounties-OG) support
+- Replace BountyHunters hook with [PlayerBounties-OG](https://git.trueog.net/trueog/PlayerBounties-OG) support
 - Replaced Vault hook with [DiamondBank-OG](https://git.trueog.net/trueog/DiamondBank-OG) API
 - Removed Multiverse hook; world whitelisting now uses plain Bukkit world names with [MyWorlds](https://git.trueog.net/trueog/MyWorlds) listed as a soft-depend to ensure managed worlds load before Duels
 - Bundled live TrueOG Network config files for plug-and-play deployment
@@ -29,7 +29,7 @@ Changes from Duels:
 - Fixed a bug where a selected kit could not be de-selected, blocking own-inventory duels
 - Select a random kit and arena if none are selected
 - Strip kit-item NBT from outgoing packets via [ProtocolLib](https://github.com/dmulloy2/ProtocolLib) so legacy clients (1.8+ through ViaVersion) can eat, draw bows, and hold items without desync, while keeping kit-item protection intact
-- Ported the per-player colored-glass arena boundary wall from [EternalCombat-OG](https://github.com/true-og/EternalCombat-OG). For the duration of a duel, each combatant sees a client-side glass wall hugging the inner edge of the arena, so they cannot wander out mid-match. The arena's bounds are read straight from the smallest WorldGuard region enclosing its first spawn point, so existing arenas pick up the wall with no extra setup. Block type, view distance, and refresh rate live under `arena.boundary` in `config.yml`.
+- Ported the per-player colored-glass arena boundary wall from [EternalCombat-OG](https://git.trueog.net/trueog/EternalCombat-OG). For the duration of a duel, each combatant sees a client-side glass wall hugging the inner edge of the arena, so they cannot wander out mid-match. The arena's bounds are read straight from the smallest WorldGuard region enclosing its first spawn point, so existing arenas pick up the wall with no extra setup. Block type, view distance, and refresh rate live under `arena.boundary` in `config.yml`.
 - Hardened arena protections: combatants snap back if they leave the WorldGuard region, and outside players cannot damage anyone in the match
 - Three inventory modes in the settings GUI — **Own**, **Mirror Mine**, **Mirror Theirs** — each player fights with a clone, originals restored after, never staked in bets
 - Fixed winner losing XP after a duel
